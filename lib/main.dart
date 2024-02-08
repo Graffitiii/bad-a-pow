@@ -1,6 +1,7 @@
 import 'package:finalmo/screen/forgetpassword.dart';
 import 'package:finalmo/screen/login.dart';
 import 'package:finalmo/screen/signup.dart';
+import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,6 +16,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blueGrey),
-        home: LoginScreen());
+        home: Profile());
   }
 }
