@@ -42,6 +42,8 @@ dependencies:
   flutter_rounded_date_picker: ^3.0.4
   intl: ^0.17.0
   dropdown_button2: ^2.3.8
+  carousel_slider: ^4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
