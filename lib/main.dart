@@ -1,4 +1,6 @@
 import 'package:finalmo/screen/forgetpassword.dart';
+import 'package:finalmo/screen/gang/findGang.dart';
+import 'package:finalmo/screen/gang/gangDetail.dart';
 import 'package:finalmo/screen/login.dart';
 import 'package:finalmo/screen/signup.dart';
 import 'package:finalmo/screen/profile/profile.dart';
@@ -16,6 +18,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blueGrey),
-        home: Profile());
+        home: GangDetail());
   }
 }
