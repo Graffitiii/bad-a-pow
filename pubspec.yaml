@@ -90,6 +90,15 @@ flutter:
         - asset: fonts/montserrat/Montserrat-Italic.ttf
         - asset: fonts/montserrat/Montserrat-Black.ttf
         - asset: fonts/inter/Inter-Black.ttf
+    - family: Noto
+      fonts:
+        - asset: fonts/noto/NotoSansThai-Black.ttf
+        - asset: fonts/noto/NotoSansThai-Bold.ttf
+        - asset: fonts/noto/NotoSansThai-ExtraBold.ttf
+        - asset: fonts/noto/NotoSansThai-Light.ttf
+        - asset: fonts/noto/NotoSansThai-Medium.ttf
+        - asset: fonts/noto/NotoSansThai-Regular.ttf
+        - asset: fonts/noto/NotoSansThai-SemiBold.ttf
   
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
