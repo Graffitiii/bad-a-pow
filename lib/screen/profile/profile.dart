@@ -1,4 +1,5 @@
 import 'package:finalmo/screen/login.dart';
+import 'package:finalmo/screen/profile/profile_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -41,21 +42,11 @@ class _ProfileState extends State<Profile> {
                         leading: new Icon(Icons.manage_accounts),
                         title: new Text('การตั้งค่าโปรไฟล์'),
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute<void>(
-                            builder: (BuildContext context) {
-                              return Scaffold(
-                                appBar: AppBar(
-                                  title: const Text('การตั้งค่าโปรไฟล์'),
-                                ),
-                                body: const Center(
-                                  child: Text(
-                                    'This is the next page',
-                                    style: TextStyle(fontSize: 24),
-                                  ),
-                                ),
-                              );
-                            },
-                          ));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      SettingProfile()));
                         },
                       ),
                       ListTile(

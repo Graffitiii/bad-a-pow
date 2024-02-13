@@ -20,7 +20,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: Text("สร้างบัญชีผู้ใช้")),
+      appBar: AppBar(
+        backgroundColor: Color(0xFF00537A),
+        elevation: 0,
+        toolbarHeight: 0,
+      ),
       body: SafeArea(
         child: Center(
           child: Container(
@@ -34,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             child: Padding(
-              padding: EdgeInsets.fromLTRB(40, 180, 40, 0),
+              padding: EdgeInsets.fromLTRB(40, 65, 40, 0),
               child: Form(
                 // key: formKey,
                 child: SingleChildScrollView(
@@ -91,49 +95,57 @@ class _LoginScreenState extends State<LoginScreen> {
                                         borderRadius:
                                             BorderRadius.circular(5.0),
                                       ),
-                                      child: TextFormField(
-                                        decoration: InputDecoration(
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(width: 1.0),
+                                      child: SizedBox(
+                                        height: 40.0,
+                                        child: TextFormField(
+                                          decoration: InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide:
+                                                  BorderSide(width: 1.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                            ),
+                                            labelText: 'หมายเลขโทรศัพท์*',
+                                            labelStyle: TextStyle(
+                                              color: Colors.black.withOpacity(
+                                                  0.3100000023841858),
+                                              fontSize: 14,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            fillColor: Color(0xFFEFEFEF),
+                                            filled: true,
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 12),
+                                            border: InputBorder.none,
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.red),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.red),
+                                            ),
+                                            prefixIcon: Icon(
+                                              Icons.phone,
+                                              color: Colors.grey,
+                                            ),
+                                            errorStyle: TextStyle(fontSize: 12),
                                           ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide.none,
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                          ),
-                                          labelText: 'หมายเลขโทรศัพท์*',
-                                          labelStyle: TextStyle(
-                                            color: Colors.black.withOpacity(
-                                                0.3100000023841858),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                          fillColor: Color(0xFFEFEFEF),
-                                          filled: true,
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 0, horizontal: 12),
-                                          border: InputBorder.none,
-                                          focusedErrorBorder:
-                                              OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1.0, color: Colors.red),
-                                          ),
-                                          errorBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1.0, color: Colors.red),
-                                          ),
-                                          prefixIcon: Icon(
-                                            Icons.phone,
-                                            color: Colors.grey,
-                                          ),
-                                          errorStyle: TextStyle(fontSize: 12),
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          // onSaved: (String email) {
+                                          //   profile.email = email;
+                                          // },
                                         ),
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                        // onSaved: (String email) {
-                                        //   profile.email = email;
-                                        // },
                                       ),
                                     ),
                                     SizedBox(
@@ -152,38 +164,44 @@ class _LoginScreenState extends State<LoginScreen> {
                                         borderRadius:
                                             BorderRadius.circular(5.0),
                                       ),
-                                      child: TextFormField(
-                                        obscureText: true,
-                                        decoration: InputDecoration(
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(width: 1.0),
+                                      child: SizedBox(
+                                        height: 40.0,
+                                        child: TextFormField(
+                                          obscureText: true,
+                                          decoration: InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide:
+                                                  BorderSide(width: 1.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                            ),
+                                            labelText: 'รหัสผ่าน*',
+                                            labelStyle: TextStyle(
+                                              color: Colors.black.withOpacity(
+                                                  0.3100000023841858),
+                                              fontSize: 14,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            border: InputBorder.none,
+                                            filled: true,
+                                            fillColor: Color(0xFFEFEFEF),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 12),
+                                            prefixIcon: Icon(
+                                              Icons.lock,
+                                              color: Colors.grey,
+                                            ),
                                           ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide.none,
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                          ),
-                                          labelText: 'รหัสผ่าน*',
-                                          labelStyle: TextStyle(
-                                            color: Colors.black.withOpacity(
-                                                0.3100000023841858),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                          border: InputBorder.none,
-                                          filled: true,
-                                          fillColor: Color(0xFFEFEFEF),
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 0, horizontal: 12),
-                                          prefixIcon: Icon(
-                                            Icons.lock,
-                                            color: Colors.grey,
-                                          ),
+                                          // onSaved: (String password) {
+                                          //   profile.password = password;
+                                          // },
                                         ),
-                                        // onSaved: (String password) {
-                                        //   profile.password = password;
-                                        // },
                                       ),
                                     ),
                                     Container(
@@ -320,7 +338,7 @@ class BackgroundSignIn extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(40, 100, 40, 0),
+            padding: EdgeInsets.fromLTRB(30, 70, 30, 0),
             child: Form(
               // key: formKey,
               child: SingleChildScrollView(
