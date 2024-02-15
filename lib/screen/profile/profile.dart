@@ -1,4 +1,4 @@
-import 'package:finalmo/screen/login.dart';
+import 'package:finalmo/screen/login_page/login.dart';
 import 'package:finalmo/screen/profile/profile_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -21,7 +21,6 @@ class _ProfileState extends State<Profile> {
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -190,7 +189,6 @@ class CarouselSliderExample extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w500,
                         height: 0,
                       ),
@@ -210,7 +208,6 @@ class CarouselSliderExample extends StatelessWidget {
                               style: TextStyle(
                                 color: Color(0xFF013C58),
                                 fontSize: 16,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -221,7 +218,6 @@ class CarouselSliderExample extends StatelessWidget {
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -239,7 +235,6 @@ class CarouselSliderExample extends StatelessWidget {
                               style: TextStyle(
                                 color: Color(0xFF013C58),
                                 fontSize: 16,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -250,7 +245,6 @@ class CarouselSliderExample extends StatelessWidget {
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -269,7 +263,6 @@ class CarouselSliderExample extends StatelessWidget {
                               style: TextStyle(
                                 color: Color(0xFF013C58),
                                 fontSize: 16,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -280,7 +273,6 @@ class CarouselSliderExample extends StatelessWidget {
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -299,7 +291,6 @@ class CarouselSliderExample extends StatelessWidget {
                               style: TextStyle(
                                 color: Color(0xFF013C58),
                                 fontSize: 16,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -318,7 +309,6 @@ class CarouselSliderExample extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w400,
                                   height: 0,
                                 ),

@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:finalmo/screen/gang/findGang.dart';
+import 'package:finalmo/screen/gang/review.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -28,7 +30,6 @@ class _GangDetailState extends State<GangDetail> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
                 height: 0,
               ),
@@ -46,7 +47,7 @@ class _GangDetailState extends State<GangDetail> {
             height: 70,
             margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 50),
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -62,7 +63,6 @@ class _GangDetailState extends State<GangDetail> {
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -97,7 +97,6 @@ class _GangDetailState extends State<GangDetail> {
                                   color:
                                       const Color.fromARGB(255, 255, 255, 255),
                                   fontSize: 16,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -187,7 +186,7 @@ class CarouselSliderImage extends StatelessWidget {
             ),
             SizedBox(height: 15),
             Container(
-              padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -201,7 +200,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 20,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w700,
                               height: 0,
                             ),
@@ -227,11 +225,7 @@ class CarouselSliderImage extends StatelessWidget {
                         ],
                       ),
                       Spacer(),
-                      Icon(
-                        Icons.share,
-                        color: Color(0xFF515151),
-                        size: 22.0,
-                      ),
+                      ShareBottton(),
                     ],
                   ),
                   Padding(
@@ -248,15 +242,19 @@ class CarouselSliderImage extends StatelessWidget {
                       Spacer(),
                       Column(
                         children: [
-                          Text(
-                            '6',
-                            style: TextStyle(
-                              color: Color(0xFF013C58),
-                              fontSize: 20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w700,
-                              height: 0,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                '6',
+                                style: TextStyle(
+                                  color: Color(0xFF013C58),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  height: 0,
+                                ),
+                              ),
+                              RequesttoJoin(),
+                            ],
                           ),
                           SizedBox(height: 5),
                           Text(
@@ -264,7 +262,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 13,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w500,
                               height: 0,
                             ),
@@ -285,7 +282,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 20,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w700,
                               height: 0,
                             ),
@@ -296,7 +292,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 13,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w500,
                               height: 0,
                             ),
@@ -310,39 +305,47 @@ class CarouselSliderImage extends StatelessWidget {
                         color: Colors.black.withOpacity(0.10999999940395355),
                       ),
                       Spacer(),
-                      Column(
-                        children: [
-                          Text(
-                            '4.6',
-                            style: TextStyle(
-                              color: Color(0xFF013C58),
-                              fontSize: 20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w700,
-                              height: 0,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Text(
+                              '4.6',
+                              style: TextStyle(
+                                color: Color(0xFF013C58),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                height: 0,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Text(
-                                'รีวิว',
-                                style: TextStyle(
-                                  color: Color(0xFF929292),
-                                  fontSize: 13,
-                                  fontFamily: 'Inter',
-                                  fontWeight: FontWeight.w500,
-                                  height: 0,
+                            SizedBox(height: 5),
+                            Row(
+                              children: [
+                                Text(
+                                  'รีวิว',
+                                  style: TextStyle(
+                                    color: Color(0xFF929292),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    height: 0,
+                                  ),
                                 ),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                color: Color(0xFF929292),
-                                size: 14.0,
-                              ),
-                            ],
-                          )
-                        ],
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Color(0xFF929292),
+                                  size: 14.0,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                       Spacer(),
                     ],
@@ -376,7 +379,6 @@ class CarouselSliderImage extends StatelessWidget {
                               style: TextStyle(
                                 color: Color(0xFF013C58),
                                 fontSize: 14,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w600,
                                 height: 0,
                               ),
@@ -386,7 +388,6 @@ class CarouselSliderImage extends StatelessWidget {
                               style: TextStyle(
                                 color: Color(0xFF929292),
                                 fontSize: 14,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -432,7 +433,6 @@ class CarouselSliderImage extends StatelessWidget {
                                 style: TextStyle(
                                   color: Color(0xFF013C58),
                                   fontSize: 14,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w600,
                                   height: 0,
                                 ),
@@ -452,7 +452,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFFFF17A),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -473,7 +472,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFF8CFF7A),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -494,7 +492,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFA47AFF),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -507,7 +504,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                               height: 0,
                             ),
@@ -544,7 +540,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               height: 0,
                             ),
@@ -554,7 +549,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                               height: 0,
                             ),
@@ -591,7 +585,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               height: 0,
                             ),
@@ -601,7 +594,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                               height: 0,
                             ),
@@ -617,7 +609,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               height: 0,
                             ),
@@ -627,7 +618,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                               height: 0,
                             ),
@@ -649,7 +639,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               height: 0,
                             ),
@@ -671,7 +660,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFFFF17A),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -692,7 +680,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFF8CFF7A),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -713,7 +700,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFA47AFF),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -764,5 +750,166 @@ class CarouselSliderImage extends StatelessWidget {
         ),
       ),
     ));
+  }
+}
+
+class ShareBottton extends StatelessWidget {
+  const ShareBottton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.share, size: 22),
+      color: Color(0xFF515151),
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Color(0xFF575757),
+          builder: (BuildContext context) {
+            return FractionallySizedBox(
+              heightFactor: 0.6,
+              child: Center(
+                child: SingleChildScrollView(
+                    child: Column(
+                  children: [
+                    Text(
+                      "ก๊วนแมวเหมียว",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        height: 0,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Image.asset(
+                      "assets/images/bad4.png",
+                      width: 200,
+                      height: 200,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.link, size: 22),
+                              color: Colors.white,
+                              onPressed: () {},
+                            ),
+                            Text(
+                              "คัดลอกลิงค์",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.download, size: 22),
+                              color: Colors.white,
+                              onPressed: () {},
+                            ),
+                            Text(
+                              "บันทึก QR",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                )),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class RequesttoJoin extends StatelessWidget {
+  const RequesttoJoin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_forward_ios, size: 12),
+      color: Color(0xFF515151),
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Color(0xFF575757),
+          builder: (BuildContext context) {
+            return FractionallySizedBox(
+              heightFactor: 0.6,
+              child: Container(
+                child: SingleChildScrollView(
+                  child: Padding(
+                      padding: EdgeInsets.fromLTRB(30, 20, 10, 0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage:
+                                    AssetImage('assets/images/profile1.jpg'),
+                              ),
+                              SizedBox(width: 25),
+                              Text(
+                                "tuna",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              Spacer(),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.check,
+                                    size: 20,
+                                    color: Colors.green,
+                                  )),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.close,
+                                    size: 20,
+                                    color: Colors.red,
+                                  )),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      )),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

@@ -19,7 +19,6 @@ class _SettingProfileState extends State<SettingProfile> {
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -61,7 +60,6 @@ class Setting extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -70,7 +68,6 @@ class Setting extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,
-                    fontFamily: 'Inter',
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -103,7 +100,6 @@ class Setting extends StatelessWidget {
                     style: TextStyle(
                       color: Color(0xFF013C58),
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       height: 0,
                     ),
@@ -114,7 +110,6 @@ class Setting extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       height: 0,
                     ),
@@ -131,7 +126,6 @@ class Setting extends StatelessWidget {
                     style: TextStyle(
                       color: Color(0xFF013C58),
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       height: 0,
                     ),
@@ -142,7 +136,6 @@ class Setting extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       height: 0,
                     ),
@@ -160,7 +153,6 @@ class Setting extends StatelessWidget {
                     style: TextStyle(
                       color: Color(0xFF013C58),
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       height: 0,
                     ),
@@ -171,7 +163,6 @@ class Setting extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       height: 0,
                     ),
@@ -189,7 +180,6 @@ class Setting extends StatelessWidget {
                     style: TextStyle(
                       color: Color(0xFF013C58),
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                       height: 0,
                     ),
@@ -207,7 +197,6 @@ class Setting extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 16,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                         height: 0,
                       ),

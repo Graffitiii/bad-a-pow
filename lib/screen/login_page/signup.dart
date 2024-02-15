@@ -1,5 +1,5 @@
 // import 'package:finalmo/object/datepicker.dart';
-import 'package:finalmo/screen/login.dart';
+import 'package:finalmo/screen/login_page/login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
@@ -44,7 +44,6 @@ class SignUpObject extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -132,7 +131,6 @@ class SignUpObject extends StatelessWidget {
                       labelStyle: TextStyle(
                         color: Colors.black.withOpacity(0.3100000023841858),
                         fontSize: 14,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
                       border: InputBorder.none,
@@ -265,7 +263,6 @@ class _DatePickerState extends State<DatePicker> {
               labelStyle: TextStyle(
                 color: Colors.black.withOpacity(0.3100000023841858),
                 fontSize: 14,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
               ),
               focusedBorder: OutlineInputBorder(
@@ -347,7 +344,6 @@ class PasswordField extends StatelessWidget {
             labelStyle: TextStyle(
               color: Colors.black.withOpacity(0.3100000023841858),
               fontSize: 14,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w400,
             ),
             border: InputBorder.none,
@@ -388,7 +384,6 @@ InputDecoration _buildInputUser(String labelText) {
     labelStyle: TextStyle(
       color: Colors.black.withOpacity(0.3100000023841858),
       fontSize: 14,
-      fontFamily: 'Inter',
       fontWeight: FontWeight.w400,
     ),
     border: InputBorder.none,

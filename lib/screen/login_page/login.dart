@@ -1,7 +1,7 @@
 // import 'package:finalmo/model/profile.dart';
-import 'package:finalmo/screen/signup.dart';
+import 'package:finalmo/screen/login_page/signup.dart';
 import 'package:flutter/material.dart';
-import 'package:finalmo/screen/forgetpassword.dart';
+import 'package:finalmo/screen/login_page/forgetpassword.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // import 'package:getwidget/getwidget.dart';
@@ -76,7 +76,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 16,
-                                            fontFamily: 'Inter',
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
@@ -113,7 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                               color: Colors.black.withOpacity(
                                                   0.3100000023841858),
                                               fontSize: 14,
-                                              fontFamily: 'Inter',
                                               fontWeight: FontWeight.w400,
                                             ),
                                             fillColor: Color(0xFFEFEFEF),
@@ -183,7 +181,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                               color: Colors.black.withOpacity(
                                                   0.3100000023841858),
                                               fontSize: 14,
-                                              fontFamily: 'Inter',
                                               fontWeight: FontWeight.w400,
                                             ),
                                             border: InputBorder.none,

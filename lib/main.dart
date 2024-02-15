@@ -1,8 +1,5 @@
-import 'package:finalmo/screen/forgetpassword.dart';
 import 'package:finalmo/screen/gang/findGang.dart';
 import 'package:finalmo/screen/gang/gangDetail.dart';
-import 'package:finalmo/screen/login.dart';
-import 'package:finalmo/screen/signup.dart';
 import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/material.dart';
 
