@@ -28,7 +28,6 @@ class _GangDetailState extends State<GangDetail> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
                 height: 0,
               ),
@@ -62,7 +61,6 @@ class _GangDetailState extends State<GangDetail> {
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -97,7 +95,6 @@ class _GangDetailState extends State<GangDetail> {
                                   color:
                                       const Color.fromARGB(255, 255, 255, 255),
                                   fontSize: 16,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -201,7 +198,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 20,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w700,
                               height: 0,
                             ),
@@ -253,7 +249,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 20,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w700,
                               height: 0,
                             ),
@@ -264,7 +259,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 13,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w500,
                               height: 0,
                             ),
@@ -285,7 +279,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 20,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w700,
                               height: 0,
                             ),
@@ -296,7 +289,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 13,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w500,
                               height: 0,
                             ),
@@ -317,7 +309,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 20,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w700,
                               height: 0,
                             ),
@@ -330,7 +321,6 @@ class CarouselSliderImage extends StatelessWidget {
                                 style: TextStyle(
                                   color: Color(0xFF929292),
                                   fontSize: 13,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w500,
                                   height: 0,
                                 ),
@@ -376,7 +366,6 @@ class CarouselSliderImage extends StatelessWidget {
                               style: TextStyle(
                                 color: Color(0xFF013C58),
                                 fontSize: 14,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w600,
                                 height: 0,
                               ),
@@ -386,7 +375,6 @@ class CarouselSliderImage extends StatelessWidget {
                               style: TextStyle(
                                 color: Color(0xFF929292),
                                 fontSize: 14,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                                 height: 0,
                               ),
@@ -432,7 +420,6 @@ class CarouselSliderImage extends StatelessWidget {
                                 style: TextStyle(
                                   color: Color(0xFF013C58),
                                   fontSize: 14,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w600,
                                   height: 0,
                                 ),
@@ -452,7 +439,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFFFF17A),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -473,7 +459,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFF8CFF7A),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -494,7 +479,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFA47AFF),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -507,7 +491,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                               height: 0,
                             ),
@@ -544,7 +527,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               height: 0,
                             ),
@@ -554,7 +536,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                               height: 0,
                             ),
@@ -591,7 +572,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               height: 0,
                             ),
@@ -601,7 +581,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                               height: 0,
                             ),
@@ -617,7 +596,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               height: 0,
                             ),
@@ -627,7 +605,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF929292),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
                               height: 0,
                             ),
@@ -649,7 +626,6 @@ class CarouselSliderImage extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
-                              fontFamily: 'Inter',
                               fontWeight: FontWeight.w600,
                               height: 0,
                             ),
@@ -671,7 +647,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFFFF17A),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -692,7 +667,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFF8CFF7A),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),
@@ -713,7 +687,6 @@ class CarouselSliderImage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFA47AFF),
                                     fontSize: 12,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w600,
                                     height: 0,
                                   ),

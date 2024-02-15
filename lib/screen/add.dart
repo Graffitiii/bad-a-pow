@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
@@ -17,8 +16,6 @@ final List<String> time = [
 ];
 List<String> selectedtime = [];
 
-
-
 class Add extends StatefulWidget {
   const Add({super.key});
 
@@ -33,19 +30,19 @@ class _AddState extends State<Add> {
   // static const List<Widget> _widgetOptions = <Widget>[
   //   Text(
   //     'Index 0: Home',
-      
+
   //   ),
   //   Text(
   //     'Index 1: Business',
-     
+
   //   ),
   //   Text(
   //     'Index 2: School',
-    
+
   //   ),
   //   Text(
   //     'Index 3: Settings',
-     
+
   //   ),
   // ];
 
@@ -54,6 +51,7 @@ class _AddState extends State<Add> {
       _selectedIndex = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +62,6 @@ class _AddState extends State<Add> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
                 height: 0,
               ),
@@ -73,45 +70,38 @@ class _AddState extends State<Add> {
           backgroundColor: Color(0xFF00537A),
         ),
         bottomNavigationBar: BottomNavigationBar(
-           items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-           
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'หาก๊วน',
-            
-          ),
-          BottomNavigationBarItem(
-            label: '',
-            icon: Icon(
-              Icons.home_rounded,
-              
-              size: 35,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
-           
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'ก๊วนของฉัน',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'โปรไฟล์',
-            
-          ),
-          
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.black.withOpacity(0.3100000023841858),
-        showUnselectedLabels: true,
-        unselectedLabelStyle: TextStyle(
-          color: Colors.black.withOpacity(0.3100000023841858)
-        ),
-        onTap: _onItemTapped,
+            BottomNavigationBarItem(
+              icon: Icon(Icons.business),
+              label: 'หาก๊วน',
+            ),
+            BottomNavigationBarItem(
+              label: '',
+              icon: Icon(
+                Icons.home_rounded,
+                size: 35,
+              ),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.school),
+              label: 'ก๊วนของฉัน',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'โปรไฟล์',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          unselectedItemColor: Colors.black.withOpacity(0.3100000023841858),
+          showUnselectedLabels: true,
+          unselectedLabelStyle:
+              TextStyle(color: Colors.black.withOpacity(0.3100000023841858)),
+          onTap: _onItemTapped,
         ),
         body: SafeArea(
           child: Padding(
@@ -136,7 +126,6 @@ class _AddState extends State<Add> {
                         style: TextStyle(
                           color: Color(0xFF013C58),
                           fontSize: 16,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           height: 0,
                         ),
@@ -158,7 +147,6 @@ class _AddState extends State<Add> {
                         labelStyle: TextStyle(
                           color: Colors.black.withOpacity(0.3100000023841858),
                           fontSize: 14,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w400,
                         ),
                         fillColor: Color(0xFFEFEFEF),
@@ -202,7 +190,6 @@ class _AddState extends State<Add> {
                                   color: Colors.black
                                       .withOpacity(0.3100000023841858),
                                   fontSize: 14,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w400,
                                 ),
                                 fillColor: Color(0xFFEFEFEF),
@@ -233,7 +220,8 @@ class _AddState extends State<Add> {
                                   'เวลา',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.black.withOpacity(0.3100000023841858),
+                                    color: Colors.black
+                                        .withOpacity(0.3100000023841858),
                                   ),
                                 ),
                                 items: time.map((item) {
@@ -307,15 +295,14 @@ class _AddState extends State<Add> {
                                   ).toList();
                                 },
                                 buttonStyleData: const ButtonStyleData(
-                                  padding: EdgeInsets.only(left: 16, right: 8),
-                                  height: 48,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFEFEFEF),
-                                    borderRadius: BorderRadius.all((Radius.circular(5.0)))
-                                  )
-                                  
-                                ),
+                                    padding:
+                                        EdgeInsets.only(left: 16, right: 8),
+                                    height: 48,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFFEFEFEF),
+                                        borderRadius: BorderRadius.all(
+                                            (Radius.circular(5.0))))),
                                 menuItemStyleData: const MenuItemStyleData(
                                   height: 40,
                                   padding: EdgeInsets.zero,
@@ -342,7 +329,6 @@ class _AddState extends State<Add> {
                         labelStyle: TextStyle(
                           color: Colors.black.withOpacity(0.3100000023841858),
                           fontSize: 14,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w400,
                         ),
                         fillColor: Color(0xFFEFEFEF),
@@ -386,7 +372,6 @@ class _AddState extends State<Add> {
                                   color: Colors.black
                                       .withOpacity(0.3100000023841858),
                                   fontSize: 14,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w400,
                                 ),
                                 fillColor: Color(0xFFEFEFEF),
@@ -417,7 +402,8 @@ class _AddState extends State<Add> {
                                   'ระดับของผู้เล่น',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.black.withOpacity(0.3100000023841858),
+                                    color: Colors.black
+                                        .withOpacity(0.3100000023841858),
                                   ),
                                 ),
                                 items: level.map((item) {
@@ -491,15 +477,14 @@ class _AddState extends State<Add> {
                                   ).toList();
                                 },
                                 buttonStyleData: const ButtonStyleData(
-                                  padding: EdgeInsets.only(left: 16, right: 8),
-                                  height: 48,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFEFEFEF),
-                                    borderRadius: BorderRadius.all((Radius.circular(5.0)))
-                                  )
-                                  
-                                ),
+                                    padding:
+                                        EdgeInsets.only(left: 16, right: 8),
+                                    height: 48,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFFEFEFEF),
+                                        borderRadius: BorderRadius.all(
+                                            (Radius.circular(5.0))))),
                                 menuItemStyleData: const MenuItemStyleData(
                                   height: 40,
                                   padding: EdgeInsets.zero,
@@ -526,7 +511,6 @@ class _AddState extends State<Add> {
                         labelStyle: TextStyle(
                           color: Colors.black.withOpacity(0.3100000023841858),
                           fontSize: 14,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w400,
                         ),
                         fillColor: Color(0xFFEFEFEF),
@@ -563,7 +547,6 @@ class _AddState extends State<Add> {
                         labelStyle: TextStyle(
                           color: Colors.black.withOpacity(0.3100000023841858),
                           fontSize: 14,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w400,
                         ),
                         fillColor: Color(0xFFEFEFEF),
@@ -607,7 +590,6 @@ class _AddState extends State<Add> {
                                   color: Colors.black
                                       .withOpacity(0.3100000023841858),
                                   fontSize: 14,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w400,
                                 ),
                                 fillColor: Color(0xFFEFEFEF),
@@ -645,7 +627,6 @@ class _AddState extends State<Add> {
                                   color: Colors.black
                                       .withOpacity(0.3100000023841858),
                                   fontSize: 14,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w400,
                                 ),
                                 fillColor: Color(0xFFEFEFEF),
@@ -684,7 +665,6 @@ class _AddState extends State<Add> {
                         labelStyle: TextStyle(
                           color: Colors.black.withOpacity(0.3100000023841858),
                           fontSize: 14,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w400,
                         ),
                         fillColor: Color(0xFFEFEFEF),
@@ -770,7 +750,7 @@ class _AddState extends State<Add> {
 //       label: const Text('ระดับของผู้เล่น',style: TextStyle(
 //                           color: Color.fromARGB(255, 174, 174, 174),        
 //                           fontSize: 14,
-//                           fontFamily: 'Inter',
+//                           
 //                           fontWeight: FontWeight.w400,
 //                                 ),),
 //       inputDecorationTheme: InputDecorationTheme(
