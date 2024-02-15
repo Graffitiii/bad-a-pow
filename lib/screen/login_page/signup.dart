@@ -1,5 +1,5 @@
 // import 'package:finalmo/object/datepicker.dart';
-import 'package:finalmo/screen/login.dart';
+import 'package:finalmo/screen/login_page/login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +17,7 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundSignIn(
-        containerHeight: 595,
+        containerHeight: 542,
         child: SignUpObject(),
       ),
     );
@@ -32,7 +32,7 @@ class SignUpObject extends StatelessWidget {
     return Scaffold(
       body: Container(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(40, 20, 40, 20),
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -44,7 +44,6 @@ class SignUpObject extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
-                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -52,11 +51,14 @@ class SignUpObject extends StatelessWidget {
               ),
               Container(
                 decoration: _buildBoxUser(),
-                child: TextFormField(
-                  decoration: _buildInputUser('ชื่อจริง*'),
-                  // onSaved: (String password) {
-                  //   profile.password = password;
-                  // },
+                child: SizedBox(
+                  height: 40.0,
+                  child: TextFormField(
+                    decoration: _buildInputUser('ชื่อจริง*'),
+                    // onSaved: (String password) {
+                    //   profile.password = password;
+                    // },
+                  ),
                 ),
               ),
               SizedBox(
@@ -64,11 +66,14 @@ class SignUpObject extends StatelessWidget {
               ),
               Container(
                 decoration: _buildBoxUser(),
-                child: TextFormField(
-                  decoration: _buildInputUser('นามสกุล*'),
-                  // onSaved: (String password) {
-                  //   profile.password = password;
-                  // },
+                child: SizedBox(
+                  height: 40.0,
+                  child: TextFormField(
+                    decoration: _buildInputUser('นามสกุล*'),
+                    // onSaved: (String password) {
+                    //   profile.password = password;
+                    // },
+                  ),
                 ),
               ),
               SizedBox(
@@ -80,47 +85,20 @@ class SignUpObject extends StatelessWidget {
                 child: DatePicker(),
               ),
               Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x3F000000),
-                      blurRadius: 4,
-                      offset: Offset(0, 4),
-                      spreadRadius: 0,
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(width: 1.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    labelText: 'เบอร์โทรศัพท์*',
-                    labelStyle: TextStyle(
-                      color: Colors.black.withOpacity(0.3100000023841858),
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: InputBorder.none,
-                    filled: true,
-                    fillColor: Color(0xFFEFEFEF),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                decoration: _buildBoxUser(),
+                child: SizedBox(
+                  height: 40.0,
+                  child: TextField(
+                    decoration: _buildInputUser('เบอร์โทรศัพท์*'),
+                    keyboardType:
+                        TextInputType.phone, // Set the keyboard type to phone
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly
+                    ], // Allow only digits
+                    // onSaved: (String password) {
+                    //   profile.password = password;
+                    // },
                   ),
-                  keyboardType:
-                      TextInputType.phone, // Set the keyboard type to phone
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly
-                  ], // Allow only digits
-                  // onSaved: (String password) {
-                  //   profile.password = password;
-                  // },
                 ),
               ),
               SizedBox(
@@ -138,37 +116,39 @@ class SignUpObject extends StatelessWidget {
                   ],
                   borderRadius: BorderRadius.circular(5.0),
                 ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(width: 1.0),
+                child: SizedBox(
+                  height: 40.0,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      labelText: 'OTP',
+                      labelStyle: TextStyle(
+                        color: Colors.black.withOpacity(0.3100000023841858),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: InputBorder.none,
+                      filled: true,
+                      fillColor: Color(0xFFEFEFEF),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0, horizontal: 12),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                    labelText: 'OTP',
-                    labelStyle: TextStyle(
-                      color: Colors.black.withOpacity(0.3100000023841858),
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: InputBorder.none,
-                    filled: true,
-                    fillColor: Color(0xFFEFEFEF),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                    keyboardType:
+                        TextInputType.phone, // Set the keyboard type to phone
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(4),
+                    ], // Allow only digits
+                    // onSaved: (String password) {
+                    //   profile.password = password;
+                    // },
                   ),
-                  keyboardType:
-                      TextInputType.phone, // Set the keyboard type to phone
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(4),
-                  ], // Allow only digits
-                  // onSaved: (String password) {
-                  //   profile.password = password;
-                  // },
                 ),
               ),
               SizedBox(
@@ -270,51 +250,53 @@ class _DatePickerState extends State<DatePicker> {
           ],
           borderRadius: BorderRadius.circular(5.0),
         ),
-        child: TextField(
-          controller: dateController,
-          decoration: InputDecoration(
-            prefixIcon: Icon(
-              Icons.calendar_today,
-              color: Colors.grey,
+        child: SizedBox(
+          height: 40.0,
+          child: TextField(
+            controller: dateController,
+            decoration: InputDecoration(
+              prefixIcon: Icon(
+                Icons.calendar_today,
+                color: Colors.grey,
+              ),
+              labelText: "Enter Date",
+              labelStyle: TextStyle(
+                color: Colors.black.withOpacity(0.3100000023841858),
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(width: 1.0),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              border: InputBorder.none,
+              filled: true,
+              fillColor: Color(0xFFEFEFEF),
+              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
             ),
-            labelText: "Enter Date",
-            labelStyle: TextStyle(
-              color: Colors.black.withOpacity(0.3100000023841858),
-              fontSize: 14,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w400,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(width: 1.0),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            border: InputBorder.none,
-            filled: true,
-            fillColor: Color(0xFFEFEFEF),
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-          ),
-          readOnly: true,
-          onTap: () async {
-            DateTime? pickedDate = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2101),
-            );
-            if (pickedDate != null) {
-              String formattedDate =
-                  DateFormat("yyyy-MM-dd").format(pickedDate);
+            readOnly: true,
+            onTap: () async {
+              DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2101),
+              );
+              if (pickedDate != null) {
+                String formattedDate =
+                    DateFormat("yyyy-MM-dd").format(pickedDate);
 
-              setState(() {
-                dateController.text = formattedDate.toString();
-              });
-            } else {
-              print("Not selected");
-            }
-          },
+                setState(() {
+                  dateController.text = formattedDate.toString();
+                });
+              } else {
+                print("Not selected");
+              }
+            },
+          ),
         ),
       ),
     );
@@ -345,28 +327,30 @@ class PasswordField extends StatelessWidget {
         ],
         borderRadius: BorderRadius.circular(5.0),
       ),
-      child: TextFormField(
-        obscureText: true,
-        onChanged: onChanged,
-        decoration: InputDecoration(
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 1.0),
+      child: SizedBox(
+        height: 40.0,
+        child: TextFormField(
+          obscureText: true,
+          onChanged: onChanged,
+          decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(width: 1.0),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            labelText: labelText,
+            labelStyle: TextStyle(
+              color: Colors.black.withOpacity(0.3100000023841858),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+            border: InputBorder.none,
+            filled: true,
+            fillColor: Color(0xFFEFEFEF),
+            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          labelText: labelText,
-          labelStyle: TextStyle(
-            color: Colors.black.withOpacity(0.3100000023841858),
-            fontSize: 14,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-          ),
-          border: InputBorder.none,
-          filled: true,
-          fillColor: Color(0xFFEFEFEF),
-          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
         ),
       ),
     );
@@ -400,7 +384,6 @@ InputDecoration _buildInputUser(String labelText) {
     labelStyle: TextStyle(
       color: Colors.black.withOpacity(0.3100000023841858),
       fontSize: 14,
-      fontFamily: 'Inter',
       fontWeight: FontWeight.w400,
     ),
     border: InputBorder.none,

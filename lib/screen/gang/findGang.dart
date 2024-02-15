@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_new
 
 import 'package:finalmo/screen/add.dart';
+import 'package:finalmo/screen/gang/filter_gang.dart';
+import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
@@ -50,66 +52,86 @@ class _FindGangState extends State<FindGang> {
   // ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 1) {
+      // เช็คว่า index เท่ากับ 1 หรือไม่ (หน้าหาก๊วน)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                FindGang()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+      );
+    }
+    if (index == 4) {
+      // เช็คว่า index เท่ากับ 1 หรือไม่ (หน้าหาก๊วน)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                Profile()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Center(
-            child: Text(
-              "หาก๊วน",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w400,
-                height: 0,
-              ),
+      appBar: AppBar(
+        title: Center(
+          child: Text(
+            "หาก๊วน",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w400,
+              height: 0,
             ),
           ),
-          backgroundColor: Color(0xFF00537A),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+        backgroundColor: Color(0xFF00537A),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'หาก๊วน',
+          ),
+          BottomNavigationBarItem(
+            label: '',
+            icon: Icon(
+              Icons.home_rounded,
+              size: 35,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.business),
-              label: 'หาก๊วน',
-            ),
-            BottomNavigationBarItem(
-              label: '',
-              icon: Icon(
-                Icons.home_rounded,
-                size: 35,
-              ),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: 'ก๊วนของฉัน',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'โปรไฟล์',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          unselectedItemColor: Colors.black.withOpacity(0.3100000023841858),
-          showUnselectedLabels: true,
-          unselectedLabelStyle:
-              TextStyle(color: Colors.black.withOpacity(0.3100000023841858)),
-          onTap: _onItemTapped,
-        ),
-        body: SafeArea(
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: 'ก๊วนของฉัน',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'โปรไฟล์',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        unselectedItemColor: Colors.black.withOpacity(0.3100000023841858),
+        showUnselectedLabels: true,
+        unselectedLabelStyle:
+            TextStyle(color: Colors.black.withOpacity(0.3100000023841858)),
+        onTap: _onItemTapped,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Padding(
-              padding: EdgeInsets.fromLTRB(40, 20, 40, 0),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Container(
                   child: Column(
                 children: [
@@ -147,24 +169,7 @@ class _FindGangState extends State<FindGang> {
                     ),
                     Spacer(),
                     // new GestureDetector( // I just added one line
-                    Container(
-                        height: 30,
-                        width: 30,
-                        decoration: ShapeDecoration(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          shape: RoundedRectangleBorder(
-                            side:
-                                BorderSide(width: 2, color: Color(0xFF013C58)),
-                            borderRadius: BorderRadius.circular(7),
-                          ),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.tune,
-                            color: Color(0xFF013C58),
-                            size: 22.0,
-                          ),
-                        )),
+                    Filter(),
                   ]),
                   SizedBox(
                     height: 15,
@@ -651,6 +656,8 @@ class _FindGangState extends State<FindGang> {
                   )
                 ],
               ))),
-        ));
+        ),
+      ),
+    );
   }
 }
