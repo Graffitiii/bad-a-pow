@@ -1,5 +1,6 @@
 import 'package:finalmo/screen/gang/findGang.dart';
 import 'package:finalmo/screen/gang/gangDetail.dart';
+import 'package:finalmo/screen/login_page/login.dart';
 
 import 'package:finalmo/screen/myGang/myGang.dart';
 
@@ -18,6 +19,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
-        home: MyGang());
+        home: LoginScreen());
   }
 }

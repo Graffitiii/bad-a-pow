@@ -65,29 +65,7 @@ class _MyGangState extends State<MyGang> {
                 padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
                 child: SingleChildScrollView(
                   child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Spacer(),
-                          Text(
-                            'ตารางของฉันทั้งหมด',
-                            style: TextStyle(
-                              color: Color(0xFF575757),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              height: 0,
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            color: Color(0xFF575757),
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      MyGangJoin()
-                    ],
+                    children: [MyGangJoin()],
                   ),
                 )),
             Padding(

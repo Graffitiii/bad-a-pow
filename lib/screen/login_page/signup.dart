@@ -198,10 +198,13 @@ class SignUpObject extends StatelessWidget {
                         ),
                         elevation: 0, // Remove default button elevation
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (_) => LoginScreen()));
+                        },
                         child: Text(
-                          'เข้าสู่ระบบ',
+                          'สมัครสมาชิก',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white,

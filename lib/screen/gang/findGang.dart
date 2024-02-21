@@ -2,6 +2,8 @@
 
 import 'package:finalmo/screen/add.dart';
 import 'package:finalmo/screen/gang/filter_gang.dart';
+import 'package:finalmo/screen/gang/gangDetail.dart';
+import 'package:finalmo/screen/myGang/myGang.dart';
 import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -29,7 +31,7 @@ class FindGang extends StatefulWidget {
 }
 
 class _FindGangState extends State<FindGang> {
-  int _selectedIndex = 0;
+  // int _selectedIndex = 0;
   // static const TextStyle optionStyle =
   //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   // static const List<Widget> _widgetOptions = <Widget>[
@@ -51,30 +53,30 @@ class _FindGangState extends State<FindGang> {
   //   ),
   // ];
 
-  void _onItemTapped(int index) {
-    if (index == 1) {
-      // เช็คว่า index เท่ากับ 1 หรือไม่ (หน้าหาก๊วน)
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                FindGang()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
-      );
-    }
-    if (index == 4) {
-      // เช็คว่า index เท่ากับ 1 หรือไม่ (หน้าหาก๊วน)
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                Profile()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
-      );
-    } else {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
-  }
+  // void _onItemTapped(int index) {
+  //   if (index == 1) {
+  //     // เช็คว่า index เท่ากับ 1 หรือไม่ (หน้าหาก๊วน)
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: (context) =>
+  //               MyGang()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+  //     );
+  //   }
+  //   if (index == 4) {
+  //     // เช็คว่า index เท่ากับ 1 หรือไม่ (หน้าหาก๊วน)
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: (context) =>
+  //               Profile()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+  //     );
+  //   } else {
+  //     setState(() {
+  //       _selectedIndex = index;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,40 +96,40 @@ class _FindGangState extends State<FindGang> {
         ),
         backgroundColor: Color(0xFF00537A),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'หาก๊วน',
-          ),
-          BottomNavigationBarItem(
-            label: '',
-            icon: Icon(
-              Icons.home_rounded,
-              size: 35,
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'ก๊วนของฉัน',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'โปรไฟล์',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.black.withOpacity(0.3100000023841858),
-        showUnselectedLabels: true,
-        unselectedLabelStyle:
-            TextStyle(color: Colors.black.withOpacity(0.3100000023841858)),
-        onTap: _onItemTapped,
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Home',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.business),
+      //       label: 'หาก๊วน',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       label: '',
+      //       icon: Icon(
+      //         Icons.home_rounded,
+      //         size: 35,
+      //       ),
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.school),
+      //       label: 'ก๊วนของฉัน',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.settings),
+      //       label: 'โปรไฟล์',
+      //     ),
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   selectedItemColor: Colors.amber[800],
+      //   unselectedItemColor: Colors.black.withOpacity(0.3100000023841858),
+      //   showUnselectedLabels: true,
+      //   unselectedLabelStyle:
+      //       TextStyle(color: Colors.black.withOpacity(0.3100000023841858)),
+      //   onTap: _onItemTapped,
+      // ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -223,7 +225,7 @@ class _FindGangState extends State<FindGang> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (BuildContext context) => Add()));
+                              builder: (BuildContext context) => GangDetail()));
                     },
                     child: Material(
                       elevation: 5.0,

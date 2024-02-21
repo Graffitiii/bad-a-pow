@@ -1,5 +1,5 @@
 import 'package:finalmo/screen/login_page/login.dart';
-import 'package:finalmo/screen/profile/profile_setting.dart';
+import 'package:finalmo/screen/profile/Owner_Apply.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -45,7 +45,7 @@ class _ProfileState extends State<Profile> {
                               context,
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      SettingProfile()));
+                                      Profile()));
                         },
                       ),
                       ListTile(
@@ -84,21 +84,11 @@ class _ProfileState extends State<Profile> {
                         leading: new Icon(Icons.supervisor_account),
                         title: new Text('สมัครเป็นผู้จัดก๊วน'),
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute<void>(
-                            builder: (BuildContext context) {
-                              return Scaffold(
-                                appBar: AppBar(
-                                  title: const Text('สมัครเป็นผู้จัดก๊วน'),
-                                ),
-                                body: const Center(
-                                  child: Text(
-                                    'This is the next page',
-                                    style: TextStyle(fontSize: 24),
-                                  ),
-                                ),
-                              );
-                            },
-                          ));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      SettingProfile()));
                         },
                       ),
                     ],

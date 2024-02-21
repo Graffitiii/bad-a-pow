@@ -56,7 +56,18 @@ class _CalenderState extends State<Calender> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('ตารางกิจกรรมของฉัน'),
+        title: Center(
+          child: Text(
+            "ตารางกิจกรรมของฉัน",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              height: 0,
+            ),
+          ),
+        ),
+        backgroundColor: Color(0xFF00537A),
       ),
       body: Column(
         children: [

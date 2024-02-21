@@ -15,7 +15,7 @@ class _SettingProfileState extends State<SettingProfile> {
       appBar: AppBar(
         title: Center(
           child: Text(
-            "โปรไฟล์",
+            "สมัครเป็นผู้จัดก๊วน",
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,

@@ -1,4 +1,6 @@
 // import 'package:finalmo/model/profile.dart';
+import 'package:finalmo/screen/TabbarButton.dart';
+import 'package:finalmo/screen/gang/findGang.dart';
 import 'package:finalmo/screen/login_page/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:finalmo/screen/login_page/forgetpassword.dart';
@@ -138,8 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ),
                                             errorStyle: TextStyle(fontSize: 12),
                                           ),
-                                          keyboardType:
-                                              TextInputType.emailAddress,
+                                          keyboardType: TextInputType.phone,
                                           // onSaved: (String email) {
                                           //   profile.email = email;
                                           // },
@@ -230,8 +231,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                               elevation:
                                                   0, // Remove default button elevation
                                             ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(10),
+                                            child: TextButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            TabBarViewBottom()));
+                                              },
                                               child: Text(
                                                 'เข้าสู่ระบบ',
                                                 style: TextStyle(

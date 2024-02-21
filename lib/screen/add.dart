@@ -24,34 +24,6 @@ class Add extends StatefulWidget {
 }
 
 class _AddState extends State<Add> {
-  int _selectedIndex = 0;
-  // static const TextStyle optionStyle =
-  //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  // static const List<Widget> _widgetOptions = <Widget>[
-  //   Text(
-  //     'Index 0: Home',
-
-  //   ),
-  //   Text(
-  //     'Index 1: Business',
-
-  //   ),
-  //   Text(
-  //     'Index 2: School',
-
-  //   ),
-  //   Text(
-  //     'Index 3: Settings',
-
-  //   ),
-  // ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,47 +34,12 @@ class _AddState extends State<Add> {
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w400,
               height: 0,
             ),
           ),
         ),
         backgroundColor: Color(0xFF00537A),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'หาก๊วน',
-          ),
-          BottomNavigationBarItem(
-            label: '',
-            icon: Icon(
-              Icons.home_rounded,
-              size: 35,
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'ก๊วนของฉัน',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'โปรไฟล์',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.black.withOpacity(0.3100000023841858),
-        showUnselectedLabels: true,
-        unselectedLabelStyle:
-            TextStyle(color: Colors.black.withOpacity(0.3100000023841858)),
-        onTap: _onItemTapped,
       ),
       body: SafeArea(
           child: SingleChildScrollView(
