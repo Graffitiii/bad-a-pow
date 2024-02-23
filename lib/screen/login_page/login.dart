@@ -5,6 +5,7 @@ import 'package:finalmo/screen/login_page/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:finalmo/screen/login_page/forgetpassword.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 
 // import 'package:getwidget/getwidget.dart';
 
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Center(
                           child: Container(
                             width: 500,
-                            height: 320,
+                            height: 300,
                             decoration: ShapeDecoration(
                                 color: Colors.white,
                                 shape: ContinuousRectangleBorder(
@@ -141,6 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                             errorStyle: TextStyle(fontSize: 12),
                                           ),
                                           keyboardType: TextInputType.phone,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                            LengthLimitingTextInputFormatter(
+                                                10),
+                                          ],
                                           // onSaved: (String email) {
                                           //   profile.email = email;
                                           // },

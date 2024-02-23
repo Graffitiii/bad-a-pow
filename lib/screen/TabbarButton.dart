@@ -1,7 +1,6 @@
 import 'package:finalmo/screen/gang/findGang.dart';
 import 'package:finalmo/screen/myGang/myGang.dart';
 import 'package:finalmo/screen/profile/profile.dart';
-import 'package:finalmo/screen/profile/Owner_Apply.dart';
 import 'package:flutter/material.dart';
 
 class TabBarViewBottom extends StatelessWidget {
@@ -28,10 +27,10 @@ class TabBarViewBottom extends StatelessWidget {
 
   Widget menu() {
     return Container(
-      color: Color(0xFF013C58),
+      color: Color.fromARGB(255, 224, 224, 224),
       child: TabBar(
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.white70,
+        labelColor: Color(0xFFF5A201),
+        unselectedLabelColor: Color(0xFF013C58),
         indicatorSize: TabBarIndicatorSize.tab,
         indicatorPadding: EdgeInsets.all(5.0),
         indicatorColor: Color(0xFFF5A201),

@@ -17,7 +17,7 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundSignIn(
-        containerHeight: 542,
+        containerHeight: 500,
         child: SignUpObject(),
       ),
     );
@@ -54,7 +54,7 @@ class SignUpObject extends StatelessWidget {
                 child: SizedBox(
                   height: 40.0,
                   child: TextFormField(
-                    decoration: _buildInputUser('ชื่อจริง*'),
+                    decoration: _buildInputUser('ชื่อผู้ใช้*'),
                     // onSaved: (String password) {
                     //   profile.password = password;
                     // },
@@ -64,92 +64,95 @@ class SignUpObject extends StatelessWidget {
               SizedBox(
                 height: 15,
               ),
-              Container(
-                decoration: _buildBoxUser(),
-                child: SizedBox(
-                  height: 40.0,
-                  child: TextFormField(
-                    decoration: _buildInputUser('นามสกุล*'),
-                    // onSaved: (String password) {
-                    //   profile.password = password;
-                    // },
-                  ),
+              SizedBox(
+                height: 40,
+                child: Container(
+                  width: 500,
+                  height: 65,
+                  child: DatePicker(),
                 ),
               ),
               SizedBox(
                 height: 15,
               ),
-              Container(
-                width: 500,
-                height: 65,
-                child: DatePicker(),
-              ),
-              Container(
-                decoration: _buildBoxUser(),
-                child: SizedBox(
-                  height: 40.0,
-                  child: TextField(
-                    decoration: _buildInputUser('เบอร์โทรศัพท์*'),
-                    keyboardType:
-                        TextInputType.phone, // Set the keyboard type to phone
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly
-                    ], // Allow only digits
-                    // onSaved: (String password) {
-                    //   profile.password = password;
-                    // },
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x3F000000),
-                      blurRadius: 4,
-                      offset: Offset(0, 4),
-                      spreadRadius: 0,
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: _buildBoxUser(),
+                      child: SizedBox(
+                        height: 40.0,
+                        child: TextField(
+                          decoration: _buildInputUser('เบอร์โทรศัพท์*'),
+                          keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(10),
+                          ],
+                        ),
+                      ),
                     ),
-                  ],
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: SizedBox(
-                  height: 40.0,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1.0),
+                  ),
+                  SizedBox(width: 5), // เพิ่มระยะห่างระหว่าง TextField และปุ่ม
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFF013C58),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      labelText: 'OTP',
-                      labelStyle: TextStyle(
-                        color: Colors.black.withOpacity(0.3100000023841858),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'ขอ OTP',
+                      style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
                       ),
-                      border: InputBorder.none,
-                      filled: true,
-                      fillColor: Color(0xFFEFEFEF),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 12),
                     ),
-                    keyboardType:
-                        TextInputType.phone, // Set the keyboard type to phone
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(4),
-                    ], // Allow only digits
-                    // onSaved: (String password) {
-                    //   profile.password = password;
-                    // },
                   ),
-                ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: _buildBoxUser(),
+                      child: SizedBox(
+                        height: 40.0,
+                        child: TextField(
+                          decoration: _buildInputUser('OTP*'),
+                          keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(4),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10), // เพิ่มระยะห่างระหว่าง TextField และปุ่ม
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFF013C58),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'ยืนยัน',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
                 height: 15,
