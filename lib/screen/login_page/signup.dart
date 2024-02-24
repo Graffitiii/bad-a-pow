@@ -1,9 +1,13 @@
 // import 'package:finalmo/object/datepicker.dart';
+import 'dart:convert';
+import 'dart:async';
 import 'package:finalmo/screen/login_page/login.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:finalmo/config.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -24,221 +28,418 @@ class _SignUpState extends State<SignUp> {
   }
 }
 
-class SignUpObject extends StatelessWidget {
+class SignUpObject extends StatefulWidget {
   const SignUpObject({super.key});
+
+  @override
+  State<SignUpObject> createState() => _SignUpObjectState();
+}
+
+class _SignUpObjectState extends State<SignUpObject> {
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController otpController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  bool usernameValidate = false;
+
+  void registerUser() async {
+    if (userNameController.text.isNotEmpty &&
+        phoneNumberController.text.isNotEmpty &&
+        otpController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        confirmPasswordController.text.isNotEmpty &&
+        dateController.text.isNotEmpty) {
+      var regBody = {
+        "phonenumber": phoneNumberController.text,
+        "password": passwordController.text,
+        "birthDate": dateController.text,
+        "userName": userNameController.text
+      };
+
+      var response = await http.post(Uri.parse(registration),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode(regBody));
+
+      var jsonResponse = jsonDecode(response.body);
+
+      print(jsonResponse['status']);
+
+      if (jsonResponse['status']) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => LoginScreen()));
+      } else {
+        setState(() {
+          usernameValidate = true;
+        });
+        print('asdfwgrwgwgw');
+        print(usernameValidate);
+      }
+    }
+  }
+
+  var otpId = "";
+  bool otpCount = false;
+  bool regisButton = false;
+  bool phoneCheck = false;
+
+  late Timer timer;
+  int _start = 30;
+  void startTimer() {
+    _start = 30;
+    setState(() {
+      otpCount = true;
+    });
+    const oneSec = const Duration(seconds: 1);
+    timer = new Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_start == 0) {
+          setState(() {
+            timer.cancel();
+            setState(() {
+              otpCount = false;
+            });
+          });
+        } else {
+          setState(() {
+            _start--;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  void sendOtp() async {
+    startTimer();
+
+    var queryParameters = {
+      'api_key': 'e5179bf7',
+      'api_secret': 'eS3znKj5XFBSVRqv',
+      'number': '66623413184',
+      'brand': 'BadAPow',
+    };
+
+    var uri = Uri.https('api.nexmo.com', '/verify/json', queryParameters);
+
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    print(response.statusCode);
+
+    setState(() {
+      otpId = jsonResponse['request_id'];
+    });
+
+    print(otpId);
+  }
+
+  void confirmOtp() async {
+    var queryParameters = {
+      'api_key': 'e5179bf7',
+      'api_secret': 'eS3znKj5XFBSVRqv',
+      'request_id': otpId,
+      'code': otpController.text,
+    };
+
+    var uri = Uri.https('api.nexmo.com', '/verify/check/json', queryParameters);
+
+    var response = await http.get(uri);
+    print(otpId);
+    print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        regisButton = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    'สมัครสมาชิก',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: _buildBoxUser(),
-                child: SizedBox(
-                  height: 40.0,
-                  child: TextFormField(
-                    decoration: _buildInputUser('ชื่อผู้ใช้*'),
-                    // onSaved: (String password) {
-                    //   profile.password = password;
-                    // },
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              SizedBox(
-                height: 40,
-                child: Container(
-                  width: 500,
-                  height: 65,
-                  child: DatePicker(),
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Row(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(
+                  SizedBox(
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        'สมัครสมาชิก',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: _buildBoxUser(),
+                    child: SizedBox(
+                      height: 40.0,
+                      child: TextFormField(
+                        controller: userNameController,
+                        decoration: _buildInputUser(
+                            'ชื่อผู้ใช้*', usernameValidate ? "Error" : null),
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Please enter some text';
+                        //   }
+                        //   return null;
+                        // },
+                        // onSaved: (String password) {
+                        //   profile.password = password;
+                        // },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  SizedBox(
+                    height: 40,
                     child: Container(
-                      decoration: _buildBoxUser(),
-                      child: SizedBox(
-                        height: 40.0,
-                        child: TextField(
-                          decoration: _buildInputUser('เบอร์โทรศัพท์*'),
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(10),
-                          ],
-                        ),
+                      width: 500,
+                      height: 65,
+                      child: DatePicker(
+                        dateController: dateController,
                       ),
                     ),
                   ),
-                  SizedBox(width: 5), // เพิ่มระยะห่างระหว่าง TextField และปุ่ม
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF013C58),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'ขอ OTP',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
+                  SizedBox(
+                    height: 15,
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: _buildBoxUser(),
-                      child: SizedBox(
-                        height: 40.0,
-                        child: TextField(
-                          decoration: _buildInputUser('OTP*'),
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(4),
-                          ],
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: _buildBoxUser(),
+                          child: SizedBox(
+                            height: 40.0,
+                            child: TextField(
+                              onChanged: (value) => {
+                                if (value.length < 10 || value.isEmpty)
+                                  {setState(() => phoneCheck = false)}
+                                else
+                                  {setState(() => phoneCheck = true)}
+                              },
+                              controller: phoneNumberController,
+                              decoration: _buildInputUser('เบอร์โทรศัพท์*',
+                                  usernameValidate ? "Error" : null),
+                              keyboardType: TextInputType.phone,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(10),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
+                      SizedBox(
+                          width: 5), // เพิ่มระยะห่างระหว่าง TextField และปุ่ม
+                      if (otpCount) ...[
+                        ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(255, 187, 187, 187),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            "ขออีกครั้งใน $_start",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        ElevatedButton(
+                          onPressed: phoneCheck
+                              ? () {
+                                  sendOtp();
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xFF013C58),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'ขอ OTP',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ]
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: _buildBoxUser(),
+                          child: SizedBox(
+                            height: 40.0,
+                            child: TextField(
+                              controller: otpController,
+                              decoration: _buildInputUser(
+                                  'OTP*', usernameValidate ? "Error" : null),
+                              keyboardType: TextInputType.phone,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(4),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                          width: 10), // เพิ่มระยะห่างระหว่าง TextField และปุ่ม
+                      if (regisButton) ...[
+                        ElevatedButton(
+                          onPressed: () {
+                            confirmOtp();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xFF02D417),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'ยืนยันสำเร็จ',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        ElevatedButton(
+                          onPressed: () {
+                            confirmOtp();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xFF013C58),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'ยืนยัน',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ]
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    child: PasswordField(
+                      labelText: 'รหัสผ่าน*',
+                      onChanged: (value) {
+                        // Handle password change
+                      },
+                      passwordController: passwordController,
                     ),
                   ),
-                  SizedBox(width: 10), // เพิ่มระยะห่างระหว่าง TextField และปุ่ม
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF013C58),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'ยืนยัน',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    child: PasswordField(
+                      labelText: 'ยืนยันรหัสผ่าน*',
+                      onChanged: (value) {
+                        // Handle password confirmation change
+                      },
+                      passwordController: confirmPasswordController,
                     ),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Container(
-                child: PasswordField(
-                  labelText: 'รหัสผ่าน*',
-                  onChanged: (value) {
-                    // Handle password change
-                  },
-                ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Container(
-                child: PasswordField(
-                  labelText: 'ยืนยันรหัสผ่าน*',
-                  onChanged: (value) {
-                    // Handle password confirmation change
-                  },
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x3F000000),
-                          blurRadius: 5,
-                          offset: Offset(0, 7),
-                          spreadRadius: 0,
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        primary: Color(0xFF013C58),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 0, // Remove default button elevation
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => LoginScreen()));
-                        },
-                        child: Text(
-                          'สมัครสมาชิก',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Container(
+                        child: ElevatedButton(
+                          onPressed: regisButton
+                              ? () {
+                                  registerUser();
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xFF013C58),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0, // Remove default button elevation
+                          ),
+                          child: Text(
+                            'สมัครสมาชิก',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
+            )),
       ),
     );
   }
 }
 
-class DatePicker extends StatefulWidget {
-  @override
-  State<DatePicker> createState() => _DatePickerState();
-}
+// class DatePicker extends StatefulWidget {
 
-class _DatePickerState extends State<DatePicker> {
-  TextEditingController dateController = TextEditingController();
+//   @override
+//   State<DatePicker> createState() => _DatePickerState();
+// }
 
-  @override
-  void initState() {
-    super.initState();
-    dateController.text = "";
-  }
+class DatePicker extends StatelessWidget {
+  // TextEditingController dateController = TextEditingController();
+  final TextEditingController dateController;
+
+  DatePicker({Key? key, required this.dateController}) : super(key: key);
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -295,9 +496,7 @@ class _DatePickerState extends State<DatePicker> {
                 String formattedDate =
                     DateFormat("yyyy-MM-dd").format(pickedDate);
 
-                setState(() {
-                  dateController.text = formattedDate.toString();
-                });
+                dateController.text = formattedDate.toString();
               } else {
                 print("Not selected");
               }
@@ -312,12 +511,13 @@ class _DatePickerState extends State<DatePicker> {
 class PasswordField extends StatelessWidget {
   final String labelText;
   final ValueChanged<String> onChanged;
-
-  const PasswordField({
-    Key? key,
-    required this.labelText,
-    required this.onChanged,
-  }) : super(key: key);
+  final TextEditingController passwordController;
+  PasswordField(
+      {Key? key,
+      required this.labelText,
+      required this.onChanged,
+      required this.passwordController})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -336,6 +536,7 @@ class PasswordField extends StatelessWidget {
       child: SizedBox(
         height: 40.0,
         child: TextFormField(
+          controller: passwordController,
           obscureText: true,
           onChanged: onChanged,
           decoration: InputDecoration(
@@ -377,8 +578,9 @@ BoxDecoration _buildBoxUser() {
   );
 }
 
-InputDecoration _buildInputUser(String labelText) {
+InputDecoration _buildInputUser(String labelText, String? errorText) {
   return InputDecoration(
+    errorText: errorText,
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(width: 1.0),
     ),
