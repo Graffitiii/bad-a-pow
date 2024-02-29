@@ -1,5 +1,12 @@
+import 'dart:convert';
+import 'package:finalmo/postModel.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:http/http.dart' as http;
+import 'package:finalmo/config.dart';
+
+typedef TodoListCallback = void Function();
 
 // const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
 final List<String> level = [
@@ -24,6 +31,91 @@ class Add extends StatefulWidget {
 }
 
 class _AddState extends State<Add> {
+  // late String userId;
+  TextEditingController club = TextEditingController();
+  TextEditingController contact = TextEditingController();
+  TextEditingController priceBadminton = TextEditingController();
+  TextEditingController priceplay = TextEditingController();
+  TextEditingController brand = TextEditingController();
+  TextEditingController details = TextEditingController();
+  List<String> selectedlevel = [];
+  List<EventList> eventlist = [];
+
+  final _formKey = GlobalKey<FormState>();
+
+  void getTodoList(TodoListCallback callback) async {
+    // โค้ดของ getTodoList() ที่เดิม...
+
+    // เรียกใช้ callback function เมื่อการดึงข้อมูลเสร็จสิ้น
+    callback();
+  }
+
+  // void getTodoList() async {
+  //   var response = await http.get(
+  //     Uri.parse(getToDoList),
+  //     headers: {"Content-Type": "application/json"},
+  //   );
+  //   if (response.statusCode == 200) {
+  //     var jsonResponse = jsonDecode(response.body);
+
+  //     jsonResponse['clublistdata'].forEach((value) => eventlist.add(EventList(
+  //           club: value['club'],
+  //           contact: value['contact'],
+  //           priceBadminton: value['price_badminton'],
+  //           priceplay: value['priceplay'],
+  //           level: value['level'],
+  //           brand: value['brand'],
+  //           details: value['details'],
+  //         )));
+
+  //     print(jsonResponse);
+  //   } else {
+  //     print(response.statusCode);
+  //   }
+  //   // items = jsonResponse['clublistdata'];
+  //   // List<EventList> eventlist = [],
+
+  //   // print(jsonResponse);
+  //   setState(() {});
+  // }
+
+  void addTodo() async {
+    if (club.text.isNotEmpty &&
+        contact.text.isNotEmpty &&
+        priceBadminton.text.isNotEmpty &&
+        priceplay.text.isNotEmpty) {
+      var regBody = {
+        // "userId": userId,
+        "club": club.text,
+        "contact": contact.text,
+        "price_badminton": priceBadminton.text,
+        "priceplay": priceplay.text,
+        "level": selectedlevel,
+        "brand": brand.text,
+        "details": details.text,
+      };
+
+      var response = await http.post(Uri.parse(addtodo),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      var jsonResponse = jsonDecode(response.body);
+
+      print(jsonResponse['status']);
+
+      if (jsonResponse['status']) {
+        Navigator.pop(context);
+        // print(jsonResponse['clublistdata']);
+        getTodoList(() {
+          // เมื่อ getTodoList() เสร็จสิ้น สามารถทำอะไรก็ได้ในนี้
+        });
+      } else {
+        print("error");
+      }
+    }
+    print(selectedlevel);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +139,7 @@ class _AddState extends State<Add> {
             padding: EdgeInsets.fromLTRB(40, 20, 40, 0),
             child: Container(
                 child: Form(
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -75,6 +168,7 @@ class _AddState extends State<Add> {
                     height: 15,
                   ),
                   TextFormField(
+                    controller: club,
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(width: 1.0),
@@ -441,6 +535,7 @@ class _AddState extends State<Add> {
                     height: 15,
                   ),
                   TextFormField(
+                    controller: contact,
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(width: 1.0),
@@ -469,6 +564,11 @@ class _AddState extends State<Add> {
                       ),
                       errorStyle: TextStyle(fontSize: 12),
                     ),
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
 
                     // onSaved: (String email) {
                     //   profile.email = email;
@@ -478,6 +578,7 @@ class _AddState extends State<Add> {
                     height: 15,
                   ),
                   TextFormField(
+                    controller: brand,
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(width: 1.0),
@@ -521,6 +622,7 @@ class _AddState extends State<Add> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: TextFormField(
+                            controller: priceplay,
                             decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(width: 1.0),
@@ -559,6 +661,7 @@ class _AddState extends State<Add> {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: TextFormField(
+                            controller: priceBadminton,
                             decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(width: 1.0),
@@ -599,6 +702,7 @@ class _AddState extends State<Add> {
                     height: 15,
                   ),
                   TextFormField(
+                    controller: details,
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(width: 1.0),
@@ -652,7 +756,10 @@ class _AddState extends State<Add> {
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            addTodo();
+                            // getTodoList();
+                          },
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xFF013C58),
                             shape: RoundedRectangleBorder(
