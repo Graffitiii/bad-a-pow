@@ -13,7 +13,7 @@ class TabBarViewBottom extends StatelessWidget {
           bottomNavigationBar: menu(),
           body: TabBarView(
             children: [
-              Container(child: FindGang()),
+              Container(child: MyGang()),
               Container(child: FindGang()),
               Container(child: MyGang()),
               Container(child: MyGang()),
