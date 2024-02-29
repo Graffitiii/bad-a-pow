@@ -190,25 +190,24 @@ class _SignUpObjectState extends State<SignUpObject> {
                     ),
                   ),
                   Container(
-                    decoration: _buildBoxUser(),
-                    child: SizedBox(
-                      height: 40.0,
-                      child: TextFormField(
-                        controller: userNameController,
-                        decoration: _buildInputUser(
-                            'ชื่อผู้ใช้*', usernameValidate ? "Error" : null),
-                        // validator: (value) {
-                        //   if (value == null || value.isEmpty) {
-                        //     return 'Please enter some text';
-                        //   }
-                        //   return null;
-                        // },
-                        // onSaved: (String password) {
-                        //   profile.password = password;
-                        // },
-                      ),
-                    ),
-                  ),
+                      decoration: _buildBoxUser(),
+                      child: SizedBox(
+                        height: 40,
+                        child: TextFormField(
+                          controller: userNameController,
+                          decoration: _buildInputUser(
+                              'ชื่อผู้ใช้*', usernameValidate ? "Error" : null),
+                          // validator: (value) {
+                          //   if (value == null || value.isEmpty) {
+                          //     return 'Please enter some text';
+                          //   }
+                          //   return null;
+                          // },
+                          // onSaved: (String password) {
+                          //   profile.password = password;
+                          // },
+                        ),
+                      )),
                   SizedBox(
                     height: 15,
                   ),

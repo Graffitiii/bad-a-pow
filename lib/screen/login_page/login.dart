@@ -1,11 +1,17 @@
 // import 'package:finalmo/model/profile.dart';
+import 'dart:convert';
+import 'dart:async';
 import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/gang/findGang.dart';
+import 'package:finalmo/screen/home.dart';
 import 'package:finalmo/screen/login_page/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:finalmo/screen/login_page/forgetpassword.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:finalmo/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:getwidget/getwidget.dart';
 
@@ -17,8 +23,62 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // final formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   // Profile profile = Profile();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  bool phoneValidate = false;
+  bool passwordValidate = false;
+
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void login() async {
+    if (phoneNumberController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty) {
+      var regBody = {
+        "phonenumber": phoneNumberController.text,
+        "password": passwordController.text,
+      };
+
+      var response = await http.post(Uri.parse(loginUrl),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode(regBody));
+
+      var jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse['status']) {
+        print('Login success');
+        var myToken = jsonResponse['token'];
+        prefs.setString('token', myToken);
+        Navigator.push(context,
+            MaterialPageRoute(builder: (_) => HomePage(token: myToken)));
+      } else {
+        if (jsonResponse['error'] == 'User dont exist') {
+          setState(() {
+            phoneValidate = true;
+          });
+          print('User dont exist');
+        } else if (jsonResponse['error'] == 'Password Invalid') {
+          setState(() {
+            passwordValidate = true;
+          });
+          print('Password Invalid');
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,20 +146,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Color(0x3F000000),
-                                            blurRadius: 4,
-                                            offset: Offset(0, 4),
-                                            spreadRadius: 0,
-                                          ),
-                                        ],
+                                        // boxShadow: [
+                                        //   BoxShadow(
+                                        //     color: Color(0x3F000000),
+                                        //     blurRadius: 4,
+                                        //     offset: Offset(0, 4),
+                                        //     spreadRadius: 0,
+                                        //   ),
+                                        // ],
                                         borderRadius:
                                             BorderRadius.circular(5.0),
                                       ),
                                       child: SizedBox(
                                         height: 40.0,
                                         child: TextFormField(
+                                          controller: phoneNumberController,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              phoneValidate = false;
+                                            });
+                                          },
                                           decoration: InputDecoration(
                                             focusedBorder: OutlineInputBorder(
                                               borderSide:
@@ -130,6 +196,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   width: 1.0,
                                                   color: Colors.red),
                                             ),
+                                            errorText: phoneValidate
+                                                ? 'ไม่มีชื่อบัญชีที่ใช้หมายเลขโทรศัพท์นี้'
+                                                : null,
                                             errorBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
                                                   width: 1.0,
@@ -160,12 +229,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Container(
                                       decoration: BoxDecoration(
                                         boxShadow: [
-                                          BoxShadow(
-                                            color: Color(0x3F000000),
-                                            blurRadius: 4,
-                                            offset: Offset(0, 4),
-                                            spreadRadius: 0,
-                                          ),
+                                          // BoxShadow(
+                                          //   color: Color(0x3F000000),
+                                          //   blurRadius: 4,
+                                          //   offset: Offset(0, 4),
+                                          //   spreadRadius: 0,
+                                          // ),
                                         ],
                                         borderRadius:
                                             BorderRadius.circular(5.0),
@@ -173,6 +242,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                       child: SizedBox(
                                         height: 40.0,
                                         child: TextFormField(
+                                          controller: passwordController,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              passwordValidate = false;
+                                            });
+                                          },
                                           obscureText: true,
                                           decoration: InputDecoration(
                                             focusedBorder: OutlineInputBorder(
@@ -183,6 +258,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                               borderSide: BorderSide.none,
                                               borderRadius:
                                                   BorderRadius.circular(5.0),
+                                            ),
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.red),
+                                            ),
+                                            errorText: passwordValidate
+                                                ? 'รหัสผผ่านไม่ถูกต้อง'
+                                                : null,
+                                            errorBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1.0,
+                                                  color: Colors.red),
                                             ),
                                             labelText: 'รหัสผ่าน*',
                                             labelStyle: TextStyle(
@@ -228,7 +317,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ],
                                           ),
                                           child: ElevatedButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              login();
+                                            },
                                             style: ElevatedButton.styleFrom(
                                               primary: Color(0xFF013C58),
                                               shape: RoundedRectangleBorder(
@@ -238,20 +329,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                               elevation:
                                                   0, // Remove default button elevation
                                             ),
-                                            child: TextButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            TabBarViewBottom()));
-                                              },
-                                              child: Text(
-                                                'เข้าสู่ระบบ',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.white,
-                                                ),
+                                            child: Text(
+                                              'เข้าสู่ระบบ',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.white,
                                               ),
                                             ),
                                           ),
