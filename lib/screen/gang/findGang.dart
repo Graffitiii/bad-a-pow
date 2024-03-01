@@ -50,13 +50,13 @@ class _FindGangState extends State<FindGang> {
       loading = true;
     });
     var response = await http.get(
-      Uri.parse(getToDoList),
+      Uri.parse(getEventList),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
       jsonResponse = jsonDecode(response.body);
 
-      jsonResponse['clublistdata'].forEach((value) => eventlist.add(EventList(
+      jsonResponse['eventlistdata'].forEach((value) => eventlist.add(EventList(
             club: value['club'],
             contact: value['contact'],
             priceBadminton: value['price_badminton'],
@@ -196,7 +196,7 @@ class _FindGangState extends State<FindGang> {
                               ? Text("Error: ")
                               : Column(
                                   //if everything fine, show the JSON as widget
-                                  children: jsonResponse['clublistdata']
+                                  children: jsonResponse['eventlistdata']
                                       .map<Widget>((items) {
                                     return Padding(
                                         padding: EdgeInsets.only(bottom: 15),

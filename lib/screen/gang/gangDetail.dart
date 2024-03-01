@@ -41,7 +41,7 @@ class _GangDetailState extends State<GangDetail> {
     print(id);
     var regBody = {"_id": id};
 
-    var response = await http.delete(Uri.parse(delEventData),
+    var response = await http.delete(Uri.parse(delEvent),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(regBody));
     jsonResponse = jsonDecode(response.body);
