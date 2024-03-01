@@ -1,3 +1,4 @@
+import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/gang/findGang.dart';
 import 'package:finalmo/screen/gang/gangDetail.dart';
 import 'package:finalmo/screen/home.dart';
@@ -40,6 +41,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
-        home: (checkToken()) ? HomePage(token: token) : LoginScreen());
+        home: (checkToken()) ? TabBarViewBottom() : LoginScreen());
   }
 }

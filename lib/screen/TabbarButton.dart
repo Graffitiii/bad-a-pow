@@ -1,9 +1,37 @@
+import 'package:finalmo/screen/add.dart';
 import 'package:finalmo/screen/gang/findGang.dart';
+import 'package:finalmo/screen/home.dart';
 import 'package:finalmo/screen/myGang/myGang.dart';
 import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class TabBarViewBottom extends StatelessWidget {
+class TabBarViewBottom extends StatefulWidget {
+  const TabBarViewBottom({super.key});
+
+  @override
+  State<TabBarViewBottom> createState() => _TabBarViewBottomState();
+}
+
+class _TabBarViewBottomState extends State<TabBarViewBottom> {
+  late SharedPreferences prefs;
+  var myToken;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    print(myToken);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,9 +41,10 @@ class TabBarViewBottom extends StatelessWidget {
           bottomNavigationBar: menu(),
           body: TabBarView(
             children: [
-              Container(child: MyGang()),
+              Container(child: HomePage(token: myToken)),
+              // Container(child: FindGang()),
               Container(child: FindGang()),
-              Container(child: MyGang()),
+              Container(child: Add()),
               Container(child: MyGang()),
               Container(child: Profile()),
             ],

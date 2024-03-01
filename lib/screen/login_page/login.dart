@@ -45,12 +45,16 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login() async {
+    print("sdsad");
     if (phoneNumberController.text.isNotEmpty &&
         passwordController.text.isNotEmpty) {
+      print("hello");
       var regBody = {
         "phonenumber": phoneNumberController.text,
         "password": passwordController.text,
       };
+
+      print(regBody);
 
       var response = await http.post(Uri.parse(loginUrl),
           headers: {"Content-type": "application/json"},
@@ -62,8 +66,10 @@ class _LoginScreenState extends State<LoginScreen> {
         print('Login success');
         var myToken = jsonResponse['token'];
         prefs.setString('token', myToken);
-        Navigator.push(context,
-            MaterialPageRoute(builder: (_) => HomePage(token: myToken)));
+        // Navigator.push(context,
+        //     MaterialPageRoute(builder: (_) => HomePage(token: myToken)));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => TabBarViewBottom()));
       } else {
         if (jsonResponse['error'] == 'User dont exist') {
           setState(() {
