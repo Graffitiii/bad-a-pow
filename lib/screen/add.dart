@@ -95,7 +95,7 @@ class _AddState extends State<Add> {
         "details": details.text,
       };
 
-      var response = await http.post(Uri.parse(addtodo),
+      var response = await http.post(Uri.parse(createEvent),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
