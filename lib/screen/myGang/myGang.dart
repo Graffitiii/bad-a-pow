@@ -1,4 +1,3 @@
-import 'package:finalmo/screen/gang/findGang.dart';
 import 'package:finalmo/screen/myGang/myGangFollow.dart';
 import 'package:finalmo/screen/myGang/myGangJoin.dart';
 import 'package:finalmo/screen/myGang/myGangOwner.dart';
