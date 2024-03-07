@@ -18,42 +18,18 @@ class EventList {
   });
 }
 
-// class PostsModel {
-//   PostsModel({
-//       String? club, 
-//       String? contact, 
-//       String? priceBadminton, 
-//       String? priceplay
-//       }){
-//     _club = club;
-//     _contact = contact;
-//     _priceBadminton = priceBadminton;
-//     _priceplay = priceplay;
-// }
+class ClubList {
+  final String? owner;
+  late List? follower;
+  final String? clubname;
+  late List? admin;
+  late List? eventId;
 
-//   PostsModel.fromJson(dynamic json) {
-//     _club = json['club'];
-//     _contact = json['contact'];
-//     _priceBadminton = json['price_badminton'];
-//     _priceplay = json['priceplay'];
-//   }
-//   String? _club, 
-//   String? _contact, 
-//   String? _priceBadminton, 
-//   String? _priceplay
-
-//   String? get club => _club;
-//   String? get contact => _contact;
-//   String? get price_badminton => _priceBadminton;
-//   String? get priceplay => _priceplay;
-
-//   Map<String, dynamic> toJson() {
-//     final map = <String, dynamic>{};
-//     map['club'] = _club;
-//     map['contact'] = _contact;
-//     map['price_badminton'] = _priceBadminton;
-//     map['priceplay'] = _priceplay;
-//     return map;
-//   }
-
-// }
+  ClubList({
+    this.owner,
+    this.follower,
+    this.clubname,
+    this.admin,
+    this.eventId,
+  });
+}

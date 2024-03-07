@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class Filter extends StatelessWidget {
-  const Filter({Key? key}) : super(key: key);
+class Filter extends StatefulWidget {
+  const Filter({super.key});
 
+  @override
+  State<Filter> createState() => _FilterState();
+}
+
+class _FilterState extends State<Filter> {
   @override
   Widget build(BuildContext context) {
     return Container(
