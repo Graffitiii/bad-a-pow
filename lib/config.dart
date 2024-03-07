@@ -6,3 +6,6 @@ final loginUrl = url + "login";
 final createEvent = url + "createEvent";
 final getEventList = url + "getEventList";
 final delEvent = url + "deleteEvent";
+final createClub = url + "createClub";
+final getClub = url + "getClubList";
+final userControl = url + "userControlStore";
