@@ -46,6 +46,29 @@ class _SignUpObjectState extends State<SignUpObject> {
   final _formKey = GlobalKey<FormState>();
   bool usernameValidate = false;
 
+  void addUserControl() async {
+    var regBody = {
+      "userName": userNameController.text,
+      "ownerPermission": false,
+      "adminOf": [],
+      "ownerOf": [],
+      "follow": [],
+      "pending": [],
+      "join": []
+    };
+
+    var response = await http.post(Uri.parse(userControl),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+    print('userControl Status:');
+    print(jsonResponse['status']);
+    if (jsonResponse['status']) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
+    }
+  }
+
   void registerUser() async {
     if (userNameController.text.isNotEmpty &&
         phoneNumberController.text.isNotEmpty &&
@@ -69,8 +92,7 @@ class _SignUpObjectState extends State<SignUpObject> {
       print(jsonResponse['status']);
 
       if (jsonResponse['status']) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (_) => LoginScreen()));
+        addUserControl();
       } else {
         setState(() {
           usernameValidate = true;
@@ -398,6 +420,10 @@ class _SignUpObjectState extends State<SignUpObject> {
                                   registerUser();
                                 }
                               : null,
+                          // onPressed: () {
+                          //   registerUser();
+                          // },
+
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xFF013C58),
                             shape: RoundedRectangleBorder(

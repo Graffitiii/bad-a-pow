@@ -2,6 +2,7 @@
 
 import 'package:finalmo/postModel.dart';
 import 'package:finalmo/screen/gang/findGang.dart';
+import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
 import 'package:finalmo/screen/gang/review.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -392,35 +393,77 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              eventeach['club'],
-                                              style: TextStyle(
-                                                color: Color(0xFF013C58),
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w700,
-                                                height: 0,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(top: 5),
-                                              child: Text(
-                                                "Tamonwan Pro",
-                                                style: TextStyle(
-                                                  shadows: [
-                                                    Shadow(
-                                                        color:
-                                                            Color(0xFF929292),
-                                                        offset: Offset(0, -5))
-                                                  ],
-                                                  fontSize: 12,
-                                                  color: Colors.transparent,
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  decorationColor:
-                                                      Color(0xFF929292),
-                                                  decorationThickness: 1,
+                                            Row(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              GangOwnerDetail(
+                                                                  club: eventeach[
+                                                                      'club'])),
+                                                    );
+                                                  },
+                                                  child: Text(
+                                                    eventeach['club'],
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      shadows: [
+                                                        Shadow(
+                                                            color: Color(
+                                                                0xFF013C58),
+                                                            offset:
+                                                                Offset(0, -6))
+                                                      ],
+                                                      color: Colors.transparent,
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      decorationColor:
+                                                          Color(0xFF013C58),
+                                                      decorationThickness: 2,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                                SizedBox(width: 10),
+                                                SizedBox(
+                                                  height: 20,
+                                                  child: TextButton(
+                                                      child: Text(
+                                                        'ติดตาม',
+                                                        style: TextStyle(
+                                                          color:
+                                                              Color(0xFF484848),
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                        ),
+                                                      ),
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        backgroundColor:
+                                                            const Color
+                                                                .fromARGB(255,
+                                                                255, 255, 255),
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          side: BorderSide(
+                                                              width: 1,
+                                                              color: Color(
+                                                                  0xFF484848)),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(25),
+                                                        ),
+                                                      ),
+                                                      onPressed: () => {}),
+                                                )
+                                              ],
                                             )
                                           ],
                                         ),
