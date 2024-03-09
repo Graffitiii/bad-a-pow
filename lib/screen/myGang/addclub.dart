@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AddClub extends StatefulWidget {
-  const AddClub({super.key});
+  final username;
+  const AddClub({@required this.username, Key? key}) : super(key: key);
 
   @override
   State<AddClub> createState() => _AddClubState();
@@ -16,7 +17,7 @@ class _AddClubState extends State<AddClub> {
   void addClubtoData() async {
     if (clubname.text.isNotEmpty) {
       var regBody = {
-        "owner": "",
+        "owner": widget.username,
         "follower": [],
         "clubname": clubname.text,
         "admin": [],
@@ -99,7 +100,7 @@ class _AddClubState extends State<AddClub> {
               padding: EdgeInsets.symmetric(horizontal: 10),
               child:
                   buildTextFieldWithTitle("ชื่อกลุ่ม", "ชื่อกลุ่ม*", clubname),
-            )
+            ),
           ],
         ),
       ),

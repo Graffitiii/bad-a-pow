@@ -9,3 +9,6 @@ final delEvent = url + "deleteEvent";
 final createClub = url + "createClub";
 final getClub = url + "getClubList";
 final userControl = url + "userControlStore";
+final AddFollow = url + 'userControlAddFollow';
+final unFollow = url + 'userControlUnFollow';
+final regOwner = url + 'userControlRegisOwner';

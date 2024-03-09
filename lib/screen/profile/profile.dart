@@ -1,7 +1,12 @@
+import 'package:finalmo/config.dart';
 import 'package:finalmo/screen/login_page/login.dart';
 import 'package:finalmo/screen/profile/Owner_Apply.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -11,6 +16,54 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  late String username;
+  late SharedPreferences prefs;
+  var myToken;
+
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+    username = jwtDecodedToken['userName'];
+    print(username);
+  }
+
+  void regisOwner() async {
+    var regBody = {
+      "userName": username,
+    };
+
+    var response = await http.post(Uri.parse(regOwner),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('สมัครเป็นผู้จัดก๊วนสำเร็จ'),
+          content: const Text('สมัครเป็นผู้จัดก๊วนสำเร็จ'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,15 +133,38 @@ class _ProfileState extends State<Profile> {
                           ));
                         },
                       ),
+                      // DialogExample(),
                       ListTile(
                         leading: new Icon(Icons.supervisor_account),
                         title: new Text('สมัครเป็นผู้จัดก๊วน'),
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      SettingProfile()));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (BuildContext context) =>
+                          //             SettingProfile()));
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('สมัครเป็นผู้จัดก๊วน'),
+                              content: const Text(
+                                  'ต้องการสมัครเป็นผู้จัดก๊วนใช่หรือไม่'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, 'Cancel'),
+                                  child: const Text('ยกเลิก'),
+                                ),
+                                TextButton(
+                                  onPressed: () => {
+                                    Navigator.pop(context, 'Cancel'),
+                                    regisOwner()
+                                  },
+                                  child: const Text('ยืนยัน'),
+                                ),
+                              ],
+                            ),
+                          );
                         },
                       ),
                     ],

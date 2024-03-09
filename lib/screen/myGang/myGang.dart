@@ -11,6 +11,12 @@ class MyGang extends StatefulWidget {
 }
 
 class _MyGangState extends State<MyGang> {
+  var clubInfo = {};
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

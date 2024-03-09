@@ -22,6 +22,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail> {
   late SharedPreferences prefs;
   var myToken;
   bool loading = true;
+  bool followStatus = false;
   var clubInfo = {};
   @override
   void initState() {
@@ -53,9 +54,49 @@ class _GangOwnerDetailState extends State<GangOwnerDetail> {
     if (jsonResponse['status']) {
       setState(() {
         clubInfo = jsonResponse['club'];
-        loading = false;
       });
       print(clubInfo);
+      if (clubInfo['follower'].contains(username)) {
+        print('$username found in the list.');
+        setState(() {
+          followStatus = true;
+        });
+      }
+      loading = false;
+    }
+  }
+
+  void onFollow() async {
+    var regBody = {"userName": username, "clubId": clubInfo['_id']};
+
+    var response = await http.post(Uri.parse(AddFollow),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+    print('Follow:');
+    print(jsonResponse['status']);
+    if (jsonResponse['status']) {
+      setState(() {
+        followStatus = true;
+      });
+    }
+  }
+
+  void onUnFollow() async {
+    var regBody = {"userName": username, "clubId": clubInfo['_id']};
+
+    var response = await http.delete(Uri.parse(unFollow),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+    print('UnFollow:');
+    print(jsonResponse['delete']);
+    if (jsonResponse['delete']) {
+      setState(() {
+        followStatus = false;
+      });
     }
   }
 
@@ -94,29 +135,66 @@ class _GangOwnerDetailState extends State<GangOwnerDetail> {
                         ),
                       ),
                       SizedBox(width: 20),
-                      SizedBox(
-                        height: 30,
-                        child: TextButton(
-                            child: Text(
-                              'ติดตาม',
-                              style: TextStyle(
-                                color: Color(0xFF484848),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
+                      if (followStatus) ...[
+                        SizedBox(
+                          height: 30,
+                          width: 110,
+                          child: TextButton(
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check,
+                                      size: 15,
+                                      color: Color(0xFF02D417),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'ติดตามแล้ว',
+                                      style: TextStyle(
+                                        color: Color(0xFF29C14A),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    )
+                                  ]),
+                              style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 255, 255, 255),
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                      width: 1, color: Color(0xFF29C14A)),
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
                               ),
-                            ),
-                            style: TextButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 255, 255, 255),
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                    width: 1, color: Color(0xFF484848)),
-                                borderRadius: BorderRadius.circular(25),
+                              onPressed: () => {onUnFollow()}),
+                        )
+                      ] else ...[
+                        SizedBox(
+                          height: 30,
+                          child: TextButton(
+                              child: Text(
+                                'ติดตาม',
+                                style: TextStyle(
+                                  color: Color(0xFF484848),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            onPressed: () => {}),
-                      )
+                              style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 255, 255, 255),
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                      width: 1, color: Color(0xFF484848)),
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                              ),
+                              onPressed: () => {onFollow()}),
+                        )
+                      ]
                     ],
                   ),
                   SizedBox(height: 10),

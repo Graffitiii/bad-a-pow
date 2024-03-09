@@ -9,13 +9,16 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-bool loading = false;
+// bool loading = true;
 List<EventList> eventlist = [];
 var jsonResponse;
 bool status = true;
 bool joinevent = true;
 bool follow = true;
+
 var eventeach;
 
 class GangDetail extends StatefulWidget {
@@ -28,14 +31,10 @@ class GangDetail extends StatefulWidget {
 
 class _GangDetailState extends State<GangDetail> {
   void initState() {
-    // TODO: implement initState
-    // print(widget.items);
     eventeach = widget.items;
     print(eventeach);
     print(joinevent);
     super.initState();
-    // Map<String,dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
-    // userId = jwtDecodedToken['_id'];
   }
 
   void deleteEvent(id) async {
@@ -245,26 +244,103 @@ class _GangDetailState extends State<GangDetail> {
                 ],
               ),
             )),
-        body: CarouselSliderImage());
+        body: CarouselSliderImage(clubname: eventeach['club']));
   }
 }
 
 class CarouselSliderImage extends StatefulWidget {
-  const CarouselSliderImage({super.key});
+  final clubname;
+  const CarouselSliderImage({@required this.clubname, Key? key})
+      : super(key: key);
 
   @override
   State<CarouselSliderImage> createState() => _CarouselSliderImageState();
 }
 
 class _CarouselSliderImageState extends State<CarouselSliderImage> {
+  late String username;
+  late SharedPreferences prefs;
+  bool followStatus = false;
+  bool loading = true;
+  var myToken;
+  var clubInfo = {};
   @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   getTodoList();
-  //   super.initState();
-  //   // Map<String,dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
-  //   // userId = jwtDecodedToken['_id'];
-  // }
+  void initState() {
+    // TODO: implement initState
+    // getTodoList();
+    print(widget.clubname);
+    initSharedPref();
+    getClubDetail(widget.clubname);
+    super.initState();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+    username = jwtDecodedToken['userName'];
+  }
+
+  void getClubDetail(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
+
+    var uri = Uri.http(getUrl, '/getClub', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      setState(() {
+        clubInfo = jsonResponse['club'];
+      });
+      print(clubInfo);
+      if (clubInfo['follower'].contains(username)) {
+        print('$username found in the list.');
+        setState(() {
+          followStatus = true;
+        });
+      }
+      loading = false;
+    }
+  }
+
+  void onFollow() async {
+    var regBody = {"userName": username, "clubId": clubInfo['_id']};
+
+    var response = await http.post(Uri.parse(AddFollow),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+    print('Follow:');
+    print(jsonResponse['status']);
+    if (jsonResponse['status']) {
+      setState(() {
+        followStatus = true;
+      });
+    }
+  }
+
+  void onUnFollow() async {
+    var regBody = {"userName": username, "clubId": clubInfo['_id']};
+
+    var response = await http.delete(Uri.parse(unFollow),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+    print('UnFollow:');
+    print(jsonResponse['delete']);
+    if (jsonResponse['delete']) {
+      setState(() {
+        followStatus = false;
+      });
+    }
+  }
 
   // void getTodoList() async {
   //   setState(() {
@@ -429,40 +505,105 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
                                                   ),
                                                 ),
                                                 SizedBox(width: 10),
-                                                SizedBox(
-                                                  height: 20,
-                                                  child: TextButton(
-                                                      child: Text(
-                                                        'ติดตาม',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Color(0xFF484848),
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w700,
+                                                if (followStatus) ...[
+                                                  SizedBox(
+                                                    height: 20,
+                                                    width: 100,
+                                                    child: TextButton(
+                                                        // ignore: sort_child_properties_last
+                                                        child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Icon(
+                                                                Icons.check,
+                                                                size: 12,
+                                                                color: Color(
+                                                                    0xFF02D417),
+                                                              ),
+                                                              SizedBox(
+                                                                  width: 5),
+                                                              Text(
+                                                                'ติดตามแล้ว',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Color(
+                                                                      0xFF29C14A),
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                ),
+                                                              )
+                                                            ]),
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  255,
+                                                                  255,
+                                                                  255),
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            side: BorderSide(
+                                                                width: 1,
+                                                                color: Color(
+                                                                    0xFF29C14A)),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        25),
+                                                          ),
                                                         ),
-                                                      ),
-                                                      style:
-                                                          TextButton.styleFrom(
-                                                        backgroundColor:
-                                                            const Color
-                                                                .fromARGB(255,
-                                                                255, 255, 255),
-                                                        padding:
-                                                            EdgeInsets.zero,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          side: BorderSide(
-                                                              width: 1,
-                                                              color: Color(
-                                                                  0xFF484848)),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(25),
+                                                        onPressed: () =>
+                                                            {onUnFollow()}),
+                                                  )
+                                                ] else ...[
+                                                  SizedBox(
+                                                    height: 20,
+                                                    child: TextButton(
+                                                        child: Text(
+                                                          'ติดตาม',
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                                0xFF484848),
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      onPressed: () => {}),
-                                                )
+                                                        style: TextButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  255,
+                                                                  255,
+                                                                  255),
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            side: BorderSide(
+                                                                width: 1,
+                                                                color: Color(
+                                                                    0xFF484848)),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        25),
+                                                          ),
+                                                        ),
+                                                        onPressed: () =>
+                                                            {onFollow()}),
+                                                  )
+                                                ]
                                               ],
                                             )
                                           ],

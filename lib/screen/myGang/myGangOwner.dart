@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyGangOwner extends StatefulWidget {
   const MyGangOwner({super.key});
@@ -17,6 +19,9 @@ class MyGangOwner extends StatefulWidget {
 }
 
 class _MyGangOwnerState extends State<MyGangOwner> {
+  late String username;
+  late SharedPreferences prefs;
+  var myToken;
   List<ClubList> clublist = [];
   var jsonResponse;
   bool status = false;
@@ -24,34 +29,57 @@ class _MyGangOwnerState extends State<MyGangOwner> {
 
   void initState() {
     // TODO: implement initState
-    getClubList();
+    initializeState();
+
     super.initState();
     // Map<String,dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
     // userId = jwtDecodedToken['_id'];
   }
 
+  void initializeState() async {
+    await initSharedPref();
+    getClubList();
+  }
+
+  Future<void> initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+    username = jwtDecodedToken['userName'];
+  }
+
   void getClubList() async {
+    print(username);
     setState(() {
       loading = true;
     });
-    var response = await http.get(
-      Uri.parse(getClub),
-      headers: {"Content-Type": "application/json"},
-    );
+    var queryParameters = {
+      'userName': username,
+    };
+    var uri = Uri.http(getUrl, '/getOwnerClub', queryParameters);
+    var response = await http.get(uri);
+
     if (response.statusCode == 200) {
       jsonResponse = jsonDecode(response.body);
 
-      jsonResponse['success'].forEach((value) => clublist.add(ClubList(
-            owner: value['owner'],
-            follower: value['follower'],
-            clubname: value['clubname'],
-            admin: value['admin'],
-            eventId: value['event_id'],
-          )));
+      print(jsonResponse);
+
+      // jsonResponse['success'].forEach((value) => clublist.add(ClubList(
+      //       owner: value['owner'],
+      //       follower: value['follower'],
+      //       clubname: value['clubname'],
+      //       admin: value['admin'],
+      //       eventId: value['event_id'],
+      //     )));
       status = true;
 
-      print(jsonResponse);
+      // print(jsonResponse);
       // print(jsonResponse.eventlist.toString());
+      setState(() {
+        loading = false;
+      });
     } else {
       status = true;
 
@@ -61,8 +89,6 @@ class _MyGangOwnerState extends State<MyGangOwner> {
     // List<EventList> eventlist = [],
 
     // print(jsonResponse);
-    loading = false;
-    setState(() {});
   }
 
   @override
@@ -77,7 +103,7 @@ class _MyGangOwnerState extends State<MyGangOwner> {
                   child: !status
                       ? Text("Error: ")
                       : Column(
-                          children: jsonResponse['success'].map<Widget>(
+                          children: jsonResponse['data'].map<Widget>(
                             (items) {
                               return Padding(
                                 padding: EdgeInsets.only(bottom: 15),
@@ -87,7 +113,8 @@ class _MyGangOwnerState extends State<MyGangOwner> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (BuildContext context) =>
-                                                GangOwnerDetail()));
+                                                GangOwnerDetail(
+                                                    club: items['clubname'])));
                                   },
                                   child: Material(
                                     elevation: 5.0,
@@ -214,7 +241,9 @@ class _MyGangOwnerState extends State<MyGangOwner> {
                           isScrollControlled: true,
                           backgroundColor: Color(0xFF515151),
                           builder: (BuildContext context) {
-                            return AddClub(); // เรียกใช้ AddClubModal ที่เราสร้างไว้
+                            return AddClub(
+                              username: username,
+                            ); // เรียกใช้ AddClubModal ที่เราสร้างไว้
                           },
                         );
                       },
