@@ -1,4 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:finalmo/config.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddCommentScreen extends StatefulWidget {
   const AddCommentScreen({super.key});
@@ -8,6 +13,63 @@ class AddCommentScreen extends StatefulWidget {
 }
 
 class _AddCommentScreenState extends State<AddCommentScreen> {
+  TextEditingController comment = TextEditingController();
+
+  bool light = true;
+  int rating = 0;
+  int average = 0;
+
+  late String username;
+  late SharedPreferences prefs;
+  var myToken;
+
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+    username = jwtDecodedToken['userName'];
+    print(username);
+  }
+
+  void addComment() async {
+    if (rating > 0) {
+      var regBody;
+      if (light) {
+        regBody = {
+          "userName": username,
+          "score": rating,
+          "comment": comment.text,
+          "showuser": light,
+        };
+      } else {
+        regBody = {
+          "userName": "ผู้ใช้",
+          "score": rating,
+          "comment": comment.text,
+          "showuser": light,
+        };
+      }
+
+      var response = await http.post(Uri.parse(createReview),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      var jsonResponse = jsonDecode(response.body);
+
+      print(jsonResponse['success']);
+    } else {
+      print(rating);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,27 +99,13 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                addComment();
+                setState(() {});
+                Navigator.of(context).pop();
+              },
             )
           ]),
-      body: Comment(),
-    );
-  }
-}
-
-class Comment extends StatefulWidget {
-  const Comment({super.key});
-
-  @override
-  State<Comment> createState() => _CommentState();
-}
-
-class _CommentState extends State<Comment> {
-  bool light = true;
-  int rating = 0;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
       body: SafeArea(
         left: false,
         right: false,
@@ -86,6 +134,7 @@ class _CommentState extends State<Comment> {
                             onPressed: () {
                               setState(() {
                                 rating = index + 1; // เพิ่มคะแนนจากดาวที่ถูกกด
+                                // print(rating);
                               });
                             },
                             icon: Icon(
@@ -130,6 +179,7 @@ class _CommentState extends State<Comment> {
                     height: 100,
                     decoration: BoxDecoration(color: Color(0xFFD9D9D9)),
                     child: TextField(
+                      controller: comment,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.all(
@@ -164,9 +214,11 @@ class _CommentState extends State<Comment> {
                         onChanged: (bool value) {
                           setState(() {
                             light = value;
+                            // print(value);
+                            // print("Value of light: $light");
                           });
                         },
-                      )
+                      ),
                       // เพิ่มระยะห่างระหว่างข้อความกับไอคอนดาว
                     ],
                   ),
