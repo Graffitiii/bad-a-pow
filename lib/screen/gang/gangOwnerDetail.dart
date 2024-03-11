@@ -17,16 +17,27 @@ class GangOwnerDetail extends StatefulWidget {
   State<GangOwnerDetail> createState() => _GangOwnerDetailState();
 }
 
-class _GangOwnerDetailState extends State<GangOwnerDetail> {
+class _GangOwnerDetailState extends State<GangOwnerDetail>
+    with TickerProviderStateMixin {
   late String username;
   late SharedPreferences prefs;
   var myToken;
   bool loading = true;
   bool followStatus = false;
   var clubInfo = {};
+  List<Map<String, dynamic>> activeEventList = [];
+  List<Map<String, dynamic>> inActiveEventList = [];
+  // late AnimationController controller;
   @override
   void initState() {
     super.initState();
+    // controller = AnimationController(
+    //   vsync: this,
+    //   duration: const Duration(seconds: 2),
+    // )..addListener(() {
+    //     setState(() {});
+    //   });
+    // controller.repeat(reverse: false);
     initSharedPref();
     print(widget.club);
     getClubDetail(widget.club);
@@ -62,7 +73,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail> {
           followStatus = true;
         });
       }
-      loading = false;
+      getEvent(clubInfo['event_id']);
     }
   }
 
@@ -96,6 +107,33 @@ class _GangOwnerDetailState extends State<GangOwnerDetail> {
     if (jsonResponse['delete']) {
       setState(() {
         followStatus = false;
+      });
+    }
+  }
+
+  void getEvent(eventId) async {
+    var queryParameters = {
+      'ownIdList': eventId,
+    };
+
+    var uri = Uri.http(getUrl, '/getOwnEvent', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      // print(jsonResponse['data']);
+      for (var event in jsonResponse['data']) {
+        if (event['active']) {
+          activeEventList.add(event);
+        } else {
+          inActiveEventList.add(event);
+        }
+      }
+      print('Active Events: $activeEventList');
+      print('Inactive Events: $inActiveEventList');
+      setState(() {
+        loading = false;
       });
     }
   }
@@ -318,8 +356,13 @@ class _GangOwnerDetailState extends State<GangOwnerDetail> {
                     ],
                   ),
                   SizedBox(height: 20),
+                  // LinearProgressIndicator(
+                  //   value: 5,
+                  //   semanticsLabel: 'Linear progress indicator',
+                  // ),
                   ExpansionTile(
-                    title: const Text('เปิดให้เข้าร่วมแล้ว (1)'),
+                    title:
+                        Text('เปิดให้เข้าร่วมแล้ว (${activeEventList.length})'),
                     textColor: Color(0xFF29C14A),
                     collapsedTextColor: Color(0xFF29C14A),
                     collapsedShape: RoundedRectangleBorder(
@@ -330,237 +373,249 @@ class _GangOwnerDetailState extends State<GangOwnerDetail> {
                       side: BorderSide(width: 1, color: Color(0xFFD9D9D9)),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    children: <Widget>[
-                      new GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      GangDetail()));
-                        },
-                        child: Material(
-                          elevation: 5.0,
-                          shadowColor: Color.fromARGB(192, 0, 0, 0),
-                          borderRadius: new BorderRadius.circular(30),
-                          child: Container(
-                            height: 160,
-                            width: double.infinity,
-                            decoration: ShapeDecoration(
-                              color: Color.fromARGB(255, 255, 255, 255),
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                    width: 2, color: Color(0xFFF5A201)),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20),
-                              child: Row(children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'ก๊วน A',
-                                      style: TextStyle(
-                                        color: Color(0xFF013C58),
-                                        fontSize: 20,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w800,
-                                        height: 0,
-                                      ),
-                                    ),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Color(0xFFFF3333),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.calendar_month,
-                                        color: Color(0xFF013C58),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                    SizedBox(
-                                      height: 7,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0xFFE3D6FF),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFFA47AFF)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'N',
-                                              style: TextStyle(
-                                                color: Color(0xFFA47AFF),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0x5B009020),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFF00901F)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'P',
-                                              style: TextStyle(
-                                                color: Color(0xFF00901F),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0xFFFEDEFF),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFFFC7FFF)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'S',
-                                              style: TextStyle(
-                                                color: Color(0xFFFC7FFF),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                      ],
-                                    ),
-                                    SizedBox(height: 7),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.stars,
-                                        color: Color.fromARGB(255, 255, 154, 3),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          '4.3',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                  ],
+                    children: activeEventList.map<Widget>((items) {
+                      return Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: new GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        GangDetail(
+                                          items: items,
+                                        )));
+                          },
+                          child: Material(
+                            elevation: 5.0,
+                            shadowColor: Color.fromARGB(192, 0, 0, 0),
+                            borderRadius: new BorderRadius.circular(30),
+                            child: Container(
+                              height: 160,
+                              width: double.infinity,
+                              decoration: ShapeDecoration(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                      width: 2, color: Color(0xFFF5A201)),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                Spacer(),
-                                Column(
-                                  // crossAxisAlignment: CrossAxisAlignment.center,
-                                  // mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Spacer(),
-                                    Row(
-                                      children: [
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 20),
+                                child: Row(children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        items['club'],
+                                        style: TextStyle(
+                                          color: Color(0xFF013C58),
+                                          fontSize: 20,
+                                          fontFamily: 'Inter',
+                                          fontWeight: FontWeight.w800,
+                                          height: 0,
+                                        ),
+                                      ),
+                                      Row(children: [
                                         Icon(
-                                          Icons.arrow_forward_ios,
+                                          Icons.location_on,
+                                          color: Color(0xFFFF3333),
+                                          size: 20.0,
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: Text(
+                                            'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
+                                            style: TextStyle(
+                                              color: Color(0xFF929292),
+                                              fontSize: 14,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                              height: 0,
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                      SizedBox(
+                                        height: 4,
+                                      ),
+                                      Row(children: [
+                                        Icon(
+                                          Icons.calendar_month,
+                                          color: Color(0xFF013C58),
+                                          size: 20.0,
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: Text(
+                                            'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
+                                            style: TextStyle(
+                                              color: Color(0xFF929292),
+                                              fontSize: 14,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                              height: 0,
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                      SizedBox(
+                                        height: 7,
+                                      ),
+                                      if (items['level'] != null &&
+                                          items['level'].isNotEmpty) ...[
+                                        Row(
+                                          children: [
+                                            for (int i = 0;
+                                                i < items['level'].length;
+                                                i++)
+                                              Container(
+                                                margin: i > 0
+                                                    ? EdgeInsets.only(left: 10)
+                                                    : EdgeInsets.zero,
+                                                height: 22,
+                                                width: 22,
+                                                decoration: BoxDecoration(
+                                                  color: items['level'][i] ==
+                                                          'N'
+                                                      ? Color(
+                                                          0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                      : items['level'][i] == 'S'
+                                                          ? Color(0x5B009020)
+                                                          : items['level'][i] ==
+                                                                  'P'
+                                                              ? Color(
+                                                                  0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
+                                                              : Color.fromARGB(
+                                                                  255,
+                                                                  222,
+                                                                  234,
+                                                                  255),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          7), // กำหนด radius ให้กรอบสี่เหลี่ยม
+                                                  border: Border.all(
+                                                    width: 2,
+                                                    color: items['level'][i] ==
+                                                            'N'
+                                                        ? Color(
+                                                            0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                        : items['level'][i] ==
+                                                                'S'
+                                                            ? Color(0xFF00901F)
+                                                            : items['level']
+                                                                        [i] ==
+                                                                    'P'
+                                                                ? Color(
+                                                                    0xFFFC7FFF)
+                                                                : Color(
+                                                                    0xFFFC7FFF),
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    items['level'][i],
+                                                    style: TextStyle(
+                                                      color: items['level']
+                                                                  [i] ==
+                                                              'N'
+                                                          ? Color(
+                                                              0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                          : items['level'][i] ==
+                                                                  'S'
+                                                              ? Color(
+                                                                  0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
+                                                              : items['level']
+                                                                          [i] ==
+                                                                      'P'
+                                                                  ? Color(
+                                                                      0xFFFC7FFF)
+                                                                  : Color(
+                                                                      0xFFFC7FFF),
+                                                      fontSize: 12,
+                                                      fontFamily: 'Inter',
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ],
+                                      SizedBox(height: 7),
+                                      Row(children: [
+                                        Icon(
+                                          Icons.stars,
                                           color:
                                               Color.fromARGB(255, 255, 154, 3),
-                                          size: 36.0,
+                                          size: 20.0,
                                         ),
-                                      ],
-                                    ),
-                                    Spacer(),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          '4 / 20',
-                                          style: TextStyle(
-                                            color: Color(0xFF013C58),
-                                            fontSize: 16,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0,
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: Text(
+                                            '4.3',
+                                            style: TextStyle(
+                                              color: Color(0xFF929292),
+                                              fontSize: 14,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                              height: 0,
+                                            ),
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              ]),
+                                        ),
+                                      ]),
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  Column(
+                                    // crossAxisAlignment: CrossAxisAlignment.center,
+                                    // mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Spacer(),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Color.fromARGB(
+                                                255, 255, 154, 3),
+                                            size: 36.0,
+                                          ),
+                                        ],
+                                      ),
+                                      Spacer(),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '4 / 20',
+                                            style: TextStyle(
+                                              color: Color(0xFF013C58),
+                                              fontSize: 16,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w600,
+                                              height: 0,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                ]),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      );
+                    }).toList(),
                   ),
                   SizedBox(height: 10),
                   ExpansionTile(
-                    title: const Text('ยังไม่เปิดให้เข้าร่วม (3)'),
+                    title: Text(
+                        'ยังไม่เปิดให้เข้าร่วม (${inActiveEventList.length})'),
                     textColor: Color(0xFF929292),
                     collapsedTextColor: Color(0xFF929292),
                     collapsedShape: RoundedRectangleBorder(
@@ -571,647 +626,244 @@ class _GangOwnerDetailState extends State<GangOwnerDetail> {
                       side: BorderSide(width: 1, color: Color(0xFFD9D9D9)),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    children: <Widget>[
-                      new GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      GangDetail()));
-                        },
-                        child: Material(
-                          elevation: 5.0,
-                          shadowColor: Color.fromARGB(192, 0, 0, 0),
-                          borderRadius: new BorderRadius.circular(30),
-                          child: Container(
-                            height: 160,
-                            width: double.infinity,
-                            decoration: ShapeDecoration(
-                              color: Color.fromARGB(255, 255, 255, 255),
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                    width: 2, color: Color(0xFFF5A201)),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20),
-                              child: Row(children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'ก๊วน A',
-                                      style: TextStyle(
-                                        color: Color(0xFF013C58),
-                                        fontSize: 20,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w800,
-                                        height: 0,
-                                      ),
-                                    ),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Color(0xFFFF3333),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.calendar_month,
-                                        color: Color(0xFF013C58),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                    SizedBox(
-                                      height: 7,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0xFFE3D6FF),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFFA47AFF)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'N',
-                                              style: TextStyle(
-                                                color: Color(0xFFA47AFF),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0x5B009020),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFF00901F)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'P',
-                                              style: TextStyle(
-                                                color: Color(0xFF00901F),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0xFFFEDEFF),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFFFC7FFF)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'S',
-                                              style: TextStyle(
-                                                color: Color(0xFFFC7FFF),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                      ],
-                                    ),
-                                    SizedBox(height: 7),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.stars,
-                                        color: Color.fromARGB(255, 255, 154, 3),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          '4.3',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                  ],
+                    children: inActiveEventList.map<Widget>((items) {
+                      return Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: new GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        GangDetail(
+                                          items: items,
+                                        )));
+                          },
+                          child: Material(
+                            elevation: 5.0,
+                            shadowColor: Color.fromARGB(192, 0, 0, 0),
+                            borderRadius: new BorderRadius.circular(30),
+                            child: Container(
+                              height: 160,
+                              width: double.infinity,
+                              decoration: ShapeDecoration(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                      width: 2, color: Color(0xFFF5A201)),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                Spacer(),
-                                Column(
-                                  // crossAxisAlignment: CrossAxisAlignment.center,
-                                  // mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Spacer(),
-                                    Row(
-                                      children: [
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 20),
+                                child: Row(children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        items['club'],
+                                        style: TextStyle(
+                                          color: Color(0xFF013C58),
+                                          fontSize: 20,
+                                          fontFamily: 'Inter',
+                                          fontWeight: FontWeight.w800,
+                                          height: 0,
+                                        ),
+                                      ),
+                                      Row(children: [
                                         Icon(
-                                          Icons.arrow_forward_ios,
+                                          Icons.location_on,
+                                          color: Color(0xFFFF3333),
+                                          size: 20.0,
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: Text(
+                                            'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
+                                            style: TextStyle(
+                                              color: Color(0xFF929292),
+                                              fontSize: 14,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                              height: 0,
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                      SizedBox(
+                                        height: 4,
+                                      ),
+                                      Row(children: [
+                                        Icon(
+                                          Icons.calendar_month,
+                                          color: Color(0xFF013C58),
+                                          size: 20.0,
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: Text(
+                                            'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
+                                            style: TextStyle(
+                                              color: Color(0xFF929292),
+                                              fontSize: 14,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                              height: 0,
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                      SizedBox(
+                                        height: 7,
+                                      ),
+                                      if (items['level'] != null &&
+                                          items['level'].isNotEmpty) ...[
+                                        Row(
+                                          children: [
+                                            for (int i = 0;
+                                                i < items['level'].length;
+                                                i++)
+                                              Container(
+                                                margin: i > 0
+                                                    ? EdgeInsets.only(left: 10)
+                                                    : EdgeInsets.zero,
+                                                height: 22,
+                                                width: 22,
+                                                decoration: BoxDecoration(
+                                                  color: items['level'][i] ==
+                                                          'N'
+                                                      ? Color(
+                                                          0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                      : items['level'][i] == 'S'
+                                                          ? Color(0x5B009020)
+                                                          : items['level'][i] ==
+                                                                  'P'
+                                                              ? Color(
+                                                                  0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
+                                                              : Color.fromARGB(
+                                                                  255,
+                                                                  222,
+                                                                  234,
+                                                                  255),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          7), // กำหนด radius ให้กรอบสี่เหลี่ยม
+                                                  border: Border.all(
+                                                    width: 2,
+                                                    color: items['level'][i] ==
+                                                            'N'
+                                                        ? Color(
+                                                            0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                        : items['level'][i] ==
+                                                                'S'
+                                                            ? Color(0xFF00901F)
+                                                            : items['level']
+                                                                        [i] ==
+                                                                    'P'
+                                                                ? Color(
+                                                                    0xFFFC7FFF)
+                                                                : Color(
+                                                                    0xFFFC7FFF),
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    items['level'][i],
+                                                    style: TextStyle(
+                                                      color: items['level']
+                                                                  [i] ==
+                                                              'N'
+                                                          ? Color(
+                                                              0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                          : items['level'][i] ==
+                                                                  'S'
+                                                              ? Color(
+                                                                  0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
+                                                              : items['level']
+                                                                          [i] ==
+                                                                      'P'
+                                                                  ? Color(
+                                                                      0xFFFC7FFF)
+                                                                  : Color(
+                                                                      0xFFFC7FFF),
+                                                      fontSize: 12,
+                                                      fontFamily: 'Inter',
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ],
+                                      SizedBox(height: 7),
+                                      Row(children: [
+                                        Icon(
+                                          Icons.stars,
                                           color:
                                               Color.fromARGB(255, 255, 154, 3),
-                                          size: 36.0,
+                                          size: 20.0,
                                         ),
-                                      ],
-                                    ),
-                                    Spacer(),
-                                  ],
-                                )
-                              ]),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: Text(
+                                            '4.3',
+                                            style: TextStyle(
+                                              color: Color(0xFF929292),
+                                              fontSize: 14,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                              height: 0,
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  Column(
+                                    // crossAxisAlignment: CrossAxisAlignment.center,
+                                    // mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Spacer(),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Color.fromARGB(
+                                                255, 255, 154, 3),
+                                            size: 36.0,
+                                          ),
+                                        ],
+                                      ),
+                                      Spacer(),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '4 / 20',
+                                            style: TextStyle(
+                                              color: Color(0xFF013C58),
+                                              fontSize: 16,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w600,
+                                              height: 0,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                ]),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      new GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      GangDetail()));
-                        },
-                        child: Material(
-                          elevation: 5.0,
-                          shadowColor: Color.fromARGB(192, 0, 0, 0),
-                          borderRadius: new BorderRadius.circular(30),
-                          child: Container(
-                            height: 160,
-                            width: double.infinity,
-                            decoration: ShapeDecoration(
-                              color: Color.fromARGB(255, 255, 255, 255),
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                    width: 2, color: Color(0xFFF5A201)),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20),
-                              child: Row(children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'ก๊วน A',
-                                      style: TextStyle(
-                                        color: Color(0xFF013C58),
-                                        fontSize: 20,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w800,
-                                        height: 0,
-                                      ),
-                                    ),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Color(0xFFFF3333),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.calendar_month,
-                                        color: Color(0xFF013C58),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                    SizedBox(
-                                      height: 7,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0xFFE3D6FF),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFFA47AFF)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'N',
-                                              style: TextStyle(
-                                                color: Color(0xFFA47AFF),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0x5B009020),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFF00901F)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'P',
-                                              style: TextStyle(
-                                                color: Color(0xFF00901F),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0xFFFEDEFF),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFFFC7FFF)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'S',
-                                              style: TextStyle(
-                                                color: Color(0xFFFC7FFF),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                      ],
-                                    ),
-                                    SizedBox(height: 7),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.stars,
-                                        color: Color.fromARGB(255, 255, 154, 3),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          '4.3',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                  ],
-                                ),
-                                Spacer(),
-                                Column(
-                                  // crossAxisAlignment: CrossAxisAlignment.center,
-                                  // mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Spacer(),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          color:
-                                              Color.fromARGB(255, 255, 154, 3),
-                                          size: 36.0,
-                                        ),
-                                      ],
-                                    ),
-                                    Spacer(),
-                                  ],
-                                )
-                              ]),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      new GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      GangDetail()));
-                        },
-                        child: Material(
-                          elevation: 5.0,
-                          shadowColor: Color.fromARGB(192, 0, 0, 0),
-                          borderRadius: new BorderRadius.circular(30),
-                          child: Container(
-                            height: 160,
-                            width: double.infinity,
-                            decoration: ShapeDecoration(
-                              color: Color.fromARGB(255, 255, 255, 255),
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                    width: 2, color: Color(0xFFF5A201)),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20),
-                              child: Row(children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'ก๊วน A',
-                                      style: TextStyle(
-                                        color: Color(0xFF013C58),
-                                        fontSize: 20,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w800,
-                                        height: 0,
-                                      ),
-                                    ),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        color: Color(0xFFFF3333),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.calendar_month,
-                                        color: Color(0xFF013C58),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                    SizedBox(
-                                      height: 7,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0xFFE3D6FF),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFFA47AFF)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'N',
-                                              style: TextStyle(
-                                                color: Color(0xFFA47AFF),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0x5B009020),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFF00901F)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'P',
-                                              style: TextStyle(
-                                                color: Color(0xFF00901F),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 10),
-                                            height: 22,
-                                            width: 22,
-                                            decoration: ShapeDecoration(
-                                              color: Color(0xFFFEDEFF),
-                                              shape: RoundedRectangleBorder(
-                                                side: BorderSide(
-                                                    width: 2,
-                                                    color: Color(0xFFFC7FFF)),
-                                                borderRadius:
-                                                    BorderRadius.circular(7),
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                              'S',
-                                              style: TextStyle(
-                                                color: Color(0xFFFC7FFF),
-                                                fontSize: 12,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ))),
-                                      ],
-                                    ),
-                                    SizedBox(height: 7),
-                                    Row(children: [
-                                      Icon(
-                                        Icons.stars,
-                                        color: Color.fromARGB(255, 255, 154, 3),
-                                        size: 20.0,
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 5),
-                                        child: Text(
-                                          '4.3',
-                                          style: TextStyle(
-                                            color: Color(0xFF929292),
-                                            fontSize: 14,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 0,
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                  ],
-                                ),
-                                Spacer(),
-                                Column(
-                                  // crossAxisAlignment: CrossAxisAlignment.center,
-                                  // mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Spacer(),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          color:
-                                              Color.fromARGB(255, 255, 154, 3),
-                                          size: 36.0,
-                                        ),
-                                      ],
-                                    ),
-                                    Spacer(),
-                                  ],
-                                )
-                              ]),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                      );
+                    }).toList(),
                   ),
                   SizedBox(
                     height: 10,

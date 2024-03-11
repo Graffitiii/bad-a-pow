@@ -65,18 +65,8 @@ class _MyGangOwnerState extends State<MyGangOwner> {
       jsonResponse = jsonDecode(response.body);
 
       print(jsonResponse);
-
-      // jsonResponse['success'].forEach((value) => clublist.add(ClubList(
-      //       owner: value['owner'],
-      //       follower: value['follower'],
-      //       clubname: value['clubname'],
-      //       admin: value['admin'],
-      //       eventId: value['event_id'],
-      //     )));
       status = true;
 
-      // print(jsonResponse);
-      // print(jsonResponse.eventlist.toString());
       setState(() {
         loading = false;
       });
@@ -85,10 +75,47 @@ class _MyGangOwnerState extends State<MyGangOwner> {
 
       print(response.statusCode);
     }
-    // items = jsonResponse['clublistdata'];
-    // List<EventList> eventlist = [],
+  }
 
-    // print(jsonResponse);
+  void addClubHandle() async {
+    var queryParameters = {
+      'userName': username,
+    };
+    var uri = Uri.http(getUrl, '/getUserControl', queryParameters);
+    var response = await http.get(uri);
+
+    jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      if (jsonResponse['data']['ownerPermission']) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Color(0xFF515151),
+          builder: (BuildContext context) {
+            return AddClub(
+              username: username,
+            ); // เรียกใช้ AddClubModal ที่เราสร้างไว้
+          },
+        );
+      } else {
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('ไม่สามารถสร้างก๊วนได้ '),
+            content: const Text(
+              'เนื่องจากคุณไม่ได้เป็นสมาชิกของ “ผู้จัดก๊วน”',
+              style: TextStyle(fontSize: 18),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('ตกลง'),
+              ),
+            ],
+          ),
+        );
+      }
+    } else {}
   }
 
   @override
@@ -236,16 +263,7 @@ class _MyGangOwnerState extends State<MyGangOwner> {
                   children: [
                     FloatingActionButton(
                       onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Color(0xFF515151),
-                          builder: (BuildContext context) {
-                            return AddClub(
-                              username: username,
-                            ); // เรียกใช้ AddClubModal ที่เราสร้างไว้
-                          },
-                        );
+                        addClubHandle();
                       },
                       tooltip: 'Addclub',
                       child: const Icon(Icons.add),
