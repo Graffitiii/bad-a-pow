@@ -11,18 +11,25 @@ import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+late String username;
+late SharedPreferences prefs;
+var myToken;
 
 // bool loading = true;
 List<EventList> eventlist = [];
 var jsonResponse;
 bool status = true;
 bool joinevent = true;
-bool follow = true;
+bool openevent = true;
 
 var eventeach;
 
 class GangDetail extends StatefulWidget {
   final items;
+
   const GangDetail({@required this.items, Key? key}) : super(key: key);
 
   @override
@@ -30,11 +37,22 @@ class GangDetail extends StatefulWidget {
 }
 
 class _GangDetailState extends State<GangDetail> {
+  var clubInfo = {};
+
   void initState() {
     eventeach = widget.items;
-    print(eventeach);
+    // print(eventeach);
     print(joinevent);
+    // print(widget.items);
+    // getOwnerList();
+    // getClubDetail(widget.clubname);
     super.initState();
+    initializeState();
+  }
+
+  void initializeState() async {
+    await initSharedPref();
+    getClubDetail(eventeach['club']);
   }
 
   void deleteEvent(id) async {
@@ -50,6 +68,49 @@ class _GangDetailState extends State<GangDetail> {
     } else {
       print('SDadw');
     }
+  }
+
+  void getClubDetail(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
+
+    var uri = Uri.http(getUrl, '/getClub', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      setState(() {
+        clubInfo = jsonResponse['club'];
+      });
+      print(clubInfo);
+    }
+  }
+
+  // void getOwnerList() async {
+  //   var response = await http.get(
+  //     Uri.parse(getClub),
+  //     headers: {"Content-Type": "application/json"},
+  //   );
+  //   if (response.statusCode == 200) {
+  //     jsonResponse = jsonDecode(response.body);
+
+  //     print(jsonResponse['success'][2]['owner']);
+  //   } else {
+  //     status = true;
+
+  //     print(response.statusCode);
+  //   }
+  // }
+
+  Future<void> initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+    username = jwtDecodedToken['userName'];
   }
 
   int _selectedIndex = 0;
@@ -89,82 +150,158 @@ class _GangDetailState extends State<GangDetail> {
               padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               child: Row(
                 children: <Widget>[
-                  if (follow) ...[
-                    Expanded(
-                      flex: 4,
-                      child: Container(
+                  if (clubInfo['owner'] != username) ...[
+                    if (joinevent) ...[
+                      Expanded(
+                        flex: 6,
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: TextButton(
+                                  child: Text(
+                                    'ส่งคำขอเข้าร่วม',
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    elevation: 2,
+                                    backgroundColor: const Color(0xFF013C58),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () => {
+                                        setState(() {
+                                          joinevent = false;
+                                        }),
+                                      }),
+                            )),
+                      ),
+                    ] else ...[
+                      Expanded(
+                        flex: 6,
+                        child: Container(
                           alignment: Alignment.center,
                           child: SizedBox(
                             width: double.infinity,
                             height: 50,
                             child: TextButton(
-                                child: Text(
-                                  'ติดตาม',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                              onPressed: () {
+                                setState(() {
+                                  joinevent = true;
+                                });
+                              },
+                              style: TextButton.styleFrom(
+                                elevation: 2,
+                                backgroundColor: Color(
+                                    0xFF02D417), // เปลี่ยนเป็นสีเขียวตามต้องการ
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                style: TextButton.styleFrom(
-                                  elevation: 2,
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 255, 255, 255),
-                                  shape: RoundedRectangleBorder(
-                                    side: BorderSide(
-                                        width: 2, color: Color(0xFF4C5B63)),
-                                    borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.check,
+                                    color: Colors
+                                        .white, // เปลี่ยนเป็นสีขาวตามต้องการ
                                   ),
-                                ),
-                                onPressed: () => {
-                                      setState(() {
-                                        follow = false;
-                                      }),
-                                    }),
-                          )),
-                    ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'กำลังรอ',
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]
                   ] else ...[
-                    Expanded(
-                      flex: 4,
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: TextButton(
-                                child: Text(
-                                  'กำลังติดตาม',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
+                    if (openevent) ...[
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: TextButton(
+                                  child: Text(
+                                    'เปิดให้เข้าร่วม',
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
-                                ),
-                                style: TextButton.styleFrom(
-                                  elevation: 2,
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 255, 255, 255),
-                                  shape: RoundedRectangleBorder(
-                                    side: BorderSide(
-                                        width: 2, color: Color(0xFF4C5B63)),
-                                    borderRadius: BorderRadius.circular(10),
+                                  style: TextButton.styleFrom(
+                                    elevation: 2,
+                                    backgroundColor: const Color(0xFFF5A201),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
-                                ),
-                                onPressed: () => {
-                                      setState(() {
-                                        follow = true;
+                                  onPressed: () => {
+                                        setState(() {
+                                          openevent = false;
+                                        }),
                                       }),
-                                    }),
-                          )),
-                    ),
-                  ],
-                  Expanded(
-                    flex: 1,
-                    child: SizedBox(),
-                  ),
-                  if (joinevent) ...[
+                            )),
+                      ),
+                    ] else ...[
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: TextButton(
+                                  child: Text(
+                                    'ยกเลิกกิจกรรม',
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    elevation: 2,
+                                    backgroundColor: const Color(0xFFFF5B5B),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () => {
+                                        setState(() {
+                                          openevent = true;
+                                        }),
+                                      }),
+                            )),
+                      ),
+                    ],
                     Expanded(
-                      flex: 6,
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                    Expanded(
+                      flex: 5,
                       child: Container(
                           alignment: Alignment.center,
                           child: SizedBox(
@@ -172,7 +309,7 @@ class _GangDetailState extends State<GangDetail> {
                             height: 50,
                             child: TextButton(
                                 child: Text(
-                                  'เข้าร่วม',
+                                  'แก้ไข้ข้อมูล',
                                   style: TextStyle(
                                     color: const Color.fromARGB(
                                         255, 255, 255, 255),
@@ -187,60 +324,10 @@ class _GangDetailState extends State<GangDetail> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                onPressed: () => {
-                                      setState(() {
-                                        joinevent = false;
-                                      }),
-                                    }),
+                                onPressed: () => {}),
                           )),
                     ),
-                  ] else ...[
-                    Expanded(
-                      flex: 6,
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: TextButton(
-                            onPressed: () {
-                              setState(() {
-                                joinevent = true;
-                              });
-                            },
-                            style: TextButton.styleFrom(
-                              elevation: 2,
-                              backgroundColor: Color(
-                                  0xFF02D417), // เปลี่ยนเป็นสีเขียวตามต้องการ
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.check,
-                                  color: Colors
-                                      .white, // เปลี่ยนเป็นสีขาวตามต้องการ
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  'เข้าร่วมแล้ว',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ]
+                  ],
                 ],
               ),
             )),
@@ -268,7 +355,7 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
   void initState() {
     // TODO: implement initState
     // getTodoList();
-    print(widget.clubname);
+    // print(widget.clubname);
     initSharedPref();
     getClubDetail(widget.clubname);
     super.initState();
@@ -297,7 +384,7 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
       setState(() {
         clubInfo = jsonResponse['club'];
       });
-      print(clubInfo);
+      // print(clubInfo);
       if (clubInfo['follower'].contains(username)) {
         print('$username found in the list.');
         setState(() {
@@ -341,43 +428,6 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
       });
     }
   }
-
-  // void getTodoList() async {
-  //   setState(() {
-  //     loading = true;
-  //   });
-  //   var response = await http.get(
-  //     Uri.parse(getToDoList),
-  //     headers: {"Content-Type": "application/json"},
-  //   );
-  //   if (response.statusCode == 200) {
-  //     jsonResponse = jsonDecode(response.body);
-
-  //     jsonResponse['clublistdata'].forEach((value) => eventlist.add(EventList(
-  //           club: value['club'],
-  //           contact: value['contact'],
-  //           priceBadminton: value['price_badminton'],
-  //           priceplay: value['priceplay'],
-  //           level: value['level'],
-  //           brand: value['brand'],
-  //           details: value['details'],
-  //         )));
-  //     status = true;
-
-  //     print(jsonResponse);
-  //     // print(jsonResponse.eventlist.toString());
-  //   } else {
-  //     status = true;
-
-  //     print(response.statusCode);
-  //   }
-  //   // items = jsonResponse['clublistdata'];
-  //   // List<EventList> eventlist = [],
-
-  //   // print(jsonResponse);
-  //   loading = false;
-  //   setState(() {});
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -641,7 +691,7 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
                                                 RequesttoJoin(),
                                               ],
                                             ),
-                                            SizedBox(height: 5),
+                                            SizedBox(height: 5.0),
                                             Text(
                                               'เข้าร่วมแล้ว',
                                               style: TextStyle(
@@ -660,37 +710,39 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
                                           color: Colors.black
                                               .withOpacity(0.10999999940395355),
                                         ),
-                                        Spacer(),
-                                        Column(
-                                          children: [
-                                            Text(
-                                              '67',
-                                              style: TextStyle(
-                                                color: Color(0xFF013C58),
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w700,
-                                                height: 0,
+                                        if (clubInfo['owner'] == username) ...[
+                                          Spacer(),
+                                          Column(
+                                            children: [
+                                              Text(
+                                                '67',
+                                                style: TextStyle(
+                                                  color: Color(0xFF013C58),
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w700,
+                                                  height: 0,
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(height: 5),
-                                            Text(
-                                              'ผู้ติดตาม',
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w500,
-                                                height: 0,
+                                              SizedBox(height: 5),
+                                              Text(
+                                                'ผู้ติดตาม',
+                                                style: TextStyle(
+                                                  color: Color(0xFF929292),
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
+                                                  height: 0,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        Spacer(),
-                                        Container(
-                                          width: 1,
-                                          height: 50,
-                                          color: Colors.black
-                                              .withOpacity(0.10999999940395355),
-                                        ),
+                                            ],
+                                          ),
+                                          Spacer(),
+                                          Container(
+                                            width: 1,
+                                            height: 50,
+                                            color: Colors.black.withOpacity(
+                                                0.10999999940395355),
+                                          ),
+                                        ],
                                         Spacer(),
                                         GestureDetector(
                                           onTap: () {
