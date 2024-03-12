@@ -746,12 +746,12 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
                                         Spacer(),
                                         GestureDetector(
                                           onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
-                                            );
+                                            // Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //       builder: (context) =>
+                                            //           ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+                                            // );
                                           },
                                           child: Column(
                                             children: [

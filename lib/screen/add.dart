@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:finalmo/postModel.dart';
+import 'package:finalmo/screen/myGang/addclub.dart';
+import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
 import 'package:intl/intl.dart';
 import 'package:time_range_picker/time_range_picker.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef TodoListCallback = void Function();
 
@@ -19,12 +23,7 @@ final List<String> level = [
 ];
 List<String> selectedlevel = [];
 
-final List<String> time = [
-  '17.00 - 18.00',
-  '18.00 - 19.00',
-  '19.00 - 20.00',
-];
-List<String> selectedtime = [];
+final List<String> clubname = [];
 
 class Add extends StatefulWidget {
   const Add({super.key});
@@ -46,9 +45,23 @@ class _AddState extends State<Add> {
   String formattedStartTime = '';
   String formattedEndTime = '';
   List<String> selectedlevel = [];
+  String? selectedclub;
   List<EventList> eventlist = [];
 
+  late String username;
+  late SharedPreferences prefs;
+  var myToken;
+  List<ClubList> clublist = [];
+  var jsonResponse;
+  bool status = false;
+  bool loading = false;
+
   final _formKey = GlobalKey<FormState>();
+
+  void initState() {
+    initializeState();
+    super.initState();
+  }
 
   void getTodoList(TodoListCallback callback) async {
     // โค้ดของ getTodoList() ที่เดิม...
@@ -57,43 +70,13 @@ class _AddState extends State<Add> {
     callback();
   }
 
-  // void getTodoList() async {
-  //   var response = await http.get(
-  //     Uri.parse(getToDoList),
-  //     headers: {"Content-Type": "application/json"},
-  //   );
-  //   if (response.statusCode == 200) {
-  //     var jsonResponse = jsonDecode(response.body);
-
-  //     jsonResponse['clublistdata'].forEach((value) => eventlist.add(EventList(
-  //           club: value['club'],
-  //           contact: value['contact'],
-  //           priceBadminton: value['price_badminton'],
-  //           priceplay: value['priceplay'],
-  //           level: value['level'],
-  //           brand: value['brand'],
-  //           details: value['details'],
-  //         )));
-
-  //     print(jsonResponse);
-  //   } else {
-  //     print(response.statusCode);
-  //   }
-  //   // items = jsonResponse['clublistdata'];
-  //   // List<EventList> eventlist = [],
-
-  //   // print(jsonResponse);
-  //   setState(() {});
-  // }
-
   void addTodo() async {
-    if (club.text.isNotEmpty &&
-        contact.text.isNotEmpty &&
+    if (contact.text.isNotEmpty &&
         priceBadminton.text.isNotEmpty &&
         priceplay.text.isNotEmpty) {
       var regBody = {
         // "userId": userId,
-        "club": club.text,
+        "club": selectedclub,
         "contact": contact.text,
         "eventdate_start": "${eventdate.text} $formattedStartTime",
         "eventdate_end": "${eventdate.text} $formattedEndTime",
@@ -102,6 +85,7 @@ class _AddState extends State<Add> {
         "level": selectedlevel,
         "brand": brand.text,
         "details": details.text,
+        "active": false
       };
 
       var response = await http.post(Uri.parse(createEvent),
@@ -125,6 +109,84 @@ class _AddState extends State<Add> {
     // print(selectedlevel);
     // print(formattedStartTime);
     // print(formattedEndTime);
+  }
+
+  void initializeState() async {
+    await initSharedPref();
+    getClubList();
+    addClubHandle();
+  }
+
+  Future<void> initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+    username = jwtDecodedToken['userName'];
+  }
+
+  void getClubList() async {
+    print("ชื่อผู้ใช้ :" + username);
+    setState(() {
+      loading = true;
+    });
+    var queryParameters = {
+      'userName': username,
+    };
+    var uri = Uri.http(getUrl, '/getOwnerClub', queryParameters);
+    var response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      jsonResponse = jsonDecode(response.body);
+
+      clubname.clear();
+      for (var item in jsonResponse['data']) {
+        // print(item['clubname']);
+        clubname.add(item['clubname']);
+      }
+      // print(jsonResponse['data'][0]['clubname']);
+      print(clubname);
+      status = true;
+
+      setState(() {
+        loading = false;
+      });
+    } else {
+      status = true;
+
+      print(response.statusCode);
+    }
+  }
+
+  void addClubHandle() async {
+    var queryParameters = {
+      'userName': username,
+    };
+    var uri = Uri.http(getUrl, '/getUserControl', queryParameters);
+    var response = await http.get(uri);
+
+    jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      if (!jsonResponse['data']['ownerPermission']) {
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('ไม่สามารถสร้างก๊วนได้ '),
+            content: const Text(
+              'เนื่องจากคุณไม่ได้เป็นสมาชิกของ “ผู้จัดก๊วน”',
+              style: TextStyle(fontSize: 18),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {},
+                child: const Text('ตกลง'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -178,40 +240,54 @@ class _AddState extends State<Add> {
                   SizedBox(
                     height: 15,
                   ),
-                  TextFormField(
-                    controller: club,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1.0),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 0),
+                    child: DropdownButtonHideUnderline(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors
+                              .grey[200], // กำหนดสีพื้นหลังของกล่อง Dropdown
+                          borderRadius: BorderRadius.circular(
+                              5.0), // กำหนดรูปร่างของกล่อง Dropdown
+                        ),
+                        child: DropdownButton2<String>(
+                          isExpanded: true,
+                          hint: Text(
+                            'ชื่อที่ใช้',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color:
+                                  Colors.black.withOpacity(0.3100000023841858),
+                            ),
+                          ),
+                          items: clubname
+                              .map((String item) => DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Text(
+                                      item,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                          value: selectedclub,
+                          onChanged: (String? value) {
+                            setState(() {
+                              selectedclub = value;
+                            });
+                          },
+                          buttonStyleData: const ButtonStyleData(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            height: 48,
+                            width: double.infinity,
+                          ),
+                          menuItemStyleData: const MenuItemStyleData(
+                            height: 40,
+                          ),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      labelText: 'ชื่อก๊วน',
-                      labelStyle: TextStyle(
-                        color: Colors.black.withOpacity(0.3100000023841858),
-                        fontSize: 14,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
-                      ),
-                      fillColor: Color(0xFFEFEFEF),
-                      filled: true,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                      border: InputBorder.none,
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1.0, color: Colors.red),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1.0, color: Colors.red),
-                      ),
-                      errorStyle: TextStyle(fontSize: 12),
                     ),
-                    // keyboardType: TextInputType.emailAddress,
-                    // onSaved: (String email) {
-                    //   profile.email = email;
-                    // },
                   ),
                   SizedBox(
                     height: 15,
@@ -880,9 +956,9 @@ class _TimePickState extends State<TimePick> {
 //   Widget build(BuildContext context) {
 //     return DropdownMenu<String>(
 //       label: const Text('ระดับของผู้เล่น',style: TextStyle(
-//                           color: Color.fromARGB(255, 174, 174, 174),        
+//                           color: Color.fromARGB(255, 174, 174, 174),
 //                           fontSize: 14,
-//                           
+//
 //                           fontWeight: FontWeight.w400,
 //                                 ),),
 //       inputDecorationTheme: InputDecorationTheme(
@@ -909,3 +985,5 @@ class _TimePickState extends State<TimePick> {
 //     );
 //   }
 // }
+
+
