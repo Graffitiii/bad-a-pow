@@ -173,65 +173,67 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                         ),
                       ),
                       SizedBox(width: 20),
-                      if (followStatus) ...[
-                        SizedBox(
-                          height: 30,
-                          width: 110,
-                          child: TextButton(
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.check,
-                                      size: 15,
-                                      color: Color(0xFF02D417),
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'ติดตามแล้ว',
-                                      style: TextStyle(
-                                        color: Color(0xFF29C14A),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
+                      if (username != clubInfo['owner']) ...[
+                        if (followStatus) ...[
+                          SizedBox(
+                            height: 30,
+                            width: 110,
+                            child: TextButton(
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.check,
+                                        size: 15,
+                                        color: Color(0xFF02D417),
                                       ),
-                                    )
-                                  ]),
-                              style: TextButton.styleFrom(
-                                backgroundColor:
-                                    const Color.fromARGB(255, 255, 255, 255),
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                      width: 1, color: Color(0xFF29C14A)),
-                                  borderRadius: BorderRadius.circular(25),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'ติดตามแล้ว',
+                                        style: TextStyle(
+                                          color: Color(0xFF29C14A),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      )
+                                    ]),
+                                style: TextButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 255, 255, 255),
+                                  padding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        width: 1, color: Color(0xFF29C14A)),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
                                 ),
-                              ),
-                              onPressed: () => {onUnFollow()}),
-                        )
-                      ] else ...[
-                        SizedBox(
-                          height: 30,
-                          child: TextButton(
-                              child: Text(
-                                'ติดตาม',
-                                style: TextStyle(
-                                  color: Color(0xFF484848),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                                onPressed: () => {onUnFollow()}),
+                          )
+                        ] else ...[
+                          SizedBox(
+                            height: 30,
+                            child: TextButton(
+                                child: Text(
+                                  'ติดตาม',
+                                  style: TextStyle(
+                                    color: Color(0xFF484848),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                              ),
-                              style: TextButton.styleFrom(
-                                backgroundColor:
-                                    const Color.fromARGB(255, 255, 255, 255),
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                      width: 1, color: Color(0xFF484848)),
-                                  borderRadius: BorderRadius.circular(25),
+                                style: TextButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 255, 255, 255),
+                                  padding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        width: 1, color: Color(0xFF484848)),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
                                 ),
-                              ),
-                              onPressed: () => {onFollow()}),
-                        )
+                                onPressed: () => {onFollow()}),
+                          )
+                        ]
                       ]
                     ],
                   ),
@@ -383,7 +385,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
                                         GangDetail(
-                                          items: items,
+                                          id: items['_id'],
                                         )));
                           },
                           child: Material(
@@ -636,7 +638,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
                                         GangDetail(
-                                          items: items,
+                                          id: items['_id'],
                                         )));
                           },
                           child: Material(
@@ -868,42 +870,45 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                   SizedBox(
                     height: 10,
                   ),
-                  SizedBox(
-                    height: 60,
-                    child: TextButton(
-                      onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (BuildContext context) => Add()))
-                      },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.add,
-                            color: Color(0xFF929292),
-                            size: 28.0,
+                  if (username == clubInfo['owner']) ...[
+                    SizedBox(
+                      height: 60,
+                      child: TextButton(
+                        onPressed: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => Add()))
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.add,
+                              color: Color(0xFF929292),
+                              size: 28.0,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              'เพิ่มก๊วน',
+                              style: TextStyle(
+                                  color: Color(0xFF929292),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            )
+                          ],
+                        ),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            side:
+                                BorderSide(width: 1, color: Color(0xFFCFCFCF)),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            'เพิ่มก๊วน',
-                            style: TextStyle(
-                                color: Color(0xFF929292),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400),
-                          )
-                        ],
-                      ),
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(width: 1, color: Color(0xFFCFCFCF)),
-                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                    ),
-                  )
+                    )
+                  ]
                 ]),
         )),
       ),

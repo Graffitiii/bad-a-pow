@@ -14,3 +14,4 @@ final unFollow = url + 'userControlUnFollow';
 final regOwner = url + 'userControlRegisOwner';
 final createReview = url + "createReview";
 final getReviewList = url + "getReviewList";
+final putEventStatus = url + "putEventStatus";

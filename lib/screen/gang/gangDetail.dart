@@ -22,15 +22,11 @@ var myToken;
 List<EventList> eventlist = [];
 var jsonResponse;
 bool status = true;
-bool joinevent = true;
-bool openevent = true;
-
-var eventeach;
 
 class GangDetail extends StatefulWidget {
-  final items;
+  final id;
 
-  const GangDetail({@required this.items, Key? key}) : super(key: key);
+  const GangDetail({@required this.id, Key? key}) : super(key: key);
 
   @override
   State<GangDetail> createState() => _GangDetailState();
@@ -38,11 +34,30 @@ class GangDetail extends StatefulWidget {
 
 class _GangDetailState extends State<GangDetail> {
   var clubInfo = {};
-
+  bool joinevent = false;
+  bool openevent = false;
+  var eventeach;
+  bool followStatus = false;
+  bool loading = true;
   void initState() {
-    eventeach = widget.items;
+    // eventeach = {
+    //   "_id": "65e19dc71f928b975aad7ed1",
+    //   "image": [],
+    //   "club": "ก๊วนหมูทอด",
+    //   "contact": "0874123566",
+    //   "level": ["S", "P"],
+    //   "brand": "regent",
+    //   "price_badminton": "11",
+    //   "priceplay": "123",
+    //   "details": "ttrredfedgg",
+    //   "active": true
+    // };
     // print(eventeach);
-    print(joinevent);
+    // setState(() {
+    //   openevent = eventeach['active'];
+    // });
+
+    // print(joinevent);
     // print(widget.items);
     // getOwnerList();
     // getClubDetail(widget.clubname);
@@ -52,7 +67,25 @@ class _GangDetailState extends State<GangDetail> {
 
   void initializeState() async {
     await initSharedPref();
-    getClubDetail(eventeach['club']);
+    getEvent(widget.id);
+  }
+
+  void getEvent(eventId) async {
+    var queryParameters = {
+      'id': eventId,
+    };
+    var uri = Uri.http(getUrl, '/getEventDetail', queryParameters);
+    var response = await http.get(uri);
+
+    jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      print(jsonResponse['data']);
+      setState(() {
+        eventeach = jsonResponse['data'];
+        openevent = eventeach['active'];
+      });
+      getClubDetail(eventeach['club']);
+    } else {}
   }
 
   void deleteEvent(id) async {
@@ -85,24 +118,69 @@ class _GangDetailState extends State<GangDetail> {
         clubInfo = jsonResponse['club'];
       });
       print(clubInfo);
+      if (clubInfo['follower'].contains(username)) {
+        print('$username found in the list.');
+        setState(() {
+          followStatus = true;
+        });
+      }
+      setState(() {
+        loading = false;
+      });
     }
   }
 
-  // void getOwnerList() async {
-  //   var response = await http.get(
-  //     Uri.parse(getClub),
-  //     headers: {"Content-Type": "application/json"},
-  //   );
-  //   if (response.statusCode == 200) {
-  //     jsonResponse = jsonDecode(response.body);
+  void changeStatus() async {
+    var regBody = {
+      "eventId": eventeach['_id'],
+      "status": eventeach['active'],
+    };
 
-  //     print(jsonResponse['success'][2]['owner']);
-  //   } else {
-  //     status = true;
+    var response = await http.put(Uri.parse(putEventStatus),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
 
-  //     print(response.statusCode);
-  //   }
-  // }
+    print(regBody);
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['edit']) {
+      getEvent(eventeach['_id']);
+    }
+  }
+
+  void onFollow() async {
+    var regBody = {"userName": username, "clubId": clubInfo['_id']};
+
+    var response = await http.post(Uri.parse(AddFollow),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+    print('Follow:');
+    print(jsonResponse['status']);
+    if (jsonResponse['status']) {
+      setState(() {
+        followStatus = true;
+      });
+    }
+  }
+
+  void onUnFollow() async {
+    var regBody = {"userName": username, "clubId": clubInfo['_id']};
+
+    var response = await http.delete(Uri.parse(unFollow),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+    print('UnFollow:');
+    print(jsonResponse['delete']);
+    if (jsonResponse['delete']) {
+      setState(() {
+        followStatus = false;
+      });
+    }
+  }
 
   Future<void> initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
@@ -151,7 +229,7 @@ class _GangDetailState extends State<GangDetail> {
               child: Row(
                 children: <Widget>[
                   if (clubInfo['owner'] != username) ...[
-                    if (joinevent) ...[
+                    if (!joinevent) ...[
                       Expanded(
                         flex: 6,
                         child: Container(
@@ -178,7 +256,7 @@ class _GangDetailState extends State<GangDetail> {
                                   ),
                                   onPressed: () => {
                                         setState(() {
-                                          joinevent = false;
+                                          joinevent = true;
                                         }),
                                       }),
                             )),
@@ -194,7 +272,7 @@ class _GangDetailState extends State<GangDetail> {
                             child: TextButton(
                               onPressed: () {
                                 setState(() {
-                                  joinevent = true;
+                                  joinevent = false;
                                 });
                               },
                               style: TextButton.styleFrom(
@@ -231,7 +309,7 @@ class _GangDetailState extends State<GangDetail> {
                       ),
                     ]
                   ] else ...[
-                    if (openevent) ...[
+                    if (!openevent) ...[
                       Expanded(
                         flex: 5,
                         child: Container(
@@ -257,9 +335,10 @@ class _GangDetailState extends State<GangDetail> {
                                     ),
                                   ),
                                   onPressed: () => {
-                                        setState(() {
-                                          openevent = false;
-                                        }),
+                                        changeStatus()
+                                        // setState(() {
+                                        //   openevent = true;
+                                        // }),
                                       }),
                             )),
                       ),
@@ -289,9 +368,11 @@ class _GangDetailState extends State<GangDetail> {
                                     ),
                                   ),
                                   onPressed: () => {
-                                        setState(() {
-                                          openevent = true;
-                                        }),
+                                        changeStatus()
+                                        // setState(() {
+                                        //   // openevent = false;
+                                        //   changeStatus();
+                                        // }),
                                       }),
                             )),
                       ),
@@ -331,547 +412,570 @@ class _GangDetailState extends State<GangDetail> {
                 ],
               ),
             )),
-        body: CarouselSliderImage(clubname: eventeach['club']));
-  }
-}
-
-class CarouselSliderImage extends StatefulWidget {
-  final clubname;
-  const CarouselSliderImage({@required this.clubname, Key? key})
-      : super(key: key);
-
-  @override
-  State<CarouselSliderImage> createState() => _CarouselSliderImageState();
-}
-
-class _CarouselSliderImageState extends State<CarouselSliderImage> {
-  late String username;
-  late SharedPreferences prefs;
-  bool followStatus = false;
-  bool loading = true;
-  var myToken;
-  var clubInfo = {};
-  @override
-  void initState() {
-    // TODO: implement initState
-    // getTodoList();
-    // print(widget.clubname);
-    initSharedPref();
-    getClubDetail(widget.clubname);
-    super.initState();
-  }
-
-  void initSharedPref() async {
-    prefs = await SharedPreferences.getInstance();
-    setState(() {
-      myToken = prefs.getString('token');
-    });
-    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
-    username = jwtDecodedToken['userName'];
-  }
-
-  void getClubDetail(clubname) async {
-    var queryParameters = {
-      'clubname': clubname,
-    };
-
-    var uri = Uri.http(getUrl, '/getClub', queryParameters);
-    var response = await http.get(uri);
-
-    var jsonResponse = jsonDecode(response.body);
-
-    if (jsonResponse['status']) {
-      setState(() {
-        clubInfo = jsonResponse['club'];
-      });
-      // print(clubInfo);
-      if (clubInfo['follower'].contains(username)) {
-        print('$username found in the list.');
-        setState(() {
-          followStatus = true;
-        });
-      }
-      loading = false;
-    }
-  }
-
-  void onFollow() async {
-    var regBody = {"userName": username, "clubId": clubInfo['_id']};
-
-    var response = await http.post(Uri.parse(AddFollow),
-        headers: {"Content-type": "application/json"},
-        body: jsonEncode(regBody));
-
-    var jsonResponse = jsonDecode(response.body);
-    print('Follow:');
-    print(jsonResponse['status']);
-    if (jsonResponse['status']) {
-      setState(() {
-        followStatus = true;
-      });
-    }
-  }
-
-  void onUnFollow() async {
-    var regBody = {"userName": username, "clubId": clubInfo['_id']};
-
-    var response = await http.delete(Uri.parse(unFollow),
-        headers: {"Content-type": "application/json"},
-        body: jsonEncode(regBody));
-
-    var jsonResponse = jsonDecode(response.body);
-    print('UnFollow:');
-    print(jsonResponse['delete']);
-    if (jsonResponse['delete']) {
-      setState(() {
-        followStatus = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
         body: SafeArea(
-      left: false,
-      right: false,
-      child: loading
-          ? CircularProgressIndicator()
-          : SingleChildScrollView(
-              child: !status
-                  ? Text("Error: ")
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 15),
-                            child: Column(children: [
-                              CarouselSlider(
-                                items: [
-                                  Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          10), // กำหนดให้เป็นรูปร่างวงกลม
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            'assets/images/bad1.jpg'),
-                                        fit: BoxFit.cover,
+          left: false,
+          right: false,
+          child: loading
+              ? CircularProgressIndicator()
+              : SingleChildScrollView(
+                  child: !status
+                      ? Text("Error: ")
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Padding(
+                                padding: EdgeInsets.only(bottom: 15),
+                                child: Column(children: [
+                                  CarouselSlider(
+                                    items: [
+                                      Container(
+                                        margin: EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                              10), // กำหนดให้เป็นรูปร่างวงกลม
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/bad1.jpg'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
                                       ),
+                                      Container(
+                                        margin: EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                              10), // กำหนดให้เป็นรูปร่างวงกลม
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/bad2.jpg'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/bad3.jpg'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/bad4.png'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    options: CarouselOptions(
+                                      height: 220.0,
+                                      enlargeCenterPage: true,
+                                      autoPlay: false,
+                                      aspectRatio: 16 / 9,
+                                      autoPlayCurve: Curves.fastOutSlowIn,
+                                      enableInfiniteScroll: true,
+                                      autoPlayAnimationDuration:
+                                          Duration(milliseconds: 800),
+                                      viewportFraction: 0.8,
                                     ),
                                   ),
+                                  SizedBox(height: 15),
                                   Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          10), // กำหนดให้เป็นรูปร่างวงกลม
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            'assets/images/bad2.jpg'),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            'assets/images/bad3.jpg'),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            'assets/images/bad4.png'),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                                options: CarouselOptions(
-                                  height: 220.0,
-                                  enlargeCenterPage: true,
-                                  autoPlay: false,
-                                  aspectRatio: 16 / 9,
-                                  autoPlayCurve: Curves.fastOutSlowIn,
-                                  enableInfiniteScroll: true,
-                                  autoPlayAnimationDuration:
-                                      Duration(milliseconds: 800),
-                                  viewportFraction: 0.8,
-                                ),
-                              ),
-                              SizedBox(height: 15),
-                              Container(
-                                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
+                                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        Row(
                                           children: [
-                                            Row(
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              GangOwnerDetail(
-                                                                  club: eventeach[
-                                                                      'club'])),
-                                                    );
-                                                  },
-                                                  child: Text(
-                                                    eventeach['club'],
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      shadows: [
-                                                        Shadow(
-                                                            color: Color(
-                                                                0xFF013C58),
-                                                            offset:
-                                                                Offset(0, -6))
-                                                      ],
-                                                      color: Colors.transparent,
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                      decorationColor:
-                                                          Color(0xFF013C58),
-                                                      decorationThickness: 2,
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(width: 10),
-                                                if (followStatus) ...[
-                                                  SizedBox(
-                                                    height: 20,
-                                                    width: 100,
-                                                    child: TextButton(
-                                                        // ignore: sort_child_properties_last
-                                                        child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Icon(
-                                                                Icons.check,
-                                                                size: 12,
+                                                Row(
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  GangOwnerDetail(
+                                                                      club: eventeach[
+                                                                          'club'])),
+                                                        );
+                                                      },
+                                                      child: Text(
+                                                        eventeach['club'],
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          shadows: [
+                                                            Shadow(
                                                                 color: Color(
-                                                                    0xFF02D417),
+                                                                    0xFF013C58),
+                                                                offset: Offset(
+                                                                    0, -6))
+                                                          ],
+                                                          color: Colors
+                                                              .transparent,
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .underline,
+                                                          decorationColor:
+                                                              Color(0xFF013C58),
+                                                          decorationThickness:
+                                                              2,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    if (clubInfo['owner'] !=
+                                                        username) ...[
+                                                      if (followStatus) ...[
+                                                        SizedBox(
+                                                          height: 20,
+                                                          width: 100,
+                                                          child: TextButton(
+                                                              // ignore: sort_child_properties_last
+                                                              child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                    Icon(
+                                                                      Icons
+                                                                          .check,
+                                                                      size: 12,
+                                                                      color: Color(
+                                                                          0xFF02D417),
+                                                                    ),
+                                                                    SizedBox(
+                                                                        width:
+                                                                            5),
+                                                                    Text(
+                                                                      'ติดตามแล้ว',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Color(
+                                                                            0xFF29C14A),
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontWeight.w700,
+                                                                      ),
+                                                                    )
+                                                                  ]),
+                                                              style: TextButton
+                                                                  .styleFrom(
+                                                                backgroundColor:
+                                                                    const Color
+                                                                        .fromARGB(
+                                                                        255,
+                                                                        255,
+                                                                        255,
+                                                                        255),
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  side: BorderSide(
+                                                                      width: 1,
+                                                                      color: Color(
+                                                                          0xFF29C14A)),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              25),
+                                                                ),
                                                               ),
-                                                              SizedBox(
-                                                                  width: 5),
-                                                              Text(
-                                                                'ติดตามแล้ว',
+                                                              onPressed: () => {
+                                                                    onUnFollow()
+                                                                  }),
+                                                        )
+                                                      ] else ...[
+                                                        SizedBox(
+                                                          height: 20,
+                                                          child: TextButton(
+                                                              child: Text(
+                                                                'ติดตาม',
                                                                 style:
                                                                     TextStyle(
                                                                   color: Color(
-                                                                      0xFF29C14A),
+                                                                      0xFF484848),
                                                                   fontSize: 12,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w700,
                                                                 ),
-                                                              )
-                                                            ]),
-                                                        style: TextButton
-                                                            .styleFrom(
-                                                          backgroundColor:
-                                                              const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  255,
-                                                                  255,
-                                                                  255),
-                                                          padding:
-                                                              EdgeInsets.zero,
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            side: BorderSide(
-                                                                width: 1,
-                                                                color: Color(
-                                                                    0xFF29C14A)),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        25),
-                                                          ),
-                                                        ),
-                                                        onPressed: () =>
-                                                            {onUnFollow()}),
-                                                  )
-                                                ] else ...[
-                                                  SizedBox(
-                                                    height: 20,
-                                                    child: TextButton(
-                                                        child: Text(
-                                                          'ติดตาม',
-                                                          style: TextStyle(
-                                                            color: Color(
-                                                                0xFF484848),
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                          ),
-                                                        ),
-                                                        style: TextButton
-                                                            .styleFrom(
-                                                          backgroundColor:
-                                                              const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  255,
-                                                                  255,
-                                                                  255),
-                                                          padding:
-                                                              EdgeInsets.zero,
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            side: BorderSide(
-                                                                width: 1,
-                                                                color: Color(
-                                                                    0xFF484848)),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        25),
-                                                          ),
-                                                        ),
-                                                        onPressed: () =>
-                                                            {onFollow()}),
-                                                  )
-                                                ]
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                        Spacer(),
-                                        ShareBottton(),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 5),
-                                      child: Container(
-                                        width: double.infinity,
-                                        height: 1,
-                                        color: Colors.black
-                                            .withOpacity(0.10999999940395355),
-                                      ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Row(
-                                      children: [
-                                        Spacer(),
-                                        Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  '6',
-                                                  style: TextStyle(
-                                                    color: Color(0xFF013C58),
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.w700,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                                RequesttoJoin(),
+                                                              ),
+                                                              style: TextButton
+                                                                  .styleFrom(
+                                                                backgroundColor:
+                                                                    const Color
+                                                                        .fromARGB(
+                                                                        255,
+                                                                        255,
+                                                                        255,
+                                                                        255),
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  side: BorderSide(
+                                                                      width: 1,
+                                                                      color: Color(
+                                                                          0xFF484848)),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              25),
+                                                                ),
+                                                              ),
+                                                              onPressed: () =>
+                                                                  {onFollow()}),
+                                                        )
+                                                      ]
+                                                    ]
+                                                  ],
+                                                )
                                               ],
                                             ),
-                                            SizedBox(height: 5.0),
-                                            Text(
-                                              'เข้าร่วมแล้ว',
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w500,
-                                                height: 0,
-                                              ),
-                                            ),
+                                            Spacer(),
+                                            ShareBottton(),
                                           ],
                                         ),
-                                        Spacer(),
-                                        Container(
-                                          width: 1,
-                                          height: 50,
-                                          color: Colors.black
-                                              .withOpacity(0.10999999940395355),
-                                        ),
-                                        if (clubInfo['owner'] == username) ...[
-                                          Spacer(),
-                                          Column(
-                                            children: [
-                                              Text(
-                                                '67',
-                                                style: TextStyle(
-                                                  color: Color(0xFF013C58),
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w700,
-                                                  height: 0,
-                                                ),
-                                              ),
-                                              SizedBox(height: 5),
-                                              Text(
-                                                'ผู้ติดตาม',
-                                                style: TextStyle(
-                                                  color: Color(0xFF929292),
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 0,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Spacer(),
-                                          Container(
-                                            width: 1,
-                                            height: 50,
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 5),
+                                          child: Container(
+                                            width: double.infinity,
+                                            height: 1,
                                             color: Colors.black.withOpacity(
                                                 0.10999999940395355),
                                           ),
-                                        ],
-                                        Spacer(),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
-                                            );
-                                          },
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                '4.6',
-                                                style: TextStyle(
-                                                  color: Color(0xFF013C58),
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w700,
-                                                  height: 0,
+                                        ),
+                                        SizedBox(height: 5),
+                                        Row(
+                                          children: [
+                                            Spacer(),
+                                            Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      '6',
+                                                      style: TextStyle(
+                                                        color:
+                                                            Color(0xFF013C58),
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        height: 0,
+                                                      ),
+                                                    ),
+                                                    RequesttoJoin(),
+                                                  ],
                                                 ),
-                                              ),
-                                              SizedBox(height: 5),
-                                              Row(
+                                                SizedBox(height: 5.0),
+                                                Text(
+                                                  'เข้าร่วมแล้ว',
+                                                  style: TextStyle(
+                                                    color: Color(0xFF929292),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500,
+                                                    height: 0,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Spacer(),
+                                            Container(
+                                              width: 1,
+                                              height: 50,
+                                              color: Colors.black.withOpacity(
+                                                  0.10999999940395355),
+                                            ),
+                                            Spacer(),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+                                                );
+                                              },
+                                              child: Column(
                                                 children: [
                                                   Text(
-                                                    'รีวิว',
+                                                    '4.6',
                                                     style: TextStyle(
-                                                      color: Color(0xFF929292),
-                                                      fontSize: 13,
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 20,
                                                       fontWeight:
-                                                          FontWeight.w500,
+                                                          FontWeight.w700,
                                                       height: 0,
                                                     ),
                                                   ),
-                                                  Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    color: Color(0xFF929292),
-                                                    size: 14.0,
+                                                  SizedBox(height: 5),
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        'รีวิว',
+                                                        style: TextStyle(
+                                                          color:
+                                                              Color(0xFF929292),
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          height: 0,
+                                                        ),
+                                                      ),
+                                                      Icon(
+                                                        Icons.arrow_forward_ios,
+                                                        color:
+                                                            Color(0xFF929292),
+                                                        size: 14.0,
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                        Spacer(),
-                                      ],
-                                    ),
-                                    SizedBox(height: 20),
-                                    Row(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Container(
-                                              height: 35,
-                                              width: 35,
-                                              decoration: BoxDecoration(
-                                                  color: Color(0x33FF0000),
-                                                  shape: BoxShape.circle),
-                                              child: Icon(
-                                                Icons.location_on,
-                                                color: Color(0xFFFF0000),
-                                                size: 22.0,
-                                              ),
-                                            )
+                                            ),
+                                            Spacer(),
                                           ],
                                         ),
-                                        SizedBox(width: 10),
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'สถานที่',
-                                                style: TextStyle(
-                                                  color: Color(0xFF013C58),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  height: 0,
-                                                ),
-                                              ),
-                                              Text(
-                                                'สนามเอสแอนด์เอ็ม',
-                                                style: TextStyle(
-                                                  color: Color(0xFF929292),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400,
-                                                  height: 0,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          color: Color(0xFF013C58),
-                                          size: 22.0,
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 15),
-                                    Row(
-                                      children: [
-                                        Column(
+                                        SizedBox(height: 20),
+                                        Row(
                                           children: [
-                                            Container(
-                                              height: 35,
-                                              width: 35,
-                                              decoration: BoxDecoration(
-                                                  color: Color(0x3344DC65),
-                                                  shape: BoxShape.circle),
-                                              child: Icon(
-                                                Icons.schedule,
-                                                color: Color(0xFF43DC65),
-                                                size: 22.0,
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  height: 35,
+                                                  width: 35,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0x33FF0000),
+                                                      shape: BoxShape.circle),
+                                                  child: Icon(
+                                                    Icons.location_on,
+                                                    color: Color(0xFFFF0000),
+                                                    size: 22.0,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(width: 10),
+                                            Flexible(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'สถานที่',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    'สนามเอสแอนด์เอ็ม',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF929292),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            )
+                                            ),
+                                            Spacer(),
+                                            Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: Color(0xFF013C58),
+                                              size: 22.0,
+                                            ),
                                           ],
                                         ),
-                                        SizedBox(width: 10),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        SizedBox(height: 15),
+                                        Row(
                                           children: [
-                                            Row(
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  height: 35,
+                                                  width: 35,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0x3344DC65),
+                                                      shape: BoxShape.circle),
+                                                  child: Icon(
+                                                    Icons.schedule,
+                                                    color: Color(0xFF43DC65),
+                                                    size: 22.0,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(width: 10),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'วัน/เวลา',
+                                                      style: TextStyle(
+                                                        color:
+                                                            Color(0xFF013C58),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        height: 0,
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: 5),
+                                                      height: 25,
+                                                      width: 25,
+                                                      decoration: BoxDecoration(
+                                                          color:
+                                                              Color(0xFFFFFAD6),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
+                                                          border: Border.all(
+                                                              color: Color(
+                                                                  0xFFFFF17A))),
+                                                      child: Center(
+                                                          child: Text(
+                                                        'M',
+                                                        style: TextStyle(
+                                                          color:
+                                                              Color(0xFFFFF17A),
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          height: 0,
+                                                        ),
+                                                      )),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: 5),
+                                                      height: 25,
+                                                      width: 25,
+                                                      decoration: BoxDecoration(
+                                                          color:
+                                                              Color(0xFFE5FFD6),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
+                                                          border: Border.all(
+                                                              color: Color(
+                                                                  0xFF8CFF7A))),
+                                                      child: Center(
+                                                          child: Text(
+                                                        'W',
+                                                        style: TextStyle(
+                                                          color:
+                                                              Color(0xFF8CFF7A),
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          height: 0,
+                                                        ),
+                                                      )),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: 5),
+                                                      height: 25,
+                                                      width: 25,
+                                                      decoration: BoxDecoration(
+                                                          color:
+                                                              Color(0xFFE3D6FF),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
+                                                          border: Border.all(
+                                                              color: Color(
+                                                                  0xFFA47AFF))),
+                                                      child: Center(
+                                                          child: Text(
+                                                        'S',
+                                                        style: TextStyle(
+                                                          color:
+                                                              Color(0xFFA47AFF),
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          height: 0,
+                                                        ),
+                                                      )),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text(
+                                                  'วันจันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
+                                                  style: TextStyle(
+                                                    color: Color(0xFF929292),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    height: 0,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 15),
+                                        Row(
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  height: 35,
+                                                  width: 35,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0x33CC00FF),
+                                                      shape: BoxShape.circle),
+                                                  child: Icon(
+                                                    Icons.call,
+                                                    color: Color(0xFFCC00FF),
+                                                    size: 18.0,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(width: 10),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  'วัน/เวลา',
+                                                  'ติดต่อ',
                                                   style: TextStyle(
                                                     color: Color(0xFF013C58),
                                                     fontSize: 14,
@@ -879,381 +983,260 @@ class _CarouselSliderImageState extends State<CarouselSliderImage> {
                                                     height: 0,
                                                   ),
                                                 ),
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 5),
-                                                  height: 25,
-                                                  width: 25,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFFFFFAD6),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.0),
-                                                      border: Border.all(
-                                                          color: Color(
-                                                              0xFFFFF17A))),
-                                                  child: Center(
-                                                      child: Text(
-                                                    'M',
-                                                    style: TextStyle(
-                                                      color: Color(0xFFFFF17A),
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      height: 0,
-                                                    ),
-                                                  )),
-                                                ),
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 5),
-                                                  height: 25,
-                                                  width: 25,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFFE5FFD6),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.0),
-                                                      border: Border.all(
-                                                          color: Color(
-                                                              0xFF8CFF7A))),
-                                                  child: Center(
-                                                      child: Text(
-                                                    'W',
-                                                    style: TextStyle(
-                                                      color: Color(0xFF8CFF7A),
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      height: 0,
-                                                    ),
-                                                  )),
-                                                ),
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 5),
-                                                  height: 25,
-                                                  width: 25,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xFFE3D6FF),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.0),
-                                                      border: Border.all(
-                                                          color: Color(
-                                                              0xFFA47AFF))),
-                                                  child: Center(
-                                                      child: Text(
-                                                    'S',
-                                                    style: TextStyle(
-                                                      color: Color(0xFFA47AFF),
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      height: 0,
-                                                    ),
-                                                  )),
+                                                Text(
+                                                  eventeach['contact'],
+                                                  style: TextStyle(
+                                                    color: Color(0xFF929292),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    height: 0,
+                                                  ),
                                                 ),
                                               ],
                                             ),
-                                            Text(
-                                              'วันจันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 15),
-                                    Row(
-                                      children: [
-                                        Column(
+                                        SizedBox(height: 15),
+                                        Row(
                                           children: [
-                                            Container(
-                                              height: 35,
-                                              width: 35,
-                                              decoration: BoxDecoration(
-                                                  color: Color(0x33CC00FF),
-                                                  shape: BoxShape.circle),
-                                              child: Icon(
-                                                Icons.call,
-                                                color: Color(0xFFCC00FF),
-                                                size: 18.0,
-                                              ),
-                                            )
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  height: 35,
+                                                  width: 35,
+                                                  decoration: BoxDecoration(
+                                                      color: Color(0x330028FF),
+                                                      shape: BoxShape.circle),
+                                                  child: Icon(
+                                                    Icons.paid,
+                                                    color: Color(0xFF363CC4),
+                                                    size: 20.0,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(width: 10),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'ค่าใช้จ่าย',
+                                                  style: TextStyle(
+                                                    color: Color(0xFF013C58),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    height: 0,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'ค่าเล่น ' +
+                                                      eventeach['priceplay'] +
+                                                      ' ค่าลูก ' +
+                                                      eventeach[
+                                                          'price_badminton'],
+                                                  style: TextStyle(
+                                                    color: Color(0xFF929292),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    height: 0,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Spacer(),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'ลูกแบดที่ใช้',
+                                                  style: TextStyle(
+                                                    color: Color(0xFF013C58),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    height: 0,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  eventeach['brand'],
+                                                  style: TextStyle(
+                                                    color: Color(0xFF929292),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    height: 0,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Spacer(),
                                           ],
                                         ),
-                                        SizedBox(width: 10),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        SizedBox(height: 15),
+                                        Row(
                                           children: [
-                                            Text(
-                                              'ติดต่อ',
-                                              style: TextStyle(
-                                                color: Color(0xFF013C58),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                height: 0,
-                                              ),
-                                            ),
-                                            Text(
-                                              eventeach['contact'],
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 15),
-                                    Row(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Container(
-                                              height: 35,
-                                              width: 35,
-                                              decoration: BoxDecoration(
-                                                  color: Color(0x330028FF),
-                                                  shape: BoxShape.circle),
-                                              child: Icon(
-                                                Icons.paid,
-                                                color: Color(0xFF363CC4),
-                                                size: 20.0,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(width: 10),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'ค่าใช้จ่าย',
-                                              style: TextStyle(
-                                                color: Color(0xFF013C58),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                height: 0,
-                                              ),
-                                            ),
-                                            Text(
-                                              'ค่าเล่น ' +
-                                                  eventeach['priceplay'] +
-                                                  ' ค่าลูก ' +
-                                                  eventeach['price_badminton'],
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Spacer(),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'ลูกแบดที่ใช้',
-                                              style: TextStyle(
-                                                color: Color(0xFF013C58),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                height: 0,
-                                              ),
-                                            ),
-                                            Text(
-                                              eventeach['brand'],
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Spacer(),
-                                      ],
-                                    ),
-                                    SizedBox(height: 15),
-                                    Row(
-                                      children: [
-                                        SizedBox(width: 10),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'ระดับของผู้เล่น',
-                                              style: TextStyle(
-                                                color: Color(0xFF013C58),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                height: 0,
-                                              ),
-                                            ),
-                                            SizedBox(height: 10),
-                                            if (eventeach['level'] != null &&
-                                                eventeach['level']
-                                                    .isNotEmpty) ...[
-                                              Row(
-                                                children: [
-                                                  for (int i = 0;
-                                                      i <
-                                                          eventeach['level']
-                                                              .length;
-                                                      i++)
-                                                    Container(
-                                                      margin: i > 0
-                                                          ? EdgeInsets.only(
-                                                              left: 10)
-                                                          : EdgeInsets.zero,
-                                                      height: 22,
-                                                      width: 22,
-                                                      decoration: BoxDecoration(
-                                                        color: eventeach[
-                                                                        'level']
-                                                                    [i] ==
-                                                                'N'
-                                                            ? Color(
-                                                                0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                            : eventeach['level']
-                                                                        [i] ==
-                                                                    'S'
-                                                                ? Color(
-                                                                    0x5B009020)
-                                                                : eventeach['level']
-                                                                            [
-                                                                            i] ==
-                                                                        'P'
-                                                                    ? Color(
-                                                                        0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                    : Color
-                                                                        .fromARGB(
-                                                                            255,
-                                                                            222,
-                                                                            234,
-                                                                            255),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                7), // กำหนด radius ให้กรอบสี่เหลี่ยม
-                                                        border: Border.all(
-                                                          width: 2,
-                                                          color: eventeach[
-                                                                          'level']
-                                                                      [i] ==
-                                                                  'N'
-                                                              ? Color(
-                                                                  0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                              : eventeach['level']
-                                                                          [i] ==
-                                                                      'S'
-                                                                  ? Color(
-                                                                      0xFF00901F)
-                                                                  : eventeach['level']
-                                                                              [
-                                                                              i] ==
-                                                                          'P'
-                                                                      ? Color(
-                                                                          0xFFFC7FFF)
-                                                                      : Color(
-                                                                          0xFFFC7FFF),
-                                                        ),
-                                                      ),
-                                                      child: Center(
-                                                        child: Text(
-                                                          eventeach['level'][i],
-                                                          style: TextStyle(
+                                            SizedBox(width: 10),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'ระดับของผู้เล่น',
+                                                  style: TextStyle(
+                                                    color: Color(0xFF013C58),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    height: 0,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 10),
+                                                if (eventeach['level'] !=
+                                                        null &&
+                                                    eventeach['level']
+                                                        .isNotEmpty) ...[
+                                                  Row(
+                                                    children: [
+                                                      for (int i = 0;
+                                                          i <
+                                                              eventeach['level']
+                                                                  .length;
+                                                          i++)
+                                                        Container(
+                                                          margin: i > 0
+                                                              ? EdgeInsets.only(
+                                                                  left: 10)
+                                                              : EdgeInsets.zero,
+                                                          height: 22,
+                                                          width: 22,
+                                                          decoration:
+                                                              BoxDecoration(
                                                             color: eventeach[
                                                                             'level']
                                                                         [i] ==
                                                                     'N'
                                                                 ? Color(
-                                                                    0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                                    0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
                                                                 : eventeach['level']
                                                                             [
                                                                             i] ==
                                                                         'S'
                                                                     ? Color(
-                                                                        0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
+                                                                        0x5B009020)
                                                                     : eventeach['level'][i] ==
                                                                             'P'
                                                                         ? Color(
-                                                                            0xFFFC7FFF)
-                                                                        : Color(
-                                                                            0xFFFC7FFF),
-                                                            fontSize: 12,
-                                                            fontFamily: 'Inter',
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            height: 0,
+                                                                            0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
+                                                                        : Color.fromARGB(
+                                                                            255,
+                                                                            222,
+                                                                            234,
+                                                                            255),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        7), // กำหนด radius ให้กรอบสี่เหลี่ยม
+                                                            border: Border.all(
+                                                              width: 2,
+                                                              color: eventeach[
+                                                                              'level']
+                                                                          [i] ==
+                                                                      'N'
+                                                                  ? Color(
+                                                                      0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                                  : eventeach['level']
+                                                                              [
+                                                                              i] ==
+                                                                          'S'
+                                                                      ? Color(
+                                                                          0xFF00901F)
+                                                                      : eventeach['level'][i] ==
+                                                                              'P'
+                                                                          ? Color(
+                                                                              0xFFFC7FFF)
+                                                                          : Color(
+                                                                              0xFFFC7FFF),
+                                                            ),
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(
+                                                              eventeach['level']
+                                                                  [i],
+                                                              style: TextStyle(
+                                                                color: eventeach['level']
+                                                                            [
+                                                                            i] ==
+                                                                        'N'
+                                                                    ? Color(
+                                                                        0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
+                                                                    : eventeach['level'][i] ==
+                                                                            'S'
+                                                                        ? Color(
+                                                                            0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
+                                                                        : eventeach['level'][i] ==
+                                                                                'P'
+                                                                            ? Color(0xFFFC7FFF)
+                                                                            : Color(0xFFFC7FFF),
+                                                                fontSize: 12,
+                                                                fontFamily:
+                                                                    'Inter',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                height: 0,
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ),
+                                                    ],
+                                                  ),
                                                 ],
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ],
                                         ),
+                                        SizedBox(height: 15),
+                                        Row(
+                                          children: [
+                                            SizedBox(width: 10),
+                                            Flexible(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'รายละเอียดเพิ่มเติม',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    eventeach['details'],
+                                                    style: TextStyle(
+                                                      color: Color(0xFF929292),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(height: 10)
                                       ],
                                     ),
-                                    SizedBox(height: 15),
-                                    Row(
-                                      children: [
-                                        SizedBox(width: 10),
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'รายละเอียดเพิ่มเติม',
-                                                style: TextStyle(
-                                                  color: Color(0xFF013C58),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  height: 0,
-                                                ),
-                                              ),
-                                              Text(
-                                                eventeach['details'],
-                                                style: TextStyle(
-                                                  color: Color(0xFF929292),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400,
-                                                  height: 0,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(height: 10)
-                                  ],
-                                ),
-                              ),
-                            ])),
-                      ],
-                    ),
-            ),
-    ));
+                                  ),
+                                ])),
+                          ],
+                        ),
+                ),
+        ));
   }
 }
 

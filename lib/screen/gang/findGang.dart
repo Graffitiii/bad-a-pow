@@ -208,7 +208,7 @@ class _FindGangState extends State<FindGang> {
                                                     builder: (BuildContext
                                                             context) =>
                                                         GangDetail(
-                                                            items: items)));
+                                                            id: items['_id'])));
                                             // if (items != null) {
                                             //   // ตรวจสอบว่า items ไม่เป็น null ก่อน
 
