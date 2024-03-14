@@ -8,6 +8,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
 
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 // const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
 final List<String> level = [
   'N',
@@ -31,55 +34,59 @@ class FindGang extends StatefulWidget {
 }
 
 class _FindGangState extends State<FindGang> {
-  List<EventList> eventlist = [];
+  var eventlist = {};
   var jsonResponse;
-  bool status = false;
-  bool loading = false;
+  bool status = true;
+  bool loading = true;
 
   @override
   void initState() {
     // TODO: implement initState
     getTodoList();
     super.initState();
-    // Map<String,dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
-    // userId = jwtDecodedToken['_id'];
   }
 
   void getTodoList() async {
-    setState(() {
-      loading = true;
-    });
-    var response = await http.get(
-      Uri.parse(getEventList),
-      headers: {"Content-Type": "application/json"},
-    );
+    var uri = Uri.http(getUrl, '/getEventList');
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
       jsonResponse = jsonDecode(response.body);
+      setState(() {
+        eventlist = jsonResponse;
+      });
 
-      jsonResponse['eventlistdata'].forEach((value) => eventlist.add(EventList(
-            club: value['club'],
-            contact: value['contact'],
-            priceBadminton: value['price_badminton'],
-            priceplay: value['priceplay'],
-            level: value['level'],
-            brand: value['brand'],
-            details: value['details'],
-          )));
-      status = true;
-
-      print(jsonResponse);
-      // print(jsonResponse.eventlist.toString());
+      print(eventlist);
     } else {
-      status = true;
-
       print(response.statusCode);
     }
-    // items = jsonResponse['clublistdata'];
-    // List<EventList> eventlist = [],
 
-    // print(jsonResponse);
-    loading = false;
-    setState(() {});
+    setState(() {
+      loading = false;
+    });
+  }
+
+  String formattingDate(start, end) {
+    initializeDateFormatting('th', null);
+
+    DateTime eventStart = DateTime.parse(start);
+    DateTime eventEnd = DateTime.parse(end);
+
+    DateTime thaiDateStartTime = eventStart.add(Duration(hours: 7));
+    DateTime thaiDateEndTime = eventEnd.add(Duration(hours: 7));
+
+    String formattedDateTime =
+        DateFormat('d MMMM H:mm', 'th').format(thaiDateStartTime);
+
+    String formattedEndTime =
+        DateFormat('H:mm น.', 'th').format(thaiDateEndTime);
+
+    // print(formattedDateTime +
+    //     "-" +
+    //     formattedEndTime);
+    return formattedDateTime + " - " + formattedEndTime;
   }
 
   @override
@@ -196,7 +203,7 @@ class _FindGangState extends State<FindGang> {
                               ? Text("Error: ")
                               : Column(
                                   //if everything fine, show the JSON as widget
-                                  children: jsonResponse['eventlistdata']
+                                  children: eventlist['eventlistdata']
                                       .map<Widget>((items) {
                                     return Padding(
                                         padding: EdgeInsets.only(bottom: 15),
@@ -305,7 +312,12 @@ class _FindGangState extends State<FindGang> {
                                                                   .only(
                                                                       left: 5),
                                                               child: Text(
-                                                                'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
+                                                                formattingDate(
+                                                                    items[
+                                                                        'eventdate_start'],
+                                                                    items[
+                                                                        'eventdate_end']),
+                                                                // "sdasdaw",
                                                                 style:
                                                                     TextStyle(
                                                                   color: Color(
@@ -528,4 +540,3 @@ class _FindGangState extends State<FindGang> {
 //                   }),
 //         ),
 //       ),
-

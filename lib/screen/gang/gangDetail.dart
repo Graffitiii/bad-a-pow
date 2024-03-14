@@ -13,6 +13,8 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 late String username;
 late SharedPreferences prefs;
@@ -34,33 +36,13 @@ class GangDetail extends StatefulWidget {
 
 class _GangDetailState extends State<GangDetail> {
   var clubInfo = {};
-  bool joinevent = false;
+  var userPending;
+  bool pending = false;
   bool openevent = false;
   var eventeach;
   bool followStatus = false;
   bool loading = true;
   void initState() {
-    // eventeach = {
-    //   "_id": "65e19dc71f928b975aad7ed1",
-    //   "image": [],
-    //   "club": "ก๊วนหมูทอด",
-    //   "contact": "0874123566",
-    //   "level": ["S", "P"],
-    //   "brand": "regent",
-    //   "price_badminton": "11",
-    //   "priceplay": "123",
-    //   "details": "ttrredfedgg",
-    //   "active": true
-    // };
-    // print(eventeach);
-    // setState(() {
-    //   openevent = eventeach['active'];
-    // });
-
-    // print(joinevent);
-    // print(widget.items);
-    // getOwnerList();
-    // getClubDetail(widget.clubname);
     super.initState();
     initializeState();
   }
@@ -79,17 +61,28 @@ class _GangDetailState extends State<GangDetail> {
 
     jsonResponse = jsonDecode(response.body);
     if (jsonResponse['status']) {
-      print(jsonResponse['data']);
+      // print(userPending);
       setState(() {
         eventeach = jsonResponse['data'];
         openevent = eventeach['active'];
+        userPending = jsonResponse['data']['pending'];
       });
+      if (eventeach['pending'].contains(username)) {
+        print('$username found in the pending.');
+        setState(() {
+          pending = true;
+        });
+      } else {
+        setState(() {
+          pending = false;
+        });
+      }
       getClubDetail(eventeach['club']);
     } else {}
   }
 
   void deleteEvent(id) async {
-    print(id);
+    // print(id);
     var regBody = {"_id": id};
 
     var response = await http.delete(Uri.parse(delEvent),
@@ -117,9 +110,10 @@ class _GangDetailState extends State<GangDetail> {
       setState(() {
         clubInfo = jsonResponse['club'];
       });
-      print(clubInfo);
+      print("clubInfo:  $clubInfo");
+
       if (clubInfo['follower'].contains(username)) {
-        print('$username found in the list.');
+        // print('$username found in the list.');
         setState(() {
           followStatus = true;
         });
@@ -182,6 +176,40 @@ class _GangDetailState extends State<GangDetail> {
     }
   }
 
+  void requestPending() async {
+    var regBody = {"userName": username, "event_id": eventeach['_id']};
+
+    var response = await http.post(Uri.parse(sendRequest),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+
+    print(jsonResponse['status']);
+    if (jsonResponse['status']) {
+      setState(() {
+        pending = true;
+      });
+    }
+  }
+
+  void unRequestPending() async {
+    var regBody = {"userName": username, "event_id": eventeach['_id']};
+
+    var response = await http.delete(Uri.parse(unRequest),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+
+    print(jsonResponse['delete']);
+    if (jsonResponse['delete']) {
+      setState(() {
+        pending = false;
+      });
+    }
+  }
+
   Future<void> initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -189,6 +217,27 @@ class _GangDetailState extends State<GangDetail> {
     });
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
     username = jwtDecodedToken['userName'];
+  }
+
+  String formattingDate(start, end) {
+    initializeDateFormatting('th', null);
+
+    DateTime eventStart = DateTime.parse(start);
+    DateTime eventEnd = DateTime.parse(end);
+
+    DateTime thaiDateStartTime = eventStart.add(Duration(hours: 7));
+    DateTime thaiDateEndTime = eventEnd.add(Duration(hours: 7));
+
+    String formattedDateTime =
+        DateFormat('d MMMM H:mm', 'th').format(thaiDateStartTime);
+
+    String formattedEndTime =
+        DateFormat('H:mm น.', 'th').format(thaiDateEndTime);
+
+    // print(formattedDateTime +
+    //     "-" +
+    //     formattedEndTime);
+    return formattedDateTime + " - " + formattedEndTime;
   }
 
   int _selectedIndex = 0;
@@ -229,7 +278,7 @@ class _GangDetailState extends State<GangDetail> {
               child: Row(
                 children: <Widget>[
                   if (clubInfo['owner'] != username) ...[
-                    if (!joinevent) ...[
+                    if (!pending) ...[
                       Expanded(
                         flex: 6,
                         child: Container(
@@ -256,7 +305,7 @@ class _GangDetailState extends State<GangDetail> {
                                   ),
                                   onPressed: () => {
                                         setState(() {
-                                          joinevent = true;
+                                          requestPending();
                                         }),
                                       }),
                             )),
@@ -272,7 +321,7 @@ class _GangDetailState extends State<GangDetail> {
                             child: TextButton(
                               onPressed: () {
                                 setState(() {
-                                  joinevent = false;
+                                  unRequestPending();
                                 });
                               },
                               style: TextButton.styleFrom(
@@ -686,7 +735,89 @@ class _GangDetailState extends State<GangDetail> {
                                                         height: 0,
                                                       ),
                                                     ),
-                                                    RequesttoJoin(),
+                                                    if (clubInfo['owner'] ==
+                                                        username) ...[
+                                                      IconButton(
+                                                        icon: Icon(
+                                                            Icons
+                                                                .arrow_forward_ios,
+                                                            size: 12),
+                                                        color:
+                                                            Color(0xFF515151),
+                                                        onPressed: () {
+                                                          showModalBottomSheet(
+                                                            context: context,
+                                                            isScrollControlled:
+                                                                true,
+                                                            backgroundColor:
+                                                                Color(
+                                                                    0xFF575757),
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return FractionallySizedBox(
+                                                                heightFactor:
+                                                                    0.6,
+                                                                child:
+                                                                    Container(
+                                                                  child:
+                                                                      SingleChildScrollView(
+                                                                    child:
+                                                                        Padding(
+                                                                      padding: EdgeInsets
+                                                                          .fromLTRB(
+                                                                              30,
+                                                                              20,
+                                                                              10,
+                                                                              0),
+                                                                      child: Column(
+                                                                          children: userPending.map<Widget>((items) {
+                                                                        return Padding(
+                                                                          padding:
+                                                                              EdgeInsetsDirectional.all(5),
+                                                                          child:
+                                                                              Row(
+                                                                            children: [
+                                                                              CircleAvatar(
+                                                                                backgroundImage: AssetImage('assets/images/profile1.jpg'),
+                                                                              ),
+                                                                              SizedBox(width: 25),
+                                                                              Text(
+                                                                                items,
+                                                                                style: TextStyle(
+                                                                                  color: Colors.white,
+                                                                                  fontSize: 14,
+                                                                                  fontWeight: FontWeight.w400,
+                                                                                ),
+                                                                              ),
+                                                                              Spacer(),
+                                                                              IconButton(
+                                                                                  onPressed: () {},
+                                                                                  icon: Icon(
+                                                                                    Icons.check,
+                                                                                    size: 20,
+                                                                                    color: Colors.green,
+                                                                                  )),
+                                                                              IconButton(
+                                                                                  onPressed: () {},
+                                                                                  icon: Icon(
+                                                                                    Icons.close,
+                                                                                    size: 20,
+                                                                                    color: Colors.red,
+                                                                                  )),
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      }).toList()),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                                    ],
                                                   ],
                                                 ),
                                                 SizedBox(height: 5.0),
@@ -711,12 +842,12 @@ class _GangDetailState extends State<GangDetail> {
                                             Spacer(),
                                             GestureDetector(
                                               onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
-                                                );
+                                                // Navigator.push(
+                                                //   context,
+                                                //   MaterialPageRoute(
+                                                //       builder: (context) =>
+                                                //           ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+                                                // );
                                               },
                                               child: Column(
                                                 children: [
@@ -744,12 +875,12 @@ class _GangDetailState extends State<GangDetail> {
                                                           height: 0,
                                                         ),
                                                       ),
-                                                      Icon(
-                                                        Icons.arrow_forward_ios,
-                                                        color:
-                                                            Color(0xFF929292),
-                                                        size: 14.0,
-                                                      ),
+                                                      // Icon(
+                                                      //   Icons.arrow_forward_ios,
+                                                      //   color:
+                                                      //       Color(0xFF929292),
+                                                      //   size: 14.0,
+                                                      // ),
                                                     ],
                                                   ),
                                                 ],
@@ -938,7 +1069,11 @@ class _GangDetailState extends State<GangDetail> {
                                                   ],
                                                 ),
                                                 Text(
-                                                  'วันจันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
+                                                  formattingDate(
+                                                      eventeach[
+                                                          'eventdate_start'],
+                                                      eventeach[
+                                                          'eventdate_end']),
                                                   style: TextStyle(
                                                     color: Color(0xFF929292),
                                                     fontSize: 14,
