@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:finalmo/screen/add.dart';
 import 'package:finalmo/screen/gang/gangDetail.dart';
+import 'package:finalmo/screen/gang/review.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
@@ -25,8 +26,13 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
   bool loading = true;
   bool followStatus = false;
   var clubInfo = {};
+  var rating = '';
+
+  var reviewlist = {};
   List<Map<String, dynamic>> activeEventList = [];
   List<Map<String, dynamic>> inActiveEventList = [];
+  var follower = '';
+
   // late AnimationController controller;
   @override
   void initState() {
@@ -41,6 +47,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
     initSharedPref();
     print(widget.club);
     getClubDetail(widget.club);
+    getReview(widget.club);
   }
 
   void initSharedPref() async {
@@ -66,13 +73,23 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
       setState(() {
         clubInfo = jsonResponse['club'];
       });
-      print(clubInfo);
+      // print(clubInfo);
       if (clubInfo['follower'].contains(username)) {
         print('$username found in the list.');
         setState(() {
           followStatus = true;
         });
       }
+
+      int count = 0;
+      for (var event in jsonResponse['club']['follower']) {
+        count++;
+      }
+      setState(() {
+        follower = count.toString();
+      });
+      print(follower);
+
       getEvent(clubInfo['event_id']);
     }
   }
@@ -136,6 +153,43 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
         loading = false;
       });
     }
+  }
+
+  void getReview(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
+
+    var uri = Uri.http(getUrl, '/getReviewList', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      setState(() {
+        reviewlist = jsonResponse;
+        averageScore(reviewlist);
+      });
+    }
+
+    setState(() {
+      loading = false;
+    });
+  }
+
+  void averageScore(reviewlist) {
+    int sum = 0;
+    int count = reviewlist['success'].length;
+
+    for (var value in reviewlist['success']) {
+      int score = value['score'];
+      sum += score;
+    }
+
+    double average = count > 0 ? sum / count : 0;
+    String formattedAverage = average.toStringAsFixed(1);
+    print('Average Score: $formattedAverage');
+    rating = formattedAverage;
   }
 
   @override
@@ -295,7 +349,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                       Column(
                         children: [
                           Text(
-                            '64',
+                            follower,
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 20,
@@ -324,34 +378,50 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                       Spacer(),
                       Column(
                         children: [
-                          Text(
-                            '4.6',
-                            style: TextStyle(
-                              color: Color(0xFF013C58),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              height: 0,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ReviewScreen(
+                                        club: widget.club,
+                                        owner: clubInfo[
+                                            'owner'])), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                Text(
+                                  rating,
+                                  style: TextStyle(
+                                    color: Color(0xFF013C58),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    height: 0,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'รีวิว',
+                                      style: TextStyle(
+                                        color: Color(0xFF929292),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        height: 0,
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Color(0xFF929292),
+                                      size: 14.0,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Text(
-                                'รีวิว',
-                                style: TextStyle(
-                                  color: Color(0xFF929292),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  height: 0,
-                                ),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                color: Color(0xFF929292),
-                                size: 14.0,
-                              ),
-                            ],
-                          )
                         ],
                       ),
                       Spacer(),

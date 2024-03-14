@@ -7,10 +7,9 @@ import 'package:finalmo/config.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-List<ReviewList> reviewlist = [];
-
 class ReviewScreen extends StatefulWidget {
-  const ReviewScreen({super.key});
+  final club, owner;
+  const ReviewScreen({this.club, this.owner, super.key});
 
   @override
   State<ReviewScreen> createState() => _ReviewScreenState();
@@ -18,54 +17,64 @@ class ReviewScreen extends StatefulWidget {
 
 class _ReviewScreenState extends State<ReviewScreen> {
   var jsonResponse;
-  bool status = false;
-  bool loading = false;
+  bool status = true;
+  bool loading = true;
+
+  var username = '';
+  // late String username;
+  late SharedPreferences prefs;
+  var myToken;
+
+  var reviewlist = {};
 
   @override
   void initState() {
-    getReview();
+    getReview(widget.club);
     super.initState();
+    initSharedPref();
+    print(widget.club);
+    print(widget.owner);
   }
 
-  void getReview() async {
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
     setState(() {
-      loading = true;
+      myToken = prefs.getString('token');
     });
-    var response = await http.get(
-      Uri.parse(getReviewList),
-      headers: {"Content-Type": "application/json"},
-    );
-    if (response.statusCode == 200) {
-      jsonResponse = jsonDecode(response.body);
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+    username = jwtDecodedToken['userName'];
+    print("ชื่อผู้ใช้: " + username);
+  }
 
-      jsonResponse['success'].forEach((value) => reviewlist.add(ReviewList(
-            score: value['score'],
-            comment: value['comment'],
-            showuser: value['showuser'],
-            userName: value['userName'],
-          )));
-      status = true;
+  void getReview(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
 
+    var uri = Uri.http(getUrl, '/getReviewList', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
       setState(() {
+        reviewlist = jsonResponse;
         AverageScore();
       });
-
-      print(jsonResponse);
-    } else {
-      status = true;
-
-      print(response.statusCode);
+      print(reviewlist);
     }
+    print("sesss:" + clubname);
 
-    loading = false;
-    setState(() {});
+    setState(() {
+      loading = false;
+    });
   }
 
   void AverageScore() {
     int sum = 0;
-    int count = jsonResponse['success'].length;
+    int count = reviewlist['success'].length;
 
-    for (var value in jsonResponse['success']) {
+    for (var value in reviewlist['success']) {
       int score = value['score'];
       sum += score;
     }
@@ -92,31 +101,34 @@ class _ReviewScreenState extends State<ReviewScreen> {
         ),
         backgroundColor: Color(0xFF00537A),
       ),
-      bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                  width: 1.0, color: Color.fromARGB(255, 153, 153, 153)),
-            ),
-          ),
-          height: 70,
-          margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: SizedBox(),
+      bottomNavigationBar: widget.owner != username
+          ? Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    width: 1.0,
+                    color: Color.fromARGB(255, 153, 153, 153),
+                  ),
                 ),
-                Expanded(
-                  flex: 6,
-                  child: Container(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: TextButton(
+              ),
+              height: 70,
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                    Expanded(
+                      flex: 6,
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: TextButton(
                             child: Text(
                               'เพิ่มความคิดเห็น',
                               style: TextStyle(
@@ -132,23 +144,29 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            onPressed: () => {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            AddCommentScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddCommentScreen(
+                                    club: widget.club,
                                   ),
-                                }),
-                      )),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: SizedBox(),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  flex: 1,
-                  child: SizedBox(),
-                ),
-              ],
-            ),
-          )),
+              ),
+            )
+          : null,
       body: SafeArea(
         left: false,
         right: false,
@@ -160,8 +178,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   child: !status
                       ? Text("Error: ")
                       : Column(
-                          children:
-                              jsonResponse['success'].map<Widget>((items) {
+                          children: reviewlist['success'].map<Widget>((items) {
                           return Padding(
                               padding: EdgeInsetsDirectional.all(5),
                               child: Container(

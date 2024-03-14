@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:finalmo/screen/gang/review.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
@@ -6,7 +7,8 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddCommentScreen extends StatefulWidget {
-  const AddCommentScreen({super.key});
+  final club;
+  const AddCommentScreen({this.club, super.key});
 
   @override
   State<AddCommentScreen> createState() => _AddCommentScreenState();
@@ -27,6 +29,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
   void initState() {
     super.initState();
     initSharedPref();
+    print(widget.club);
   }
 
   void initSharedPref() async {
@@ -36,7 +39,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
     });
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
     username = jwtDecodedToken['userName'];
-    print(username);
+    print("ชื่อผู้ใช้: " + username);
   }
 
   void addComment() async {
@@ -48,6 +51,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
           "score": rating,
           "comment": comment.text,
           "showuser": light,
+          "clubname": widget.club,
         };
       } else {
         regBody = {
@@ -55,6 +59,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
           "score": rating,
           "comment": comment.text,
           "showuser": light,
+          "clubname": widget.club,
         };
       }
 
@@ -102,7 +107,12 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
               onPressed: () {
                 addComment();
                 setState(() {});
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReviewScreen(club: widget.club),
+                  ),
+                );
               },
             )
           ]),

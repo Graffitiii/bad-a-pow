@@ -1,6 +1,8 @@
 class EventList {
   final String? club;
   final String? contact;
+  late DateTime? eventdateStart;
+  late DateTime? eventdateEnd;
   final String? priceBadminton;
   late List? level;
   final String? brand;
@@ -10,6 +12,8 @@ class EventList {
   EventList({
     this.club,
     this.contact,
+    this.eventdateStart,
+    this.eventdateEnd,
     this.brand,
     this.level,
     this.priceBadminton,

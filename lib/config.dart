@@ -15,3 +15,5 @@ final regOwner = url + 'userControlRegisOwner';
 final createReview = url + "createReview";
 final getReviewList = url + "getReviewList";
 final putEventStatus = url + "putEventStatus";
+final sendRequest = url + 'requestJoinEvent';
+final unRequest = url + 'unRequestEvent';
