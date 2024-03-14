@@ -80,7 +80,12 @@ class _SignUpObjectState extends State<SignUpObject> {
         "phonenumber": phoneNumberController.text,
         "password": passwordController.text,
         "birthDate": dateController.text,
-        "userName": userNameController.text
+        "userName": userNameController.text,
+        "picture": "",
+        "gender": "",
+        "level": "",
+        "about": "",
+        "ageShow": false
       };
 
       var response = await http.post(Uri.parse(registration),
