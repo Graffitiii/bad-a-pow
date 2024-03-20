@@ -17,3 +17,4 @@ final getReviewList = url + "getReviewList";
 final putEventStatus = url + "putEventStatus";
 final sendRequest = url + 'requestJoinEvent';
 final unRequest = url + 'unRequestEvent';
+final editProfile = url + 'editProfile';

@@ -56,7 +56,13 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
 
   Widget menu() {
     return Container(
-      color: Color.fromARGB(255, 224, 224, 224),
+      // color: Color.fromARGB(255, 224, 224, 224),
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Color(0xFFDFDFDF)),
+        ),
+        color: Color.fromARGB(255, 255, 255, 255),
+      ),
       child: TabBar(
         labelColor: Color(0xFFF5A201),
         unselectedLabelColor: Color(0xFF013C58),

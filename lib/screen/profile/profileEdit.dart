@@ -1,17 +1,23 @@
+import 'dart:io';
+
 import 'package:finalmo/config.dart';
 import 'package:finalmo/screen/login_page/login.dart';
 import 'package:finalmo/screen/profile/Owner_Apply.dart';
 import 'package:finalmo/screen/profile/profile.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class ProfileEdit extends StatefulWidget {
-  const ProfileEdit({super.key});
+  final profile;
+  const ProfileEdit({this.profile, Key? key}) : super(key: key);
 
   @override
   State<ProfileEdit> createState() => _ProfileEditState();
@@ -21,16 +27,118 @@ class _ProfileEditState extends State<ProfileEdit> {
   late String username;
   late SharedPreferences prefs;
   var myToken;
+  var userInfo;
   List<String> gender = ['ชาย', 'หญิง', 'ไม่ระบุ'];
   List<String> showAge = ['แสดง', 'ไม่แสดง'];
-  List<String> level = ['N', 'S', 'P'];
+  List<String> level = ['N', 'S', 'P', 'ไม่ระบุ'];
+  TextEditingController details = TextEditingController();
   String? genderSelect;
   String? showAgeSelect;
   String? levelSelect;
+
+  firebase_storage.FirebaseStorage storage =
+      firebase_storage.FirebaseStorage.instance;
+  String imageUrl = '';
+  File? _photo;
+  final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
     super.initState();
     initSharedPref();
+    setState(() {
+      userInfo = widget.profile;
+    });
+    print(userInfo);
+    setDefault();
+  }
+
+  void setDefault() async {
+    if (userInfo['gender'] != "") {
+      setState(() {
+        genderSelect = userInfo['gender'];
+      });
+    }
+    if (userInfo['level'] != "") {
+      setState(() {
+        levelSelect = userInfo['level'];
+      });
+    }
+    if (userInfo['ageShow'] == false) {
+      setState(() {
+        showAgeSelect = 'ไม่แสดง';
+      });
+    }
+    if (userInfo['ageShow'] == true) {
+      setState(() {
+        showAgeSelect = 'แสดง';
+      });
+    }
+    if (userInfo['about'] != "") {
+      setState(() {
+        details.text = userInfo['about'];
+      });
+    }
+    if (userInfo['about'] == "") {
+      setState(() {
+        details.text = "";
+      });
+    }
+  }
+
+  void saveProfile() async {
+    if (genderSelect != null && levelSelect != null) {
+      bool ageShowBody = false;
+      String imageBody = "";
+      if (showAgeSelect == 'แสดง') {
+        setState(() {
+          ageShowBody = true;
+        });
+      }
+      if (showAgeSelect == 'ไม่แสดง') {
+        setState(() {
+          ageShowBody = false;
+        });
+      }
+      if (imageUrl == "") {
+        setState(() {
+          imageBody = userInfo['picture'];
+        });
+      }
+      if (imageUrl != "") {
+        imageBody = imageUrl;
+      }
+      var regBody = {
+        "userName": userInfo['userName'],
+        "picture": imageBody,
+        "gender": genderSelect,
+        "level": levelSelect,
+        "about": details.text,
+        "ageShow": ageShowBody
+      };
+      print(regBody);
+      var response = await http.put(Uri.parse(editProfile),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode(regBody));
+
+      var jsonResponse = jsonDecode(response.body);
+      print(jsonResponse['status']);
+      if (jsonResponse['status']) {
+        print(jsonResponse['data']);
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('บันทึกโปรไฟล์สำเร็จ'),
+            content: const Text('บันทึกโปรไฟล์สำเร็จ'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 
   void initSharedPref() async {
@@ -41,6 +149,60 @@ class _ProfileEditState extends State<ProfileEdit> {
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
     username = jwtDecodedToken['userName'];
     print(username);
+  }
+
+  Future uploadFile() async {
+    if (genderSelect != null && levelSelect != null) {
+      if (_photo == null) {
+        saveProfile();
+      } else {
+        final fileName = username;
+        final destination = 'profile_image/$fileName';
+
+        try {
+          final ref =
+              firebase_storage.FirebaseStorage.instance.ref(destination);
+          await ref.putFile(
+              _photo!, SettableMetadata(contentType: 'image/jpeg'));
+
+          imageUrl = await ref.getDownloadURL();
+          print(imageUrl);
+          if (imageUrl != "") {
+            saveProfile();
+          }
+        } catch (e) {
+          print('error occured');
+        }
+      }
+    } else {
+      print('error genderSelect levelSelect');
+    }
+  }
+
+  Future imgFromCamera() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _photo = File(pickedFile.path);
+        // uploadFile();
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future imgFromGallery() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _photo = File(pickedFile.path);
+        // uploadFile();
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   @override
@@ -62,7 +224,9 @@ class _ProfileEditState extends State<ProfileEdit> {
           IconButton(
             icon: const Icon(Icons.save),
             tooltip: 'บันทึก',
-            onPressed: () {},
+            onPressed: () {
+              uploadFile();
+            },
           ),
         ],
       ),
@@ -70,29 +234,54 @@ class _ProfileEditState extends State<ProfileEdit> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CarouselSlider(
-              items: [
-                Container(
-                  margin: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle, // กำหนดให้เป็นรูปร่างวงกลม
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/profile2.jpg'),
-                      fit: BoxFit.cover,
+            Stack(
+              children: [
+                Padding(
+                    padding: EdgeInsets.fromLTRB(60, 20, 60, 0),
+                    child: Center(
+                        child: _photo != null
+                            ? CircleAvatar(
+                                radius: 100,
+                                backgroundImage: Image.file(
+                                  _photo!,
+                                  fit: BoxFit.cover,
+                                ).image,
+                              )
+                            : (_photo == null && userInfo['picture'] == '')
+                                ? CircleAvatar(
+                                    radius: 100,
+                                    backgroundImage: AssetImage(
+                                        'assets/images/user_default.png'),
+                                  )
+                                : (_photo == null && userInfo['picture'] != '')
+                                    ? CircleAvatar(
+                                        radius: 100,
+                                        backgroundImage:
+                                            NetworkImage(userInfo['picture']),
+                                      )
+                                    : Container())),
+                Positioned(
+                  right: 90,
+                  bottom: 0,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      imgFromGallery();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Color(0xFF013C58),
+                      shape: CircleBorder(),
+                      elevation: 0, // Remove default button elevation
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      color: Color.fromARGB(
+                          255, 255, 255, 255) // สีเหลืองถ้าอยู่ในช่วงที่ถูกกด
+                      , // สีเทาถ้าไม่ได้ถูกกด
+                      size: 24.0,
                     ),
                   ),
                 ),
               ],
-              options: CarouselOptions(
-                height: 230.0,
-                enlargeCenterPage: true,
-                autoPlay: false,
-                aspectRatio: 16 / 9,
-                autoPlayCurve: Curves.fastOutSlowIn,
-                enableInfiniteScroll: true,
-                autoPlayAnimationDuration: Duration(milliseconds: 800),
-                viewportFraction: 0.8,
-              ),
             ),
             SizedBox(height: 15),
             Container(
@@ -103,7 +292,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                   Align(
                     alignment: Alignment.center,
                     child: Text(
-                      'TTamonwan233',
+                      userInfo['userName'],
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -362,7 +551,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                           children: [
                             Expanded(
                               child: TextFormField(
-                                // controller: details,
+                                controller: details,
                                 decoration: InputDecoration(
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(width: 1.0),

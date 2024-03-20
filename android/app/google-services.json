@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "377102217262",
+    "project_id": "bad-a-pow",
+    "storage_bucket": "bad-a-pow.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377102217262:android:75ea9f513a42f5a8c76fbf",
+        "android_client_info": {
+          "package_name": "com.example.finalmo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-NDcwa4ZKpWQFGnPhHAwDHxnvpyFy6XY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

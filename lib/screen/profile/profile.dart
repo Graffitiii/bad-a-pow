@@ -146,7 +146,9 @@ class _ProfileState extends State<Profile> {
                               context,
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
-                                      ProfileEdit()));
+                                      ProfileEdit(
+                                        profile: userInfo,
+                                      )));
                         },
                       ),
                       ListTile(
@@ -237,8 +239,8 @@ class _ProfileState extends State<Profile> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle, // กำหนดให้เป็นรูปร่างวงกลม
                             image: DecorationImage(
-                              image: AssetImage(userInfo['picture']),
-                              // fit: BoxFit.cover,
+                              image: NetworkImage(userInfo['picture']),
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -250,7 +252,7 @@ class _ProfileState extends State<Profile> {
                             image: DecorationImage(
                               image:
                                   AssetImage('assets/images/user_default.png'),
-                              // fit: BoxFit.cover,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
