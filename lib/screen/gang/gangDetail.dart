@@ -1,16 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:finalmo/postModel.dart';
-import 'package:finalmo/screen/gang/findGang.dart';
 import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
-import 'package:finalmo/screen/gang/review.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -37,6 +33,8 @@ class GangDetail extends StatefulWidget {
 class _GangDetailState extends State<GangDetail> {
   var clubInfo = {};
   var userPending;
+  var userJoin;
+  bool join = false;
   bool pending = false;
   bool openevent = false;
   var eventeach;
@@ -61,12 +59,16 @@ class _GangDetailState extends State<GangDetail> {
 
     jsonResponse = jsonDecode(response.body);
     if (jsonResponse['status']) {
-      // print(userPending);
       setState(() {
         eventeach = jsonResponse['data'];
         openevent = eventeach['active'];
         userPending = jsonResponse['data']['pending'];
+        userJoin = jsonResponse['data']['join'];
       });
+
+      print("เข้าร่วมแล้ว: $userJoin");
+      print("กำลังรอ: $userPending");
+
       if (eventeach['pending'].contains(username)) {
         print('$username found in the pending.');
         setState(() {
@@ -75,6 +77,16 @@ class _GangDetailState extends State<GangDetail> {
       } else {
         setState(() {
           pending = false;
+        });
+      }
+      if (eventeach['join'].contains(username)) {
+        print('$username found in the pending.');
+        setState(() {
+          join = true;
+        });
+      } else {
+        setState(() {
+          join = false;
         });
       }
       getClubDetail(eventeach['club']);
@@ -110,7 +122,7 @@ class _GangDetailState extends State<GangDetail> {
       setState(() {
         clubInfo = jsonResponse['club'];
       });
-      print("clubInfo:  $clubInfo");
+      // print("clubInfo:  $clubInfo");
 
       if (clubInfo['follower'].contains(username)) {
         // print('$username found in the list.');
@@ -134,7 +146,7 @@ class _GangDetailState extends State<GangDetail> {
         headers: {"Content-type": "application/json"},
         body: jsonEncode(regBody));
 
-    print(regBody);
+    // print(regBody);
     var jsonResponse = jsonDecode(response.body);
 
     if (jsonResponse['edit']) {
@@ -185,7 +197,7 @@ class _GangDetailState extends State<GangDetail> {
 
     var jsonResponse = jsonDecode(response.body);
 
-    print(jsonResponse['status']);
+    print("กำลังรอเจ้าของตอบรับ");
     if (jsonResponse['status']) {
       setState(() {
         pending = true;
@@ -208,6 +220,40 @@ class _GangDetailState extends State<GangDetail> {
         pending = false;
       });
     }
+  }
+
+  void acceptJoinEvent(requestuser) async {
+    var regBody = {"userName": requestuser, "event_id": eventeach['_id']};
+
+    var response = await http.post(Uri.parse(joinEvent),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+
+    print("acceptJoinEvent $jsonResponse");
+    // if (jsonResponse['status']) {
+    //   setState(() {
+    //     initializeState();
+    //   });
+    // }
+  }
+
+  void unacceptJoinEvent(requestuser) async {
+    var regBody = {"userName": requestuser, "event_id": eventeach['_id']};
+
+    var response = await http.delete(Uri.parse(unJoinEvent),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    var jsonResponse = jsonDecode(response.body);
+
+    print("เข้าไปแล้ว");
+    // if (jsonResponse['delete']) {
+    //   setState(() {
+    //     join = false;
+    //   });
+    // }
   }
 
   Future<void> initSharedPref() async {
@@ -278,7 +324,7 @@ class _GangDetailState extends State<GangDetail> {
               child: Row(
                 children: <Widget>[
                   if (clubInfo['owner'] != username) ...[
-                    if (!pending) ...[
+                    if (!pending && !join) ...[
                       Expanded(
                         flex: 6,
                         child: Container(
@@ -310,7 +356,7 @@ class _GangDetailState extends State<GangDetail> {
                                       }),
                             )),
                       ),
-                    ] else ...[
+                    ] else if (pending && !join) ...[
                       Expanded(
                         flex: 6,
                         child: Container(
@@ -323,6 +369,50 @@ class _GangDetailState extends State<GangDetail> {
                                 setState(() {
                                   unRequestPending();
                                 });
+                              },
+                              style: TextButton.styleFrom(
+                                elevation: 2,
+                                backgroundColor: Color.fromARGB(255, 212, 156,
+                                    2), // เปลี่ยนเป็นสีเขียวตามต้องการ
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.check,
+                                    color: Colors
+                                        .white, // เปลี่ยนเป็นสีขาวตามต้องการ
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    'กำลังรอ',
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else if (!pending && join) ...[
+                      Expanded(
+                        flex: 6,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: TextButton(
+                              onPressed: () {
+                                setState(() {});
                               },
                               style: TextButton.styleFrom(
                                 elevation: 2,
@@ -342,7 +432,7 @@ class _GangDetailState extends State<GangDetail> {
                                   ),
                                   SizedBox(width: 5),
                                   Text(
-                                    'กำลังรอ',
+                                    'เข้าร่วมแล้ว',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                           255, 255, 255, 255),
@@ -755,60 +845,178 @@ class _GangDetailState extends State<GangDetail> {
                                                             builder:
                                                                 (BuildContext
                                                                     context) {
-                                                              return FractionallySizedBox(
-                                                                heightFactor:
-                                                                    0.6,
+                                                              return DefaultTabController(
+                                                                length: 2,
                                                                 child:
-                                                                    Container(
+                                                                    FractionallySizedBox(
+                                                                  heightFactor:
+                                                                      0.6,
                                                                   child:
-                                                                      SingleChildScrollView(
+                                                                      Container(
                                                                     child:
                                                                         Padding(
                                                                       padding: EdgeInsets
                                                                           .fromLTRB(
-                                                                              30,
-                                                                              20,
+                                                                              10,
+                                                                              5,
                                                                               10,
                                                                               0),
-                                                                      child: Column(
-                                                                          children: userPending.map<Widget>((items) {
-                                                                        return Padding(
-                                                                          padding:
-                                                                              EdgeInsetsDirectional.all(5),
-                                                                          child:
-                                                                              Row(
-                                                                            children: [
-                                                                              CircleAvatar(
-                                                                                backgroundImage: AssetImage('assets/images/profile1.jpg'),
-                                                                              ),
-                                                                              SizedBox(width: 25),
-                                                                              Text(
-                                                                                items,
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 14,
-                                                                                  fontWeight: FontWeight.w400,
+                                                                      child:
+                                                                          Column(
+                                                                        children: [
+                                                                          TabBar(
+                                                                            tabs: [
+                                                                              Tab(
+                                                                                child: Text(
+                                                                                  "กำลังรอการยืนยัน",
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.white,
+                                                                                    fontSize: 14,
+                                                                                    fontWeight: FontWeight.w400,
+                                                                                  ),
                                                                                 ),
                                                                               ),
-                                                                              Spacer(),
-                                                                              IconButton(
-                                                                                  onPressed: () {},
-                                                                                  icon: Icon(
-                                                                                    Icons.check,
-                                                                                    size: 20,
-                                                                                    color: Colors.green,
-                                                                                  )),
-                                                                              IconButton(
-                                                                                  onPressed: () {},
-                                                                                  icon: Icon(
-                                                                                    Icons.close,
-                                                                                    size: 20,
-                                                                                    color: Colors.red,
-                                                                                  )),
+                                                                              Tab(
+                                                                                child: Text(
+                                                                                  "เข้าร่วมแล้ว",
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.white,
+                                                                                    fontSize: 14,
+                                                                                    fontWeight: FontWeight.w400,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
                                                                             ],
                                                                           ),
-                                                                        );
-                                                                      }).toList()),
+                                                                          Expanded(
+                                                                            child:
+                                                                                TabBarView(
+                                                                              children: [
+                                                                                SingleChildScrollView(
+                                                                                  child: Padding(
+                                                                                    padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+                                                                                    child: Column(
+                                                                                      children: userPending.map<Widget>((items) {
+                                                                                        return Padding(
+                                                                                          padding: EdgeInsetsDirectional.all(5),
+                                                                                          child: Column(
+                                                                                            children: [
+                                                                                              Row(
+                                                                                                children: [
+                                                                                                  CircleAvatar(
+                                                                                                    backgroundImage: AssetImage('assets/images/profile1.jpg'),
+                                                                                                  ),
+                                                                                                  SizedBox(width: 25),
+                                                                                                  Text(
+                                                                                                    items,
+                                                                                                    style: TextStyle(
+                                                                                                      color: Colors.white,
+                                                                                                      fontSize: 14,
+                                                                                                      fontWeight: FontWeight.w400,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  Spacer(),
+                                                                                                  IconButton(
+                                                                                                    onPressed: () {
+                                                                                                      acceptJoinEvent(items); // ทำการยอมรับข้อมูล
+                                                                                                      unacceptJoinEvent(items); // ทำการยกเลิกข้อมูล
+
+                                                                                                      // ลบรายการที่มีค่าเท่ากับ items ออกจาก userPending
+
+                                                                                                      setState(() {
+                                                                                                        userPending.removeWhere((item) => item == items);
+                                                                                                      });
+                                                                                                    },
+                                                                                                    icon: Icon(
+                                                                                                      Icons.check,
+                                                                                                      size: 20,
+                                                                                                      color: Colors.green,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  IconButton(
+                                                                                                    onPressed: () {
+                                                                                                      unacceptJoinEvent(items);
+                                                                                                      setState(() {
+                                                                                                        userPending.removeWhere((item) => item == items);
+                                                                                                      });
+                                                                                                    },
+                                                                                                    icon: Icon(
+                                                                                                      Icons.close,
+                                                                                                      size: 20,
+                                                                                                      color: Colors.red,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                              SizedBox(
+                                                                                                height: 10,
+                                                                                              ),
+                                                                                              Container(
+                                                                                                width: double.infinity,
+                                                                                                height: 1,
+                                                                                                color: Colors.black.withOpacity(0.10999999940395355),
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                        );
+                                                                                      }).toList(),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                SingleChildScrollView(
+                                                                                  child: Padding(
+                                                                                    padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+                                                                                    child: Column(
+                                                                                      children: userJoin.map<Widget>((items) {
+                                                                                        return Padding(
+                                                                                          padding: EdgeInsetsDirectional.all(5),
+                                                                                          child: Column(
+                                                                                            children: [
+                                                                                              Row(
+                                                                                                children: [
+                                                                                                  CircleAvatar(
+                                                                                                    backgroundImage: AssetImage('assets/images/profile1.jpg'),
+                                                                                                  ),
+                                                                                                  SizedBox(width: 25),
+                                                                                                  Text(
+                                                                                                    items,
+                                                                                                    style: TextStyle(
+                                                                                                      color: Colors.black,
+                                                                                                      fontSize: 14,
+                                                                                                      fontWeight: FontWeight.w400,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  Spacer(),
+                                                                                                  Text(
+                                                                                                    "เข้าร่วมแล้ว",
+                                                                                                    style: TextStyle(
+                                                                                                      color: Color.fromARGB(255, 26, 255, 26),
+                                                                                                      fontSize: 14,
+                                                                                                      fontWeight: FontWeight.w400,
+                                                                                                    ),
+                                                                                                  )
+                                                                                                ],
+                                                                                              ),
+                                                                                              SizedBox(
+                                                                                                height: 20,
+                                                                                              ),
+                                                                                              Container(
+                                                                                                width: double.infinity,
+                                                                                                height: 1,
+                                                                                                color: Colors.black.withOpacity(0.10999999940395355),
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                        );
+                                                                                      }).toList(),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ),
@@ -1535,3 +1743,196 @@ class RequesttoJoin extends StatelessWidget {
     );
   }
 }
+
+// class TabBarParticipants extends StatefulWidget {
+//   final id;
+//   const TabBarParticipants({this.id, super.key});
+
+//   @override
+//   State<TabBarParticipants> createState() => _TabBarParticipantsState();
+// }
+
+// class _TabBarParticipantsState extends State<TabBarParticipants> {
+
+// // Navigator.push(
+// //                                                             context,
+// //                                                             MaterialPageRoute(
+// //                                                               builder: (context) =>
+//   @override
+//   Widget build(BuildContext context) {
+//     return DefaultTabController(
+//       initialIndex: 1,
+//       length: 2,
+//       child: Scaffold(
+//         appBar: AppBar(
+//           title: Center(
+//             child: Text(
+//               'สมาชิกที่ขอเข้าร่วม',
+//               style: TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 16,
+//                 fontWeight: FontWeight.w400,
+//                 height: 0,
+//               ),
+//             ),
+//           ),
+//           backgroundColor: Color(0xFF00537A),
+//           bottom: const TabBar(
+//             tabs: <Widget>[
+//               Tab(
+//                 child: Text(
+//                   "กำลังรอการยืนยัน",
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontSize: 14,
+//                     fontWeight: FontWeight.w400,
+//                   ),
+//                 ),
+//               ),
+//               Tab(
+//                 child: Text(
+//                   "เข้าร่วมแล้ว",
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontSize: 14,
+//                     fontWeight: FontWeight.w400,
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//         body: TabBarView(
+//           children: [
+//             SingleChildScrollView(
+//               child: Padding(
+//                 padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+//                 child: Column(
+//                   children: userPending.map<Widget>((items) {
+//                     return Padding(
+//                       padding: EdgeInsetsDirectional.all(5),
+//                       child: Column(
+//                         children: [
+//                           Row(
+//                             children: [
+//                               CircleAvatar(
+//                                 backgroundImage:
+//                                     AssetImage('assets/images/profile1.jpg'),
+//                               ),
+//                               SizedBox(width: 25),
+//                               Text(
+//                                 items,
+//                                 style: TextStyle(
+//                                   color: Colors.black,
+//                                   fontSize: 14,
+//                                   fontWeight: FontWeight.w400,
+//                                 ),
+//                               ),
+//                               Spacer(),
+//                               IconButton(
+//                                 onPressed: () {
+//                                   acceptJoinEvent(items); // ทำการยอมรับข้อมูล
+//                                   unacceptJoinEvent(items); // ทำการยกเลิกข้อมูล
+
+//                                   // ลบรายการที่มีค่าเท่ากับ items ออกจาก userPending
+
+//                                   setState(() {
+//                                     userPending
+//                                         .removeWhere((item) => item == items);
+//                                   });
+//                                 },
+//                                 icon: Icon(
+//                                   Icons.check,
+//                                   size: 20,
+//                                   color: Colors.green,
+//                                 ),
+//                               ),
+//                               IconButton(
+//                                 onPressed: () {
+//                                   unacceptJoinEvent(items);
+//                                   setState(() {
+//                                     userPending
+//                                         .removeWhere((item) => item == items);
+//                                   });
+//                                 },
+//                                 icon: Icon(
+//                                   Icons.close,
+//                                   size: 20,
+//                                   color: Colors.red,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                           SizedBox(
+//                             height: 10,
+//                           ),
+//                           Container(
+//                             width: double.infinity,
+//                             height: 1,
+//                             color:
+//                                 Colors.black.withOpacity(0.10999999940395355),
+//                           ),
+//                         ],
+//                       ),
+//                     );
+//                   }).toList(),
+//                 ),
+//               ),
+//             ),
+//             SingleChildScrollView(
+//               child: Padding(
+//                 padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+//                 child: Column(
+//                   children: userJoin.map<Widget>((items) {
+//                     return Padding(
+//                       padding: EdgeInsetsDirectional.all(5),
+//                       child: Column(
+//                         children: [
+//                           Row(
+//                             children: [
+//                               CircleAvatar(
+//                                 backgroundImage:
+//                                     AssetImage('assets/images/profile1.jpg'),
+//                               ),
+//                               SizedBox(width: 25),
+//                               Text(
+//                                 items,
+//                                 style: TextStyle(
+//                                   color: Colors.black,
+//                                   fontSize: 14,
+//                                   fontWeight: FontWeight.w400,
+//                                 ),
+//                               ),
+//                               Spacer(),
+//                               Text(
+//                                 "เข้าร่วมแล้ว",
+//                                 style: TextStyle(
+//                                   color: Color.fromARGB(255, 26, 255, 26),
+//                                   fontSize: 14,
+//                                   fontWeight: FontWeight.w400,
+//                                 ),
+//                               )
+//                             ],
+//                           ),
+//                           SizedBox(
+//                             height: 20,
+//                           ),
+//                           Container(
+//                             width: double.infinity,
+//                             height: 1,
+//                             color:
+//                                 Colors.black.withOpacity(0.10999999940395355),
+//                           ),
+//                         ],
+//                       ),
+//                     );
+//                   }).toList(),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

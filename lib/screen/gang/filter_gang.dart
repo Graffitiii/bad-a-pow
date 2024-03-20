@@ -10,174 +10,159 @@ class Filter extends StatefulWidget {
 }
 
 class _FilterState extends State<Filter> {
+  TextEditingController eventtime = TextEditingController();
+  String formattedStartTime = '';
+  String formattedEndTime = '';
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 30,
-      width: 30,
-      decoration: ShapeDecoration(
-        color: const Color.fromARGB(255, 255, 255, 255),
-        shape: RoundedRectangleBorder(
-          side: BorderSide(width: 2, color: Color(0xFF013C58)),
-          borderRadius: BorderRadius.circular(7),
+        height: 40,
+        width: 40,
+        decoration: ShapeDecoration(
+          color: const Color.fromARGB(255, 255, 255, 255),
+          shape: RoundedRectangleBorder(
+            side: BorderSide(width: 2, color: Color(0xFF013C58)),
+            borderRadius: BorderRadius.circular(7),
+          ),
         ),
-      ),
-      child: IconButton(
-        icon: Icon(Icons.tune, size: 22),
-        color: Color(0xFF013C58),
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (BuildContext context) {
-              return FractionallySizedBox(
-                heightFactor: 0.8,
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 20, 10),
+          child: IconButton(
+            icon: Icon(Icons.tune, size: 23),
+            color: Color(0xFF013C58),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (BuildContext context) {
+                  return FractionallySizedBox(
+                    heightFactor: 0.8,
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.all(30),
-                              child: Text("ที่อยู่ของฉัน"),
-                            ),
-                            Spacer(),
-                            TextButton(
-                              onPressed: () {
-                                // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
-                              },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'ดูทั้งหมด',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Icon(Icons.arrow_forward_ios),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 20),
-                            child: Row(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                buildLocationRow(
-                                  "อาคารเรียนรวม บร.2",
-                                  "ตำบล คลองหนึ่ง อำเภอ คลองหลวง ปทุมธานี 12120",
+                                Padding(
+                                  padding: EdgeInsets.all(30),
+                                  child: Text("ที่อยู่ของฉัน"),
                                 ),
                                 Spacer(),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                                TextButton(
+                                  onPressed: () {
+                                    // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'ดูทั้งหมด',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Icon(Icons.arrow_forward_ios),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 20),
+                                child: Row(
                                   children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
+                                    buildLocationRow(
+                                      "อาคารเรียนรวม บร.2",
+                                      "ตำบล คลองหนึ่ง อำเภอ คลองหลวง ปทุมธานี 12120",
+                                    ),
+                                    Spacer(),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Icon(
-                                          Icons.check_circle,
-                                          size: 25,
-                                          color: Color(0xFF02D417),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Icon(
+                                              Icons.check_circle,
+                                              size: 25,
+                                              color: Color(0xFF02D417),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ],
-                                ),
-                              ],
-                            )),
-                        pageDivider(),
-                        Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                          child: Row(
-                            children: [
-                              buildLocationRow(
-                                "ฟิวเจอร์พาร์ค รังสิต",
-                                "ตำบล คลองหนึ่ง อำเภอคลองหลวง ปทุมธานี 12120",
+                                )),
+                            pageDivider(),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 20),
+                              child: Row(
+                                children: [
+                                  buildLocationRow(
+                                    "ฟิวเจอร์พาร์ค รังสิต",
+                                    "ตำบล คลองหนึ่ง อำเภอคลองหลวง ปทุมธานี 12120",
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                        pageDivider(),
-                        Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Color(
-                                    0xFF013C58), // ตั้งค่าสีเส้นขอบเป็นสีน้ำเงิน
-                                width: 2, // กำหนดความกว้างของเส้นขอบ
-                              ),
-                              borderRadius: BorderRadius.circular(
-                                  15), // กำหนดรูปทรงของขอบเส้น
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Expanded(
-                                  child: FloatingActionButton.extended(
-                                    onPressed: () {
-                                      _launchMaps();
-                                    },
-                                    backgroundColor: Color(0xFFEFEFEF),
-                                    label: const Text(
-                                      'เพิ่มที่อยู่',
-                                      style: TextStyle(
-                                        color: Color(0xFF013C58),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        height: 0,
+                            pageDivider(),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 20),
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Color(
+                                        0xFF013C58), // ตั้งค่าสีเส้นขอบเป็นสีน้ำเงิน
+                                    width: 2, // กำหนดความกว้างของเส้นขอบ
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                      15), // กำหนดรูปทรงของขอบเส้น
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: FloatingActionButton.extended(
+                                        onPressed: () {
+                                          _launchMaps();
+                                        },
+                                        backgroundColor: Color(0xFFEFEFEF),
+                                        label: const Text(
+                                          'เพิ่มที่อยู่',
+                                          style: TextStyle(
+                                            color: Color(0xFF013C58),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            height: 0,
+                                          ),
+                                        ),
+                                        icon: const Icon(
+                                          Icons.add_circle,
+                                          color: Color(0xFF013C58),
+                                        ),
                                       ),
                                     ),
-                                    icon: const Icon(
-                                      Icons.add_circle,
-                                      color: Color(0xFF013C58),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        pageDivider(),
-                        buildTextFieldWithTitle("กำหนดระยะทาง", "ระยะทาง*"),
-                        Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                          child: Row(
-                            children: [
-                              Text(
-                                'วัน',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  height: 0,
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        ChipDateWeek(),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                            ),
+                            pageDivider(),
+                            buildTextFieldWithTitle("กำหนดระยะทาง", "ระยะทาง*"),
                             Padding(
                               padding: EdgeInsets.symmetric(
                                   vertical: 0, horizontal: 20),
                               child: Row(
                                 children: [
                                   Text(
-                                    "เวลา",
+                                    'วัน',
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
@@ -188,118 +173,139 @@ class _FilterState extends State<Filter> {
                                 ],
                               ),
                             ),
+                            ChipDateWeek(),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 20),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "เวลา",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          height: 0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 20),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: YourWidget(),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Icon(
+                                        Icons.remove,
+                                        size: 30,
+                                        color: Color(0xFF013C58),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: YourWidget(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                             Padding(
                               padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20),
+                                  vertical: 0, horizontal: 20),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'ระดับของผู้เล่น',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      height: 0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ChipLevel(),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 30),
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: YourWidget(),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Icon(
-                                    Icons.remove,
-                                    size: 30,
-                                    color: Color(0xFF013C58),
+                                    child: FractionallySizedBox(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่มล้างข้อมูล
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Color(
+                                              0xFFEFEFEF), // สีพื้นหลังของปุ่ม
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                10), // รูปทรงของปุ่ม
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'ล้าง',
+                                          style: TextStyle(
+                                            color: Color(
+                                                0xFF013C58), // สีของตัวอักษรในปุ่ม
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                   SizedBox(width: 10),
                                   Expanded(
-                                    child: YourWidget(),
+                                    child: FractionallySizedBox(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่มค้นหา
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Color(
+                                              0xFF013C58), // สีพื้นหลังของปุ่ม
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                10), // รูปทรงของปุ่ม
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'ค้นหา',
+                                          style: TextStyle(
+                                            color: Colors
+                                                .white, // สีของตัวอักษรในปุ่ม
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                          child: Row(
-                            children: [
-                              Text(
-                                'ระดับของผู้เล่น',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  height: 0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        ChipLevel(),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 30),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: FractionallySizedBox(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่มล้างข้อมูล
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Color(
-                                          0xFFEFEFEF), // สีพื้นหลังของปุ่ม
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            10), // รูปทรงของปุ่ม
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'ล้าง',
-                                      style: TextStyle(
-                                        color: Color(
-                                            0xFF013C58), // สีของตัวอักษรในปุ่ม
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: FractionallySizedBox(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่มค้นหา
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Color(
-                                          0xFF013C58), // สีพื้นหลังของปุ่ม
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            10), // รูปทรงของปุ่ม
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'ค้นหา',
-                                      style: TextStyle(
-                                        color:
-                                            Colors.white, // สีของตัวอักษรในปุ่ม
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
-          );
-        },
-      ),
-    );
+          ),
+        ));
   }
 }
 
