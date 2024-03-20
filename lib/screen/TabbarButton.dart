@@ -67,7 +67,7 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
         labelColor: Color(0xFFF5A201),
         unselectedLabelColor: Color(0xFF013C58),
         indicatorSize: TabBarIndicatorSize.tab,
-        indicatorPadding: EdgeInsets.all(5.0),
+        indicatorPadding: EdgeInsets.all(3.0),
         indicatorColor: Color(0xFFF5A201),
         tabs: [
           Tab(
@@ -81,8 +81,8 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
           Tab(
             text: " ",
             icon: Icon(
-              Icons.home_rounded,
-              size: 35,
+              Icons.add_box,
+              size: 40,
             ),
           ),
           Tab(
