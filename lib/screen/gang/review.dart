@@ -70,7 +70,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
     });
   }
 
-  void AverageScore() {
+  String AverageScore() {
     int sum = 0;
     int count = reviewlist['success'].length;
 
@@ -80,8 +80,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
     }
 
     double average = count > 0 ? sum / count : 0;
-    String formattedAverage = average.toStringAsFixed(1);
-    print('Average Score: $formattedAverage');
+    String averages = average.toStringAsFixed(1);
+    print('Average Score: $averages');
+
+    return averages;
   }
 
   @override

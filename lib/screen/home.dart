@@ -93,7 +93,12 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
-                          logout();
+                          // logout();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TabBarViewBottom()),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Color(0xFF013C58),
@@ -103,13 +108,237 @@ class _HomePageState extends State<HomePage> {
                           elevation: 0, // Remove default button elevation
                         ),
                         child: Text(
-                          'ออกจากระบบ',
+                          'เริ่มหาก๊วน',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white,
                           ),
                         ),
                       ),
+                    ],
+                  )),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+              child: Material(
+                elevation: 5.0,
+                shadowColor: Color.fromARGB(255, 0, 0, 0),
+                borderRadius: new BorderRadius.circular(30),
+                child: TextFormField(
+                  // onChanged: onQueryChanged,
+                  decoration: InputDecoration(
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.only(left: 15),
+                      child: Icon(Icons.search),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1.0),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    fillColor: Color(0xFFF4F4F4),
+                    filled: true,
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                    border: InputBorder.none,
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1.0, color: Colors.red),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1.0, color: Colors.red),
+                    ),
+                    errorStyle: TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(15), // Add border radius
+                            border: Border.all(
+                              color:
+                                  Color(0xFFF0F0F0), // Choose your border color
+                              width: 5, // Specify the width of the border
+                            ),
+                          ),
+                          child: Container(
+                            height: 60,
+                            width: 60,
+                            color: Color(0xFFF0F0F0),
+                            child: Icon(
+                              Icons.calendar_month,
+                              size: 50,
+                              color: Color(0xFF013C58),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text("ตารางกิจกรรม"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(15), // Add border radius
+                            border: Border.all(
+                              color:
+                                  Color(0xFFF0F0F0), // Choose your border color
+                              width: 5, // Specify the width of the border
+                            ),
+                          ),
+                          child: Container(
+                            height: 60,
+                            width: 60,
+                            color: Color(0xFFF0F0F0),
+                            child: Icon(
+                              Icons.calendar_month,
+                              size: 50,
+                              color: Color(0xFF013C58),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text("กลุ่มที่ติดตาม"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(15), // Add border radius
+                            border: Border.all(
+                              color:
+                                  Color(0xFFF0F0F0), // Choose your border color
+                              width: 5, // Specify the width of the border
+                            ),
+                          ),
+                          child: Container(
+                            height: 60,
+                            width: 60,
+                            color: Color(0xFFF0F0F0),
+                            child: Icon(
+                              Icons.calendar_month,
+                              size: 50,
+                              color: Color(0xFF013C58),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text("ที่เข้าร่วม"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(15), // Add border radius
+                            border: Border.all(
+                              color:
+                                  Color(0xFFF0F0F0), // Choose your border color
+                              width: 5, // Specify the width of the border
+                            ),
+                          ),
+                          child: Container(
+                            height: 60,
+                            width: 60,
+                            color: Color(0xFFF0F0F0),
+                            child: Icon(
+                              Icons.calendar_month,
+                              size: 50,
+                              color: Color(0xFF013C58),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text("ที่เข้าร่วม"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Container(
+              width: double.infinity,
+              height: 110,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                image: DecorationImage(
+                  image: AssetImage('assets/images/badHome.jpg'),
+                  colorFilter: ColorFilter.mode(
+                    Color.fromARGB(255, 56, 56, 56),
+                    BlendMode.hardLight,
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 10),
+                      TextButton(
+                        onPressed: () {
+                          // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              'ความรู้แบดมินตันเบื้องต้น',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
+                            ),
+                            Icon(Icons.arrow_forward_ios),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
                     ],
                   )),
             ),

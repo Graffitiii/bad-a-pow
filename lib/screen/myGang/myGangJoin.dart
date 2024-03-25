@@ -87,7 +87,7 @@ class _MyGangJoinState extends State<MyGangJoin> {
       statusEventList.addAll(pendingList);
       statusEventList.addAll(joinList);
 
-      print("Combined Eventsกหดฟหำดำด: $statusEventList");
+      // print("Combined Eventsกหดฟหำดำด: $statusEventList");
 
       setState(() {
         loading = false;

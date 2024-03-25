@@ -1,9 +1,16 @@
+import 'package:finalmo/screen/add.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:finalmo/config.dart';
 
 class Filter extends StatefulWidget {
-  const Filter({super.key});
+  final level;
+
+  const Filter({this.level, Key? key}) : super(key: key);
 
   @override
   State<Filter> createState() => _FilterState();
@@ -11,14 +18,54 @@ class Filter extends StatefulWidget {
 
 class _FilterState extends State<Filter> {
   TextEditingController eventtime = TextEditingController();
+  TextEditingController eventdate = TextEditingController();
   String formattedStartTime = '';
   String formattedEndTime = '';
+  late Set<String> _selectedValues = {};
+  var filterlist = {};
+  var jsonResponse;
+  bool status = true;
+  bool loading = true;
+
+  final _formKey = GlobalKey<FormState>();
+
+  void initState() {
+    print(_selectedValues);
+    getFilters(widget.level);
+    super.initState();
+  }
+
+  void getFilters(level) async {
+    var queryParameters = {
+      'level': _selectedValues,
+      // 'eventdate_start': "${eventdate.text} $formattedStartTime",
+    };
+    var uri = Uri.http(getUrl, '/getFilter', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      jsonResponse = jsonDecode(response.body);
+      setState(() {
+        filterlist = jsonResponse;
+      });
+      print(filterlist);
+      // for (var item in jsonResponse['success']) {
+      //   print(item['club']);
+      // }
+    } else {
+      print(response.statusCode);
+    }
+
+    // setState(() {
+    //   loading = false;
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 40,
-        width: 40,
         decoration: ShapeDecoration(
           color: const Color.fromARGB(255, 255, 255, 255),
           shape: RoundedRectangleBorder(
@@ -38,39 +85,41 @@ class _FilterState extends State<Filter> {
                 builder: (BuildContext context) {
                   return FractionallySizedBox(
                     heightFactor: 0.8,
-                    child: Center(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(30),
-                                  child: Text("ที่อยู่ของฉัน"),
-                                ),
-                                Spacer(),
-                                TextButton(
-                                  onPressed: () {
-                                    // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'ดูทั้งหมด',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Icon(Icons.arrow_forward_ios),
-                                    ],
+                    child: Container(
+                      child: Form(
+                        key: _formKey,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(30),
+                                    child: Text("ที่อยู่ของฉัน"),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Padding(
+                                  Spacer(),
+                                  TextButton(
+                                    onPressed: () {
+                                      // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'ดูทั้งหมด',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Icon(Icons.arrow_forward_ios),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 0, horizontal: 20),
                                 child: Row(
@@ -97,206 +146,268 @@ class _FilterState extends State<Filter> {
                                       ],
                                     ),
                                   ],
-                                )),
-                            pageDivider(),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 20),
-                              child: Row(
-                                children: [
-                                  buildLocationRow(
-                                    "ฟิวเจอร์พาร์ค รังสิต",
-                                    "ตำบล คลองหนึ่ง อำเภอคลองหลวง ปทุมธานี 12120",
-                                  ),
-                                ],
-                              ),
-                            ),
-                            pageDivider(),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 20),
-                              child: Container(
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Color(
-                                        0xFF013C58), // ตั้งค่าสีเส้นขอบเป็นสีน้ำเงิน
-                                    width: 2, // กำหนดความกว้างของเส้นขอบ
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                      15), // กำหนดรูปทรงของขอบเส้น
                                 ),
+                              ),
+                              pageDivider(),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 20),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: FloatingActionButton.extended(
-                                        onPressed: () {
-                                          _launchMaps();
-                                        },
-                                        backgroundColor: Color(0xFFEFEFEF),
-                                        label: const Text(
-                                          'เพิ่มที่อยู่',
-                                          style: TextStyle(
+                                  children: [
+                                    buildLocationRow(
+                                      "ฟิวเจอร์พาร์ค รังสิต",
+                                      "ตำบล คลองหนึ่ง อำเภอคลองหลวง ปทุมธานี 12120",
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              pageDivider(),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 20),
+                                child: Container(
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Color(
+                                          0xFF013C58), // ตั้งค่าสีเส้นขอบเป็นสีน้ำเงิน
+                                      width: 2, // กำหนดความกว้างของเส้นขอบ
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                        15), // กำหนดรูปทรงของขอบเส้น
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: FloatingActionButton.extended(
+                                          onPressed: () {
+                                            _launchMaps();
+                                          },
+                                          backgroundColor: Color(0xFFEFEFEF),
+                                          label: const Text(
+                                            'เพิ่มที่อยู่',
+                                            style: TextStyle(
+                                              color: Color(0xFF013C58),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              height: 0,
+                                            ),
+                                          ),
+                                          icon: const Icon(
+                                            Icons.add_circle,
                                             color: Color(0xFF013C58),
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            height: 0,
                                           ),
                                         ),
-                                        icon: const Icon(
-                                          Icons.add_circle,
-                                          color: Color(0xFF013C58),
-                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              pageDivider(),
+                              buildTextFieldWithTitle(
+                                  "กำหนดระยะทาง", "ระยะทาง*"),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 20),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'วัน',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        height: 0,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                            pageDivider(),
-                            buildTextFieldWithTitle("กำหนดระยะทาง", "ระยะทาง*"),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 20),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'วัน',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ChipDateWeek(),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 0, horizontal: 20),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "เวลา",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          height: 0,
+                              // ChipDateWeek(),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 10),
+                                      child: Container(
+                                        width: 370,
+                                        height: 50,
+                                        child: DatePicker(
+                                          eventdate: eventdate,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 20),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: YourWidget(),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Icon(
-                                        Icons.remove,
-                                        size: 30,
-                                        color: Color(0xFF013C58),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: YourWidget(),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 20),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'ระดับของผู้เล่น',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0,
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ChipLevel(),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 15, horizontal: 30),
-                              child: Row(
+                                  ]),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: FractionallySizedBox(
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่มล้างข้อมูล
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary: Color(
-                                              0xFFEFEFEF), // สีพื้นหลังของปุ่ม
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                10), // รูปทรงของปุ่ม
-                                          ),
-                                        ),
-                                        child: Text(
-                                          'ล้าง',
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 20),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "เวลาเริ่ม",
                                           style: TextStyle(
-                                            color: Color(
-                                                0xFF013C58), // สีของตัวอักษรในปุ่ม
+                                            color: Colors.black,
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w600,
+                                            fontWeight: FontWeight.w400,
+                                            height: 0,
                                           ),
                                         ),
-                                      ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(width: 10),
-                                  Expanded(
-                                    child: FractionallySizedBox(
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่มค้นหา
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary: Color(
-                                              0xFF013C58), // สีพื้นหลังของปุ่ม
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                10), // รูปทรงของปุ่ม
-                                          ),
-                                        ),
-                                        child: Text(
-                                          'ค้นหา',
+                                  // Material(
+                                  //   child: Flexible(
+                                  //     child: Padding(
+                                  //       padding: EdgeInsets.symmetric(
+                                  //           vertical: 0, horizontal: 30),
+                                  //       child: Row(
+                                  //         children: [
+                                  //           Expanded(
+                                  //             child: TimePick(
+                                  //               eventtime: eventtime,
+                                  //               startTime: (startTime) {
+                                  //                 setState(() {
+                                  //                   formattedStartTime =
+                                  //                       startTime;
+                                  //                   // print(formattedStartTime);
+                                  //                 });
+                                  //               },
+                                  //               endTime: (endTime) {
+                                  //                 setState(() {
+                                  //                   formattedEndTime = endTime;
+                                  //                   // print(formattedEndTime);
+                                  //                 });
+                                  //               },
+                                  //             ),
+                                  //           ),
+                                  //           Icon(
+                                  //             Icons.remove,
+                                  //             size: 30,
+                                  //             color: Color(0xFF013C58),
+                                  //           ),
+                                  //           Expanded(
+                                  //             child: TimePick(
+                                  //               eventtime: eventtime,
+                                  //               startTime: (startTime) {
+                                  //                 setState(() {
+                                  //                   formattedStartTime =
+                                  //                       startTime;
+                                  //                   // print(formattedStartTime);
+                                  //                 });
+                                  //               },
+                                  //               endTime: (endTime) {
+                                  //                 setState(() {
+                                  //                   formattedEndTime = endTime;
+                                  //                   // print(formattedEndTime);
+                                  //                 });
+                                  //               },
+                                  //             ),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 20),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'ระดับของผู้เล่น',
                                           style: TextStyle(
-                                            color: Colors
-                                                .white, // สีของตัวอักษรในปุ่ม
+                                            color: Colors.black,
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w600,
+                                            fontWeight: FontWeight.w400,
+                                            height: 0,
                                           ),
                                         ),
-                                      ),
+                                      ],
+                                    ),
+                                  ),
+                                  ChipLevel(
+                                    onChanged: (values) {
+                                      // Update the selected values in Filter
+                                      setState(() {
+                                        _selectedValues = values;
+                                      });
+                                      // Print the selected values in Filter
+                                      print(_selectedValues);
+                                    },
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 15, horizontal: 30),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: FractionallySizedBox(
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่มล้างข้อมูล
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Color(
+                                                    0xFFEFEFEF), // สีพื้นหลังของปุ่ม
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10), // รูปทรงของปุ่ม
+                                                ),
+                                              ),
+                                              child: Text(
+                                                'ล้าง',
+                                                style: TextStyle(
+                                                  color: Color(
+                                                      0xFF013C58), // สีของตัวอักษรในปุ่ม
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: FractionallySizedBox(
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                getFilters(level);
+                                                // Navigator.pop(context);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Color(
+                                                    0xFF013C58), // สีพื้นหลังของปุ่ม
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10), // รูปทรงของปุ่ม
+                                                ),
+                                              ),
+                                              child: Text(
+                                                'ค้นหา',
+                                                style: TextStyle(
+                                                  color: Colors
+                                                      .white, // สีของตัวอักษรในปุ่ม
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -388,40 +499,22 @@ Widget buildTextFieldWithTitle(String title, String hintText) {
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Container(
           decoration: _buildBoxUser(),
-          child: SizedBox(
-            height: 40.0,
-            child: TextFormField(
-              decoration: _buildInputUser(hintText),
-              // onSaved: (String password) {
-              //   profile.password = password;
-              // },
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(4),
-              ],
-            ),
+          child: TextFormField(
+            decoration: _buildInputUser(hintText),
+            // onSaved: (String password) {
+            //   profile.password = password;
+            // },
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(4),
+            ],
           ),
         ),
       ),
     ],
   );
 }
-
-// class Date {
-//   final String? name;
-//   Date({this.name});
-// }
-
-// List<Date> DateList = [
-//   Date(name: 'จันทร์'),
-//   Date(name: 'อังคาร'),
-//   Date(name: 'พุธ'),
-//   Date(name: 'พฤหัสบดี'),
-//   Date(name: 'ศุกร์'),
-//   Date(name: 'เสาร์'),
-//   Date(name: 'อาทิตย์')
-// ];
 
 _launchMaps() async {
   // พิกัดที่ต้องการ (เช่นละติจูดและลองจิจูดของสถานที่ที่ต้องการ)
@@ -563,19 +656,30 @@ class _ChipDateWeekState extends State<ChipDateWeek> {
 }
 
 class ChipLevel extends StatefulWidget {
+  final void Function(Set<String> selectedValues) onChanged;
+
+  const ChipLevel({Key? key, required this.onChanged}) : super(key: key);
+
   @override
   _ChipLevelState createState() => _ChipLevelState();
 }
 
 class _ChipLevelState extends State<ChipLevel> {
-  Set<int> _selectedValues = Set<int>();
+  late Set<String> _selectedValues;
+  late List<bool> _isSelected;
 
-  // สีของแต่ละ ChoiceChip ตามลำดับ
   final List<Color> chipColors = [
     Color(0xFFF5A201),
     Color(0xFFFC7FFF),
     Color(0xFF43DC65),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValues = {};
+    _isSelected = List<bool>.filled(3, false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -589,22 +693,27 @@ class _ChipLevelState extends State<ChipLevel> {
             pressElevation: 0.0,
             selectedColor: chipColors[index],
             backgroundColor: Colors.grey[100],
-            label: Text(_getDayOfWeekName(index),
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w400,
-                ),
-                overflow: TextOverflow.ellipsis),
-            selected: _selectedValues.contains(index),
+            label: Text(
+              _getLevel(index),
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 10,
+                fontWeight: FontWeight.w400,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            selected: _isSelected[index],
             onSelected: (bool selected) {
               setState(() {
+                _isSelected[index] = selected;
                 if (selected) {
-                  _selectedValues.add(index);
+                  _selectedValues.add(_getLevel(index));
                 } else {
-                  _selectedValues.remove(index);
+                  _selectedValues.remove(_getLevel(index));
                 }
               });
+              // Call the onChanged callback to send the selected values to Filter
+              widget.onChanged(_selectedValues);
             },
           );
         }),
@@ -612,7 +721,7 @@ class _ChipLevelState extends State<ChipLevel> {
     );
   }
 
-  String _getDayOfWeekName(int index) {
+  String _getLevel(int index) {
     switch (index) {
       case 0:
         return "N";
@@ -626,20 +735,30 @@ class _ChipLevelState extends State<ChipLevel> {
   }
 }
 
-class YourWidget extends StatefulWidget {
+class TimePick extends StatefulWidget {
+  final TextEditingController eventtime;
+  final Function(String) startTime;
+  final Function(String) endTime;
+
+  TimePick(
+      {Key? key,
+      required this.eventtime,
+      required this.startTime,
+      required this.endTime})
+      : super(key: key);
   @override
-  _YourWidgetState createState() => _YourWidgetState();
+  State<StatefulWidget> createState() {
+    return _TimePickState();
+  }
 }
 
-class _YourWidgetState extends State<YourWidget> {
-  TextEditingController _startTimeController = TextEditingController();
-
-  @override
-  void dispose() {
-    _startTimeController.dispose();
-    super.dispose();
-  }
-
+class _TimePickState extends State<TimePick> {
+  TimeOfDay _startTime = TimeOfDay.now();
+  TimeOfDay _endTime =
+      TimeOfDay.fromDateTime(DateTime.now().add(const Duration(hours: 3)));
+  TextEditingController eventtime = TextEditingController();
+  String formattedStartTime = '';
+  String formattedEndTime = '';
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -652,14 +771,14 @@ class _YourWidgetState extends State<YourWidget> {
             );
             if (time != null) {
               String formattedTime = formatTime(time);
-              _startTimeController.text = formattedTime;
+              eventtime.text = formattedTime;
             }
           },
           child: Container(
             decoration: _buildBoxUser(),
             child: Center(
               child: TextFormField(
-                controller: _startTimeController,
+                controller: eventtime,
                 enabled: false,
                 decoration: InputDecoration(
                   hintText: 'Click to select start time',
@@ -703,5 +822,59 @@ class _YourWidgetState extends State<YourWidget> {
     String hour = time.hour.toString().padLeft(2, '0');
     String minute = time.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
+  }
+}
+
+class DatePicker extends StatelessWidget {
+  final TextEditingController eventdate;
+  DatePicker({Key? key, required this.eventdate}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: TextField(
+        controller: eventdate,
+        decoration: InputDecoration(
+          prefixIcon: Icon(
+            Icons.calendar_today,
+            color: Colors.grey,
+          ),
+          labelText: "Enter Date",
+          labelStyle: TextStyle(
+            color: Colors.black.withOpacity(0.3100000023841858),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(width: 1.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          border: InputBorder.none,
+          filled: true,
+          fillColor: Color(0xFFEFEFEF),
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+        ),
+        readOnly: true,
+        onTap: () async {
+          DateTime? pickedDate = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2101),
+          );
+          if (pickedDate != null) {
+            String formattedDate = DateFormat.yMd().format(pickedDate);
+
+            eventdate.text = formattedDate.toString();
+            // print(eventdate.text);
+          } else {
+            print("Not selected");
+          }
+        },
+      ),
+    );
   }
 }
