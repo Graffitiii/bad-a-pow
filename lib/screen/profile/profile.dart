@@ -43,6 +43,19 @@ class _ProfileState extends State<Profile> {
     username = jwtDecodedToken['userName'];
   }
 
+  void logout() {
+    prefs.remove('token');
+    print('logout');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => TabBarViewBottom()),
+    // );
+  }
+
   void getUser() async {
     var queryParameters = {
       'userName': username,
@@ -152,16 +165,11 @@ class _ProfileState extends State<Profile> {
                         },
                       ),
                       ListTile(
-                        leading: new Icon(Icons.logout),
-                        title: new Text('ออกจากระบบ'),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      LoginScreen()));
-                        },
-                      ),
+                          leading: new Icon(Icons.logout),
+                          title: new Text('ออกจากระบบ'),
+                          onTap: () {
+                            logout();
+                          }),
                       ListTile(
                         leading: new Icon(Icons.info),
                         title: new Text('เกี่ยวกับ'),
