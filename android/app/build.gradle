@@ -23,6 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
+    
     namespace "com.example.finalmo"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
@@ -69,3 +70,11 @@ dependencies {
     // implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     // implementation("com.google.firebase:firebase-appcheck")
 }
+
+android {
+    compileSdkVersion 34
+    defaultConfig {
+        minSdkVersion 20
+    }
+}
+

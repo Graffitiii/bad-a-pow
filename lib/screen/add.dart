@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:finalmo/postModel.dart';
 import 'package:finalmo/screen/myGang/addclub.dart';
 import 'package:finalmo/screen/profile/profile.dart';
@@ -8,10 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:time_range_picker/time_range_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 typedef TodoListCallback = void Function();
 
@@ -56,6 +60,11 @@ class _AddState extends State<Add> {
   bool status = false;
   bool loading = false;
 
+  firebase_storage.FirebaseStorage storage =
+      firebase_storage.FirebaseStorage.instance;
+  List<File> images = [];
+  List<String> downloadUrls = [];
+  final ImagePicker _picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
 
   void initState() {
@@ -70,24 +79,77 @@ class _AddState extends State<Add> {
     callback();
   }
 
+  Future getMultiImage() async {
+    final List<XFile>? pickedImage = await _picker.pickMultiImage();
+
+    if (pickedImage != null) {
+      pickedImage.forEach((e) {
+        images.add(File(e.path));
+      });
+
+      setState(() {});
+    }
+
+    print(images);
+  }
+
+  Future<String> uploadFile(File file) async {
+    // final fileName = username;
+    final destination = 'event_image/${DateTime.now().microsecondsSinceEpoch}';
+
+    final ref = firebase_storage.FirebaseStorage.instance.ref(destination);
+    await ref.putFile(file, SettableMetadata(contentType: 'image/jpeg'));
+
+    final imageUrl = await ref.getDownloadURL();
+    print(imageUrl);
+    return imageUrl;
+  }
+
   void addTodo() async {
     if (contact.text.isNotEmpty &&
         priceBadminton.text.isNotEmpty &&
         priceplay.text.isNotEmpty) {
-      var regBody = {
-        // "userId": userId,
-        "club": selectedclub,
-        "contact": contact.text,
-        "eventdate_start": "${eventdate.text} $formattedStartTime",
-        "eventdate_end": "${eventdate.text} $formattedEndTime",
-        "price_badminton": priceBadminton.text,
-        "priceplay": priceplay.text,
-        "level": selectedlevel,
-        "brand": brand.text,
-        "details": details.text,
-        "active": false
-      };
+      var regBody;
+      if (images.length != 0) {
+        for (int i = 0; i < images.length; i++) {
+          String url = await uploadFile(images[i]);
+          downloadUrls.add(url);
 
+          if (i == images.length - 1) {
+            regBody = {
+              "image": downloadUrls,
+              "club": selectedclub,
+              "contact": contact.text,
+              "eventdate_start": "${eventdate.text} $formattedStartTime",
+              "eventdate_end": "${eventdate.text} $formattedEndTime",
+              "price_badminton": priceBadminton.text,
+              "priceplay": priceplay.text,
+              "level": selectedlevel,
+              "brand": brand.text,
+              "details": details.text,
+              "active": false
+            };
+
+            print(regBody);
+          }
+        }
+      } else {
+        regBody = {
+          // "userId": userId,
+          "club": selectedclub,
+          "contact": contact.text,
+          "eventdate_start": "${eventdate.text} $formattedStartTime",
+          "eventdate_end": "${eventdate.text} $formattedEndTime",
+          "price_badminton": priceBadminton.text,
+          "priceplay": priceplay.text,
+          "level": selectedlevel,
+          "brand": brand.text,
+          "details": details.text,
+          "active": false
+        };
+      }
+
+      print(regBody);
       var response = await http.post(Uri.parse(createEvent),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
@@ -216,26 +278,66 @@ class _AddState extends State<Add> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    height: 120,
-                    decoration: ShapeDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(width: 2, color: Color(0xFF013C58)),
-                        borderRadius: BorderRadius.circular(10),
+                  GestureDetector(
+                    onTap: () async {
+                      getMultiImage();
+                    },
+                    child: Container(
+                      height: 120,
+                      decoration: ShapeDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(width: 2, color: Color(0xFF013C58)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Center(
+                        child: images.length == 0
+                            ? Center(
+                                child: Text("เพิ่มรูปภาพ"),
+                              )
+                            : ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (ctx, i) {
+                                  return Container(
+                                      width: 120,
+                                      margin: EdgeInsets.only(right: 5),
+                                      // height: 10,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Color(0xFF013C58)),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          Image.file(
+                                            images[i],
+                                            fit: BoxFit.cover,
+                                          ),
+                                          Positioned(
+                                              right: -10,
+                                              top: -10,
+                                              child: IconButton(
+                                                iconSize: 25,
+                                                icon: Icon(
+                                                  Icons.cancel,
+                                                ),
+                                                color: Color.fromARGB(
+                                                    255, 255, 255, 255),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    images.removeAt(i);
+                                                  });
+                                                },
+                                              )),
+                                        ],
+                                      ));
+                                },
+                                itemCount: images.length,
+                              ),
                       ),
                     ),
-                    child: Center(
-                        child: Text(
-                      'เพิ่มรูปภาพ',
-                      style: TextStyle(
-                        color: Color(0xFF013C58),
-                        fontSize: 16,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w600,
-                        height: 0,
-                      ),
-                    )),
                   ),
                   SizedBox(
                     height: 15,
@@ -985,5 +1087,3 @@ class _TimePickState extends State<TimePick> {
 //     );
 //   }
 // }
-
-

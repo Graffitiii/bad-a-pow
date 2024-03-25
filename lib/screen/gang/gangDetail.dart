@@ -2,6 +2,7 @@
 
 import 'package:finalmo/postModel.dart';
 import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
+import 'package:finalmo/screen/gang/map.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:convert';
@@ -38,6 +39,7 @@ class _GangDetailState extends State<GangDetail> {
   bool pending = false;
   bool openevent = false;
   var eventeach;
+  List images = [];
   bool followStatus = false;
   bool loading = true;
   void initState() {
@@ -61,6 +63,7 @@ class _GangDetailState extends State<GangDetail> {
     if (jsonResponse['status']) {
       setState(() {
         eventeach = jsonResponse['data'];
+        images = eventeach['image'];
         openevent = eventeach['active'];
         userPending = jsonResponse['data']['pending'];
         userJoin = jsonResponse['data']['join'];
@@ -565,69 +568,48 @@ class _GangDetailState extends State<GangDetail> {
                             Padding(
                                 padding: EdgeInsets.only(bottom: 15),
                                 child: Column(children: [
-                                  CarouselSlider(
-                                    items: [
-                                      Container(
-                                        margin: EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              10), // กำหนดให้เป็นรูปร่างวงกลม
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/bad1.jpg'),
-                                            fit: BoxFit.cover,
+                                  if (images.isNotEmpty) ...[
+                                    CarouselSlider(
+                                      items: images.map<Widget>((items) {
+                                        return Container(
+                                          margin: EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                                10), // กำหนดให้เป็นรูปร่างวงกลม
+                                            image: DecorationImage(
+                                              image: NetworkImage(items),
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
-                                        ),
+                                        );
+                                      }).toList(),
+                                      options: CarouselOptions(
+                                        height: 220.0,
+                                        enlargeCenterPage: true,
+                                        autoPlay: true,
+                                        aspectRatio: 16 / 9,
+                                        autoPlayCurve: Curves.fastOutSlowIn,
+                                        enableInfiniteScroll: false,
+                                        autoPlayAnimationDuration:
+                                            Duration(milliseconds: 1000),
+                                        viewportFraction: 0.8,
                                       ),
-                                      Container(
-                                        margin: EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              10), // กำหนดให้เป็นรูปร่างวงกลม
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/bad2.jpg'),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/bad3.jpg'),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/bad4.png'),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                    options: CarouselOptions(
-                                      height: 220.0,
-                                      enlargeCenterPage: true,
-                                      autoPlay: false,
-                                      aspectRatio: 16 / 9,
-                                      autoPlayCurve: Curves.fastOutSlowIn,
-                                      enableInfiniteScroll: true,
-                                      autoPlayAnimationDuration:
-                                          Duration(milliseconds: 800),
-                                      viewportFraction: 0.8,
                                     ),
-                                  ),
+                                  ] else ...[
+                                    Container(
+                                      width: double.infinity,
+                                      height: 200,
+                                      margin: EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/badapow.png'),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                   SizedBox(height: 15),
                                   Container(
                                     padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -1146,10 +1128,20 @@ class _GangDetailState extends State<GangDetail> {
                                               ),
                                             ),
                                             Spacer(),
-                                            Icon(
-                                              Icons.arrow_forward_ios,
-                                              color: Color(0xFF013C58),
-                                              size: 22.0,
+                                            IconButton(
+                                              iconSize: 20,
+                                              icon: Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Color(0xFF013C58),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (BuildContext
+                                                                context) =>
+                                                            MapPage()));
+                                              },
                                             ),
                                           ],
                                         ),
