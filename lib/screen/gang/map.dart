@@ -9,9 +9,18 @@ import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+  final eventLat;
+  final eventLng;
+  final eventPlacename;
+  const MapPage(
+      {@required this.eventLat,
+      @required this.eventLng,
+      Key? key,
+      @required this.eventPlacename})
+      : super(key: key);
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -47,7 +56,7 @@ class _MapPageState extends State<MapPage> {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       googleAPiKey,
       PointLatLng(13.744679051575686, 100.53005064632619), // Start coordinates
-      PointLatLng(13.7650836, 100.5379664), // End coordinates
+      PointLatLng(widget.eventLat, widget.eventLng), // End coordinates
     );
 
     if (result.points.isNotEmpty) {
@@ -67,6 +76,23 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       userMarker = BitmapDescriptor.fromBytes(markerIcon!);
     });
+  }
+
+  void _launchMaps() async {
+    // พิกัดที่ต้องการ (เช่นละติจูดและลองจิจูดของสถานที่ที่ต้องการ)
+    final latitude = widget.eventLat;
+    final longitude = widget.eventLng;
+
+    // URL ของ Google Maps ที่มีพิกัดที่ต้องการ
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+
+    // เปิด Google Maps ในอุปกรณ์ของผู้ใช้
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'ไม่สามารถเปิด Google Maps ได้: $url';
+    }
   }
 
   Future<Uint8List?> getBytesFromAsset(String path, int width) async {
@@ -109,6 +135,7 @@ class _MapPageState extends State<MapPage> {
   Future goToMe() async {
     final GoogleMapController controller = await _controller.future;
     // userLocation = await getLocation();
+
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: LatLng(13.744679051575686, 100.53005064632619),
       zoom: 16,
@@ -127,19 +154,37 @@ class _MapPageState extends State<MapPage> {
               onPressed: goToMe)
         ],
       ),
+      floatingActionButton: ElevatedButton(
+        onPressed: () {
+          _launchMaps();
+        },
+        style: ElevatedButton.styleFrom(
+          primary: ui.Color.fromARGB(255, 255, 142, 67),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 0, // Remove default button elevation
+        ),
+        child: Text(
+          'ไปที่ Google Maps',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       body: GoogleMap(
         mapType: MapType.terrain,
-        // myLocationEnabled: true,
-        // myLocationButtonEnabled: true,
         initialCameraPosition: CameraPosition(
-          target: LatLng(13.7650836, 100.5379664),
+          target: LatLng(widget.eventLat, widget.eventLng),
           zoom: 16,
         ),
         markers: {
           Marker(
             markerId: MarkerId("event"),
-            position: LatLng(13.7650836, 100.5379664),
-            infoWindow: InfoWindow(title: "สนามแบดซ่า", snippet: "สนามแบดซ่า"),
+            position: LatLng(widget.eventLat, widget.eventLng),
+            infoWindow: InfoWindow(title: widget.eventPlacename),
           ),
           Marker(
             markerId: const MarkerId("user"),
@@ -148,7 +193,6 @@ class _MapPageState extends State<MapPage> {
           ),
         },
         polylines: Set<Polyline>.of(polylines.values),
-
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },

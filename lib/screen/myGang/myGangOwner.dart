@@ -26,6 +26,9 @@ class _MyGangOwnerState extends State<MyGangOwner> {
   var jsonResponse;
   bool status = false;
   bool loading = false;
+  var reviewlist = {};
+  // var rating = '';
+  Map<String, String> review = {};
 
   void initState() {
     // TODO: implement initState
@@ -67,6 +70,17 @@ class _MyGangOwnerState extends State<MyGangOwner> {
       print(jsonResponse);
       status = true;
 
+      List<Future> reviewFutures = [];
+
+      for (var club in jsonResponse['data']) {
+        // Call getReview for each club and store the future
+        reviewFutures.add(getReview(club['clubname']));
+      }
+
+      // Wait for all futures to complete
+      await Future.wait(reviewFutures);
+
+      print(review);
       setState(() {
         loading = false;
       });
@@ -75,6 +89,46 @@ class _MyGangOwnerState extends State<MyGangOwner> {
 
       print(response.statusCode);
     }
+  }
+
+  Future<void> getReview(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
+
+    var uri = Uri.http(getUrl, '/getReviewList', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      setState(() {
+        reviewlist = jsonResponse;
+        // print(averageScore(reviewlist));
+        review[clubname] = averageScore(reviewlist);
+      });
+    }
+
+    setState(() {
+      loading = false;
+    });
+  }
+
+  String averageScore(reviewlist) {
+    var rating = '';
+    int sum = 0;
+    int count = reviewlist['success'].length;
+
+    for (var value in reviewlist['success']) {
+      int score = value['score'];
+      sum += score;
+    }
+
+    double average = count > 0 ? sum / count : 0;
+    String formattedAverage = average.toStringAsFixed(1);
+    // print('Average Score: $formattedAverage');
+    rating = formattedAverage;
+    return rating;
   }
 
   void addClubHandle() async {
@@ -218,7 +272,8 @@ class _MyGangOwnerState extends State<MyGangOwner> {
                                                   margin:
                                                       EdgeInsets.only(left: 5),
                                                   child: Text(
-                                                    '4.3',
+                                                    review[items['clubname']] ??
+                                                        '',
                                                     style: TextStyle(
                                                       color: Color(0xFF929292),
                                                       fontSize: 14,

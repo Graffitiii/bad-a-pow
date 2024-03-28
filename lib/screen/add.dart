@@ -7,6 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +18,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 
 typedef TodoListCallback = void Function();
 
@@ -46,6 +49,10 @@ class _AddState extends State<Add> {
   TextEditingController details = TextEditingController();
   TextEditingController eventdate = TextEditingController();
   TextEditingController eventtime = TextEditingController();
+  TextEditingController placename = TextEditingController();
+  TextEditingController userlimit = TextEditingController();
+  late double latitude;
+  late double longitude;
   String formattedStartTime = '';
   String formattedEndTime = '';
   List<String> selectedlevel = [];
@@ -127,7 +134,11 @@ class _AddState extends State<Add> {
               "level": selectedlevel,
               "brand": brand.text,
               "details": details.text,
-              "active": false
+              "active": false,
+              "placename": placename.text,
+              "latitude": latitude,
+              "longitude": longitude,
+              "userlimit": userlimit.text
             };
 
             print(regBody);
@@ -145,7 +156,11 @@ class _AddState extends State<Add> {
           "level": selectedlevel,
           "brand": brand.text,
           "details": details.text,
-          "active": false
+          "active": false,
+          "placename": placename.text,
+          "latitude": latitude,
+          "longitude": longitude,
+          "userlimit": userlimit.text
         };
       }
 
@@ -250,6 +265,16 @@ class _AddState extends State<Add> {
       }
     }
   }
+
+  final ThemeData darkTheme = ThemeData.dark().copyWith(
+    // Background color of the FloatingCard
+    cardColor: Colors.grey,
+    buttonTheme: ButtonThemeData(
+      // Select here's button color
+      buttonColor: Colors.yellow,
+      textTheme: ButtonTextTheme.primary,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -438,39 +463,218 @@ class _AddState extends State<Add> {
                   SizedBox(
                     height: 15,
                   ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1.0),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      labelText: 'สถานที่',
-                      labelStyle: TextStyle(
-                        color: Colors.black.withOpacity(0.3100000023841858),
-                        fontSize: 14,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
-                      ),
-                      fillColor: Color(0xFFEFEFEF),
-                      filled: true,
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                      border: InputBorder.none,
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1.0, color: Colors.red),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1.0, color: Colors.red),
-                      ),
-                      errorStyle: TextStyle(fontSize: 12),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          child: SizedBox(
+                            child: TextFormField(
+                              controller: placename,
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 1.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                labelText: 'สถานที่ *ชื่อสถานที่ที่แสดง',
+                                labelStyle: TextStyle(
+                                  color: Colors.black
+                                      .withOpacity(0.3100000023841858),
+                                  fontSize: 14,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                fillColor: Color(0xFFEFEFEF),
+                                filled: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 12),
+                                border: InputBorder.none,
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(width: 1.0, color: Colors.red),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(width: 1.0, color: Colors.red),
+                                ),
+                                errorStyle: TextStyle(fontSize: 12),
+                              ),
 
-                    // onSaved: (String email) {
-                    //   profile.email = email;
-                    // },
+                              // onSaved: (String email) {
+                              //   profile.email = email;
+                              // },
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                          width: 5), // เพิ่มระยะห่างระหว่าง TextField และปุ่ม
+
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlacePicker(
+                                initialMapType: MapType.normal,
+                                autocompleteLanguage: 'th',
+                                apiKey:
+                                    'AIzaSyC0DEere3Ykl4YG32qEmfRfG9aCpsl1igw',
+
+                                onPlacePicked: (result) {
+                                  print(result.formattedAddress);
+                                  print(result.geometry?.location);
+                                  print(result.vicinity);
+                                  print(result.name);
+                                  Navigator.of(context).pop();
+                                },
+                                selectedPlaceWidgetBuilder: (_, selectedPlace,
+                                    state, isSearchBarFocused) {
+                                  return isSearchBarFocused
+                                      ? Container()
+                                      // Use FloatingCard or just create your own Widget.
+                                      : FloatingCard(
+                                          bottomPosition:
+                                              50.0, // MediaQuery.of(context) will cause rebuild. See MediaQuery document for the information.
+                                          leftPosition: 10.0,
+                                          rightPosition: 10.0,
+                                          width: 500,
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          child: state ==
+                                                  SearchingState.Searching
+                                              ? Container(
+                                                  height: 140,
+                                                  color: Color.fromARGB(
+                                                      255, 117, 117, 117),
+                                                  child: Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      color: Color.fromARGB(
+                                                          255, 255, 145, 0),
+                                                    ),
+                                                  ))
+                                              : Container(
+                                                  height: 140,
+                                                  color: Color.fromARGB(
+                                                      255, 117, 117, 117),
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsets.all(10.0),
+                                                    child: Column(children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          selectedPlace?.name ??
+                                                              selectedPlace
+                                                                  ?.formattedAddress ??
+                                                              "Address not available",
+                                                          style: TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    255,
+                                                                    255,
+                                                                    255),
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            height: 0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            if (selectedPlace
+                                                                    ?.name !=
+                                                                null) {
+                                                              placename.text =
+                                                                  selectedPlace!
+                                                                      .name!;
+                                                            } else {
+                                                              placename.text =
+                                                                  selectedPlace!
+                                                                      .formattedAddress!;
+                                                            }
+                                                          });
+                                                          setState(() {
+                                                            latitude =
+                                                                selectedPlace!
+                                                                    .geometry!
+                                                                    .location
+                                                                    .lat;
+                                                            longitude =
+                                                                selectedPlace
+                                                                    .geometry!
+                                                                    .location
+                                                                    .lng;
+                                                          });
+
+                                                          print(latitude);
+                                                          print(longitude);
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          primary: Color.fromARGB(
+                                                              255,
+                                                              255,
+                                                              145,
+                                                              0), // สีพื้นหลังของปุ่ม
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10), // รูปทรงของปุ่ม
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          'เลือกที่นี่',
+                                                          style: TextStyle(
+                                                            color: Color.fromARGB(
+                                                                255,
+                                                                255,
+                                                                255,
+                                                                255), // สีของตัวอักษรในปุ่ม
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ]),
+                                                  )));
+                                },
+                                initialPosition: LatLng(
+                                    13.744679051575686, 100.53005064632619),
+                                useCurrentLocation: false,
+
+                                resizeToAvoidBottomInset:
+                                    false, // only works in page mode, less flickery, remove if wrong offsets
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xFF013C58),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'เลือกสถานที่',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height: 15,
@@ -482,6 +686,7 @@ class _AddState extends State<Add> {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: TextFormField(
+                            controller: userlimit,
                             decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(width: 1.0),

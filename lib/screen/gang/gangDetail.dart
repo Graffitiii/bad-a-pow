@@ -1099,7 +1099,7 @@ class _GangDetailState extends State<GangDetail> {
                                               ],
                                             ),
                                             SizedBox(width: 10),
-                                            Flexible(
+                                            Expanded(
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -1115,7 +1115,7 @@ class _GangDetailState extends State<GangDetail> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    'สนามเอสแอนด์เอ็ม',
+                                                    eventeach['placename'],
                                                     style: TextStyle(
                                                       color: Color(0xFF929292),
                                                       fontSize: 14,
@@ -1127,7 +1127,7 @@ class _GangDetailState extends State<GangDetail> {
                                                 ],
                                               ),
                                             ),
-                                            Spacer(),
+                                            // Spacer(),
                                             IconButton(
                                               iconSize: 20,
                                               icon: Icon(
@@ -1140,7 +1140,15 @@ class _GangDetailState extends State<GangDetail> {
                                                     MaterialPageRoute(
                                                         builder: (BuildContext
                                                                 context) =>
-                                                            MapPage()));
+                                                            MapPage(
+                                                              eventLat: eventeach[
+                                                                  'latitude'],
+                                                              eventLng: eventeach[
+                                                                  'longitude'],
+                                                              eventPlacename:
+                                                                  eventeach[
+                                                                      'placename'],
+                                                            )));
                                               },
                                             ),
                                           ],

@@ -65,7 +65,7 @@ class _FindGangState extends State<FindGang> {
       setState(() {
         eventlist = jsonResponse;
       });
-
+      print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       print(eventlist);
     } else {
       print(response.statusCode);
@@ -768,23 +768,37 @@ class _FindGangState extends State<FindGang> {
                                                                   0xFFFF3333),
                                                               size: 20.0,
                                                             ),
-                                                            Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      left: 5),
-                                                              child: Text(
-                                                                'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color(
-                                                                      0xFF929292),
-                                                                  fontSize: 14,
-                                                                  fontFamily:
-                                                                      'Inter',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  height: 0,
+                                                            ConstrainedBox(
+                                                              constraints: BoxConstraints(
+                                                                  maxWidth: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.6), // Adjust the value as needed
+                                                              child: Container(
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        left:
+                                                                            5),
+                                                                child: Text(
+                                                                  items[
+                                                                      'placename'],
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color(
+                                                                        0xFF929292),
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontFamily:
+                                                                        'Inter',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    height: 0,
+                                                                  ),
                                                                 ),
                                                               ),
                                                             ),
