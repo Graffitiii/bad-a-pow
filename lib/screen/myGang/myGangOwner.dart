@@ -264,6 +264,12 @@ class _MyGangOwnerState extends State<MyGangOwner> {
                     FloatingActionButton(
                       onPressed: () {
                         addClubHandle();
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (BuildContext context) => MyGangOwner(),
+                        //   ),
+                        // );
                       },
                       tooltip: 'Addclub',
                       child: const Icon(Icons.add),

@@ -155,7 +155,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
     }
   }
 
-  void getReview(clubname) async {
+  Future<String> getReview(clubname) async {
     var queryParameters = {
       'clubname': clubname,
     };
@@ -175,6 +175,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
     setState(() {
       loading = false;
     });
+    return rating;
   }
 
   void averageScore(reviewlist) {
