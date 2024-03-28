@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:finalmo/screen/TabbarButton.dart';
+import 'package:finalmo/screen/calender.dart';
 import 'package:finalmo/screen/login_page/login.dart';
+import 'package:finalmo/screen/myGang/myGang.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   final token;
@@ -42,6 +45,16 @@ class _HomePageState extends State<HomePage> {
     //   context,
     //   MaterialPageRoute(builder: (context) => TabBarViewBottom()),
     // );
+  }
+
+  _launchURL() async {
+    const url =
+        'https://th.wikipedia.org/wiki/%E0%B9%81%E0%B8%9A%E0%B8%94%E0%B8%A1%E0%B8%B4%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%99'; // URL ที่คุณต้องการเปิด
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -159,138 +172,173 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(15), // Add border radius
-                            border: Border.all(
-                              color:
-                                  Color(0xFFF0F0F0), // Choose your border color
-                              width: 5, // Specify the width of the border
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => Calender()));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                  15), // Add border radius
+                              border: Border.all(
+                                color: Color(
+                                    0xFFF0F0F0), // Choose your border color
+                                width: 5, // Specify the width of the border
+                              ),
+                            ),
+                            child: Container(
+                              height: 60,
+                              width: 60,
+                              color: Color(0xFFF0F0F0),
+                              child: Icon(
+                                Icons.calendar_month,
+                                size: 50,
+                                color: Color(0xFF013C58),
+                              ),
                             ),
                           ),
-                          child: Container(
-                            height: 60,
-                            width: 60,
-                            color: Color(0xFFF0F0F0),
-                            child: Icon(
-                              Icons.calendar_month,
-                              size: 50,
-                              color: Color(0xFF013C58),
-                            ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text("ตารางกิจกรรม"),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text("ตารางกิจกรรม"),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(15), // Add border radius
-                            border: Border.all(
-                              color:
-                                  Color(0xFFF0F0F0), // Choose your border color
-                              width: 5, // Specify the width of the border
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  TabBarViewMyEvent()));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                  15), // Add border radius
+                              border: Border.all(
+                                color: Color(
+                                    0xFFF0F0F0), // Choose your border color
+                                width: 5, // Specify the width of the border
+                              ),
+                            ),
+                            child: Container(
+                              height: 60,
+                              width: 60,
+                              color: Color(0xFFF0F0F0),
+                              child: Icon(
+                                Icons.calendar_month,
+                                size: 50,
+                                color: Color(0xFF013C58),
+                              ),
                             ),
                           ),
-                          child: Container(
-                            height: 60,
-                            width: 60,
-                            color: Color(0xFFF0F0F0),
-                            child: Icon(
-                              Icons.calendar_month,
-                              size: 50,
-                              color: Color(0xFF013C58),
-                            ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text("กลุ่มที่ติดตาม"),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text("กลุ่มที่ติดตาม"),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(15), // Add border radius
-                            border: Border.all(
-                              color:
-                                  Color(0xFFF0F0F0), // Choose your border color
-                              width: 5, // Specify the width of the border
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  TabBarViewMyEvent()));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                  15), // Add border radius
+                              border: Border.all(
+                                color: Color(
+                                    0xFFF0F0F0), // Choose your border color
+                                width: 5, // Specify the width of the border
+                              ),
+                            ),
+                            child: Container(
+                              height: 60,
+                              width: 60,
+                              color: Color(0xFFF0F0F0),
+                              child: Icon(
+                                Icons.calendar_month,
+                                size: 50,
+                                color: Color(0xFF013C58),
+                              ),
                             ),
                           ),
-                          child: Container(
-                            height: 60,
-                            width: 60,
-                            color: Color(0xFFF0F0F0),
-                            child: Icon(
-                              Icons.calendar_month,
-                              size: 50,
-                              color: Color(0xFF013C58),
-                            ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text("ที่เข้าร่วม"),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text("ที่เข้าร่วม"),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(15), // Add border radius
-                            border: Border.all(
-                              color:
-                                  Color(0xFFF0F0F0), // Choose your border color
-                              width: 5, // Specify the width of the border
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  TabBarViewProfile()));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                  15), // Add border radius
+                              border: Border.all(
+                                color: Color(
+                                    0xFFF0F0F0), // Choose your border color
+                                width: 5, // Specify the width of the border
+                              ),
+                            ),
+                            child: Container(
+                              height: 60,
+                              width: 60,
+                              color: Color(0xFFF0F0F0),
+                              child: Icon(
+                                Icons.calendar_month,
+                                size: 50,
+                                color: Color(0xFF013C58),
+                              ),
                             ),
                           ),
-                          child: Container(
-                            height: 60,
-                            width: 60,
-                            color: Color(0xFFF0F0F0),
-                            child: Icon(
-                              Icons.calendar_month,
-                              size: 50,
-                              color: Color(0xFF013C58),
-                            ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text("เป็นผู้จัดก๊วน"),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text("ที่เข้าร่วม"),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -301,7 +349,7 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
               width: double.infinity,
-              height: 110,
+              height: 130,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 image: DecorationImage(
@@ -318,39 +366,42 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 10),
                       TextButton(
                         onPressed: () {
                           // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
                         },
                         child: Row(
                           children: [
-                            Text(
-                              'ความรู้แบดมินตันเบื้องต้น',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                height: 0,
+                            TextButton(
+                              onPressed: () {
+                                _launchURL();
+                              },
+                              child: Text(
+                                'ความรู้แบดมินตันเบื้องต้น',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  height: 0,
+                                ),
                               ),
                             ),
                             Icon(Icons.arrow_forward_ios),
                           ],
                         ),
                       ),
-                      SizedBox(height: 10),
                     ],
                   )),
             ),
-            Text(
-              widget.token,
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                height: 0,
-              ),
-            ),
+            // Text(
+            //   widget.token,
+            //   style: TextStyle(
+            //     color: const Color.fromARGB(255, 0, 0, 0),
+            //     fontSize: 14,
+            //     fontWeight: FontWeight.w400,
+            //     height: 0,
+            //   ),
+            // ),
           ],
         ),
       )),

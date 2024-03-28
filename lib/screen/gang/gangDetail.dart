@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:finalmo/postModel.dart';
+import 'package:finalmo/screen/edit_event.dart';
 import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
 import 'package:finalmo/screen/gang/map.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,8 @@ bool status = true;
 
 class GangDetail extends StatefulWidget {
   final id;
-
-  const GangDetail({@required this.id, Key? key}) : super(key: key);
+  final club;
+  const GangDetail({this.id, this.club, super.key});
 
   @override
   State<GangDetail> createState() => _GangDetailState();
@@ -42,6 +43,10 @@ class _GangDetailState extends State<GangDetail> {
   List images = [];
   bool followStatus = false;
   bool loading = true;
+
+  var reviewlist = {};
+  var rating = '';
+
   void initState() {
     super.initState();
     initializeState();
@@ -50,6 +55,7 @@ class _GangDetailState extends State<GangDetail> {
   void initializeState() async {
     await initSharedPref();
     getEvent(widget.id);
+    getReview(widget.club);
   }
 
   void getEvent(eventId) async {
@@ -125,7 +131,7 @@ class _GangDetailState extends State<GangDetail> {
       setState(() {
         clubInfo = jsonResponse['club'];
       });
-      // print("clubInfo:  $clubInfo");
+      print("clubInfo:  $clubInfo");
 
       if (clubInfo['follower'].contains(username)) {
         // print('$username found in the list.');
@@ -287,6 +293,43 @@ class _GangDetailState extends State<GangDetail> {
     //     "-" +
     //     formattedEndTime);
     return formattedDateTime + " - " + formattedEndTime;
+  }
+
+  void getReview(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
+
+    var uri = Uri.http(getUrl, '/getReviewList', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      setState(() {
+        reviewlist = jsonResponse;
+        averageScore(reviewlist);
+      });
+    }
+
+    setState(() {
+      loading = false;
+    });
+  }
+
+  void averageScore(reviewlist) {
+    int sum = 0;
+    int count = reviewlist['success'].length;
+
+    for (var value in reviewlist['success']) {
+      int score = value['score'];
+      sum += score;
+    }
+
+    double average = count > 0 ? sum / count : 0;
+    String formattedAverage = average.toStringAsFixed(1);
+    print('Average Score: $formattedAverage');
+    rating = formattedAverage;
   }
 
   int _selectedIndex = 0;
@@ -547,7 +590,13 @@ class _GangDetailState extends State<GangDetail> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                onPressed: () => {}),
+                                onPressed: () => {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  EditEvent(id: eventeach)))
+                                    }),
                           )),
                     ),
                   ],
@@ -797,7 +846,8 @@ class _GangDetailState extends State<GangDetail> {
                                                 Row(
                                                   children: [
                                                     Text(
-                                                      '6',
+                                                      userJoin.length
+                                                          .toString(),
                                                       style: TextStyle(
                                                         color:
                                                             Color(0xFF013C58),
@@ -1042,7 +1092,7 @@ class _GangDetailState extends State<GangDetail> {
                                               child: Column(
                                                 children: [
                                                   Text(
-                                                    '4.6',
+                                                    rating,
                                                     style: TextStyle(
                                                       color: Color(0xFF013C58),
                                                       fontSize: 20,
@@ -1598,7 +1648,7 @@ class ShareBottton extends StatelessWidget {
           backgroundColor: Color(0xFF575757),
           builder: (BuildContext context) {
             return FractionallySizedBox(
-              heightFactor: 0.6,
+              heightFactor: 0.5,
               child: Center(
                 child: SingleChildScrollView(
                     child: Column(

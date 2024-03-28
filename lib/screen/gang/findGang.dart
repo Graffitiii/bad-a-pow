@@ -22,8 +22,9 @@ List<String> selectedlevel = [];
 List<String> selectedtime = [];
 
 class FindGang extends StatefulWidget {
-  final averages;
-  const FindGang({Key? key, this.averages}) : super(key: key);
+  const FindGang({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<FindGang> createState() => _FindGangState();
@@ -36,7 +37,8 @@ class _FindGangState extends State<FindGang> {
   bool loading = true;
   String query = '';
   var reviewlist = {};
-  var rating = '';
+  Map<String, String> review = {};
+  // var rating = '';
 
   TextEditingController eventtime = TextEditingController();
   TextEditingController eventdate = TextEditingController();
@@ -49,7 +51,6 @@ class _FindGangState extends State<FindGang> {
   @override
   void initState() {
     getTodoList();
-    print(widget.averages);
     getFilters();
     super.initState();
   }
@@ -67,6 +68,14 @@ class _FindGangState extends State<FindGang> {
       });
       print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       print(eventlist);
+      List<Future> reviewFutures = [];
+      for (var club in jsonResponse['eventlistdata']) {
+        reviewFutures.add(getReview(club['club']));
+      }
+
+      await Future.wait(reviewFutures);
+
+      print(review);
     } else {
       print(response.statusCode);
     }
@@ -80,19 +89,19 @@ class _FindGangState extends State<FindGang> {
     // DateTime eventStart = dateR("");
     var queryParameters = {
       'level': _selectedValues,
-      'eventdate_start': "2024-03-05 03:30:00.000Z",
+      'eventdate_start': "${eventdate.text} ${eventtime.text}",
     };
     var uri = Uri.http(getUrl, '/getFilter', queryParameters);
     var response = await http.get(uri);
 
     var jsonResponse = jsonDecode(response.body);
-
+    print(eventtime.text);
     if (response.statusCode == 200) {
       jsonResponse = jsonDecode(response.body);
       setState(() {
         filterlist = jsonResponse;
       });
-      print(filterlist);
+      print("filterlist: $filterlist");
       // for (var item in jsonResponse['success']) {
       //   print(item['club']);
       // }
@@ -132,42 +141,45 @@ class _FindGangState extends State<FindGang> {
     });
   }
 
-  // void getReview(clubname) async {
-  //   var queryParameters = {
-  //     'clubname': clubname,
-  //   };
+  Future<void> getReview(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
 
-  //   var uri = Uri.http(getUrl, '/getReviewList', queryParameters);
-  //   var response = await http.get(uri);
+    var uri = Uri.http(getUrl, '/getReviewList', queryParameters);
+    var response = await http.get(uri);
 
-  //   var jsonResponse = jsonDecode(response.body);
+    var jsonResponse = jsonDecode(response.body);
 
-  //   if (jsonResponse['status']) {
-  //     setState(() {
-  //       reviewlist = jsonResponse;
-  //       averageScore(reviewlist);
-  //     });
-  //   }
+    if (jsonResponse['status']) {
+      setState(() {
+        reviewlist = jsonResponse;
+        // print(averageScore(reviewlist));
+        review[clubname] = averageScore(reviewlist);
+      });
+    }
 
-  //   setState(() {
-  //     loading = false;
-  //   });
-  // }
+    setState(() {
+      loading = false;
+    });
+  }
 
-  // void averageScore(reviewlist) {
-  //   int sum = 0;
-  //   int count = reviewlist['success'].length;
+  String averageScore(reviewlist) {
+    var rating = '';
+    int sum = 0;
+    int count = reviewlist['success'].length;
 
-  //   for (var value in reviewlist['success']) {
-  //     int score = value['score'];
-  //     sum += score;
-  //   }
+    for (var value in reviewlist['success']) {
+      int score = value['score'];
+      sum += score;
+    }
 
-  //   double average = count > 0 ? sum / count : 0;
-  //   String formattedAverage = average.toStringAsFixed(1);
-  //   print('Average Score: $formattedAverage');
-  //   rating = formattedAverage;
-  // }
+    double average = count > 0 ? sum / count : 0;
+    String formattedAverage = average.toStringAsFixed(1);
+    // print('Average Score: $formattedAverage');
+    rating = formattedAverage;
+    return rating;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -604,7 +616,9 @@ class _FindGangState extends State<FindGang> {
                                                                       ElevatedButton(
                                                                     onPressed:
                                                                         () {
-                                                                      getFilters();
+                                                                      // getFilters();
+                                                                      print(eventtime
+                                                                          .text);
                                                                       // Navigator.pop(context);
                                                                     },
                                                                     style: ElevatedButton
@@ -710,12 +724,9 @@ class _FindGangState extends State<FindGang> {
                                                     builder: (BuildContext
                                                             context) =>
                                                         GangDetail(
-                                                            id: items['_id'])));
-                                            // if (items != null) {
-                                            //   // ตรวจสอบว่า items ไม่เป็น null ก่อน
-
-                                            // }
-                                            // print(items);
+                                                            id: items['_id'],
+                                                            club: items[
+                                                                'club'])));
                                           },
                                           child: Material(
                                             elevation: 5.0,
@@ -942,7 +953,9 @@ class _FindGangState extends State<FindGang> {
                                                                 EdgeInsets.only(
                                                                     left: 5),
                                                             child: Text(
-                                                              "5",
+                                                              review[items[
+                                                                      'club']] ??
+                                                                  '',
                                                               style: TextStyle(
                                                                 color: Color(
                                                                     0xFF929292),
@@ -1306,6 +1319,8 @@ class _TimePickState extends State<TimePick> {
             if (time != null) {
               String formattedTime = formatTime(time);
               eventtime.text = formattedTime;
+              // print("formattedTime" + formattedTime);
+              // print(eventtime.text);
             }
           },
           child: Container(

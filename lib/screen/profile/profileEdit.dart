@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:finalmo/config.dart';
+import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/login_page/login.dart';
 import 'package:finalmo/screen/profile/Owner_Apply.dart';
 import 'package:finalmo/screen/profile/profile.dart';
@@ -226,6 +227,13 @@ class _ProfileEditState extends State<ProfileEdit> {
             tooltip: 'บันทึก',
             onPressed: () {
               uploadFile();
+              Navigator.pop(context, 'OK');
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => TabBarViewProfile(),
+                ),
+              );
             },
           ),
         ],
