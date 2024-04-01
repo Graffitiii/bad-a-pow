@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
+import 'package:finalmo/config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +12,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:http/http.dart' as http;
 
 class MapPage extends StatefulWidget {
   final eventLat;
@@ -34,12 +39,56 @@ class _MapPageState extends State<MapPage> {
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = "AIzaSyC0DEere3Ykl4YG32qEmfRfG9aCpsl1igw";
-
+  late String username;
+  late SharedPreferences prefs;
+  var myToken;
+  late String userPlacename;
+  late double userLat;
+  late double userLng;
+  bool loading = true;
   @override
   void initState() {
-    addCustomIcon();
-    _getPolyline();
+    initializeState();
     super.initState();
+  }
+
+  void initializeState() async {
+    await initSharedPref();
+    await getUserControl();
+    await addCustomIcon();
+    _getPolyline();
+
+    // getFilters();
+  }
+
+  Future<void> initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+    username = jwtDecodedToken['userName'];
+  }
+
+  Future<void> getUserControl() async {
+    var queryParameters = {
+      'userName': username,
+    };
+    var uri = Uri.http(getUrl, '/getUserControl', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      setState(() {
+        userPlacename = jsonResponse['data']['placename'];
+        userLat = jsonResponse['data']['latitude'];
+        userLng = jsonResponse['data']['longitude'];
+      });
+    }
+
+    setState(() {
+      loading = false;
+    });
   }
 
   _addPolyLine() {
@@ -55,7 +104,7 @@ class _MapPageState extends State<MapPage> {
   _getPolyline() async {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       googleAPiKey,
-      PointLatLng(13.744679051575686, 100.53005064632619), // Start coordinates
+      PointLatLng(userLat, userLng), // Start coordinates
       PointLatLng(widget.eventLat, widget.eventLng), // End coordinates
     );
 
@@ -69,7 +118,7 @@ class _MapPageState extends State<MapPage> {
     _addPolyLine();
   }
 
-  void addCustomIcon() async {
+  Future<void> addCustomIcon() async {
     final Uint8List? markerIcon =
         await getBytesFromAsset('assets/images/marker.png', 100);
 
@@ -137,7 +186,7 @@ class _MapPageState extends State<MapPage> {
     // userLocation = await getLocation();
 
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(13.744679051575686, 100.53005064632619),
+      target: LatLng(userLat, userLng),
       zoom: 16,
     )));
   }
@@ -174,29 +223,34 @@ class _MapPageState extends State<MapPage> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      body: GoogleMap(
-        mapType: MapType.terrain,
-        initialCameraPosition: CameraPosition(
-          target: LatLng(widget.eventLat, widget.eventLng),
-          zoom: 16,
-        ),
-        markers: {
-          Marker(
-            markerId: MarkerId("event"),
-            position: LatLng(widget.eventLat, widget.eventLng),
-            infoWindow: InfoWindow(title: widget.eventPlacename),
-          ),
-          Marker(
-            markerId: const MarkerId("user"),
-            position: const LatLng(13.744679051575686, 100.53005064632619),
-            icon: userMarker,
-          ),
-        },
-        polylines: Set<Polyline>.of(polylines.values),
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-      ),
+      body: loading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : GoogleMap(
+              mapType: MapType.terrain,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(widget.eventLat, widget.eventLng),
+                zoom: 16,
+              ),
+              markers: {
+                Marker(
+                  markerId: MarkerId("event"),
+                  position: LatLng(widget.eventLat, widget.eventLng),
+                  infoWindow: InfoWindow(title: widget.eventPlacename),
+                ),
+                Marker(
+                  markerId: const MarkerId("user"),
+                  position: LatLng(userLat, userLng),
+                  icon: userMarker,
+                  infoWindow: InfoWindow(title: userPlacename),
+                ),
+              },
+              polylines: Set<Polyline>.of(polylines.values),
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+            ),
     );
   }
 }

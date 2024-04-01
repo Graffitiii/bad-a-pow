@@ -54,11 +54,11 @@ class _GangDetailState extends State<GangDetail> {
 
   void initializeState() async {
     await initSharedPref();
-    getEvent(widget.id);
+    await getEvent(widget.id);
     getReview(widget.club);
   }
 
-  void getEvent(eventId) async {
+  Future<void> getEvent(eventId) async {
     var queryParameters = {
       'id': eventId,
     };

@@ -54,7 +54,10 @@ class _SignUpObjectState extends State<SignUpObject> {
       "ownerOf": [],
       "follow": [],
       "pending": [],
-      "join": []
+      "join": [],
+      "placename": "",
+      "latitude": 0,
+      "longitude": 0
     };
 
     var response = await http.post(Uri.parse(userControl),
