@@ -22,3 +22,5 @@ final joinEvent = url + 'joinEvent';
 final unJoinEvent = url + 'unJoinEvent';
 final editEvent = url + 'editEvent';
 final saveLocation = url + 'saveLocation';
+final assingAdmin = url + 'assingAdmin';
+final unAssingAdmin = url + 'unAssingAdmin';
