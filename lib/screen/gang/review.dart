@@ -179,14 +179,18 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   padding: EdgeInsets.fromLTRB(5, 20, 5, 0),
                   child: !status
                       ? Text("Error: ")
-                      : Column(
-                          children: reviewlist['success'].map<Widget>((items) {
-                          return Padding(
-                              padding: EdgeInsetsDirectional.all(5),
-                              child: Container(
-                                  decoration:
-                                      BoxDecoration(color: Color(0xFFD9D9D9)),
-                                  child: Padding(
+                      : reviewlist['success']
+                              .isEmpty // ตรวจสอบว่ารายการรีวิวว่างเปล่าหรือไม่
+                          ? Center(child: Text("ยังไม่มีรีวิว"))
+                          : Column(
+                              children:
+                                  reviewlist['success'].map<Widget>((items) {
+                                return Padding(
+                                  padding: EdgeInsetsDirectional.all(5),
+                                  child: Container(
+                                    decoration:
+                                        BoxDecoration(color: Color(0xFFD9D9D9)),
+                                    child: Padding(
                                       padding:
                                           EdgeInsets.fromLTRB(15, 15, 5, 10),
                                       child: Column(
@@ -234,8 +238,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                           ),
                                           SizedBox(height: 10),
                                         ],
-                                      ))));
-                        }).toList()),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                 ),
         ),
       ),

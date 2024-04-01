@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:finalmo/screen/add.dart';
+import 'package:finalmo/screen/gang/admin_of.dart';
 import 'package:finalmo/screen/gang/gangDetail.dart';
 import 'package:finalmo/screen/gang/review.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +58,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
     });
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
     username = jwtDecodedToken['userName'];
+    print(username);
   }
 
   void getClubDetail(clubname) async {
@@ -73,7 +75,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
       setState(() {
         clubInfo = jsonResponse['club'];
       });
-      // print(clubInfo);
+      print(clubInfo);
       if (clubInfo['follower'].contains(username)) {
         print('$username found in the list.');
         setState(() {
@@ -316,7 +318,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'เจ้าของก๊วน',
+                            'เจ้าของ',
                             style: TextStyle(
                               color: Color(0xFF013C58),
                               fontSize: 14,
@@ -337,7 +339,92 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+
+                  SizedBox(height: 20),
+
+                  if (clubInfo['owner'] == username ||
+                      clubInfo['admin'].contains(username)) ...[
+                    Row(
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              height: 35,
+                              width: 35,
+                              decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 255, 230, 179),
+                                  shape: BoxShape.circle),
+                              child: Icon(
+                                Icons.manage_accounts,
+                                color: Color(0xFFF5A201),
+                                size: 18.0,
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Admin',
+                              style: TextStyle(
+                                color: Color(0xFF013C58),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                height: 0,
+                              ),
+                            ),
+                            Row(
+                              children: List<Widget>.generate(
+                                clubInfo['admin'].length,
+                                (index) => Text(
+                                  clubInfo['admin'][index] + " , ",
+                                  style: TextStyle(
+                                    color: Color(0xFF929292),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              AdiminOf(
+                                                  club: clubInfo['clubname'])));
+                                },
+                                child: Container(
+                                  height: 35,
+                                  width: 35,
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.more_horiz,
+                                    color: Color(0xFFF5A201),
+                                    size: 18.0,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                  ],
                   Container(
                     width: double.infinity,
                     height: 1,
@@ -949,7 +1036,8 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (BuildContext context) => Add()))
+                                  builder: (BuildContext context) =>
+                                      Add(club: clubInfo['clubname'])))
                         },
                         child: Row(
                           children: [
@@ -962,7 +1050,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                               width: 10,
                             ),
                             Text(
-                              'เพิ่มก๊วน',
+                              'เพิ่มกิจกรรม',
                               style: TextStyle(
                                   color: Color(0xFF929292),
                                   fontSize: 16,

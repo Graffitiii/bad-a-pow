@@ -22,6 +22,9 @@ class _MyGangFollowState extends State<MyGangFollow> {
   var jsonResponse;
   bool loading = true;
 
+  var reviewlist = {};
+  Map<String, String> review = {};
+
   @override
   void initState() {
     super.initState();
@@ -56,10 +59,58 @@ class _MyGangFollowState extends State<MyGangFollow> {
       });
       print(clubList);
       // print(clublist);
+      List<Future> reviewFutures = [];
+      for (var club in jsonResponse['data']) {
+        // Call getReview for each club and store the future
+        reviewFutures.add(getReview(club['clubname']));
+      }
+
+      await Future.wait(reviewFutures);
+
       setState(() {
         loading = false;
       });
     } else {}
+  }
+
+  Future<void> getReview(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
+
+    var uri = Uri.http(getUrl, '/getReviewList', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      setState(() {
+        reviewlist = jsonResponse;
+        // print(averageScore(reviewlist));
+        review[clubname] = averageScore(reviewlist);
+      });
+    }
+
+    setState(() {
+      loading = false;
+    });
+  }
+
+  String averageScore(reviewlist) {
+    var rating = '';
+    int sum = 0;
+    int count = reviewlist['success'].length;
+
+    for (var value in reviewlist['success']) {
+      int score = value['score'];
+      sum += score;
+    }
+
+    double average = count > 0 ? sum / count : 0;
+    String formattedAverage = average.toStringAsFixed(1);
+    // print('Average Score: $formattedAverage');
+    rating = formattedAverage;
+    return rating;
   }
 
   @override
@@ -140,7 +191,7 @@ class _MyGangFollowState extends State<MyGangFollow> {
                           Container(
                             margin: EdgeInsets.only(left: 5),
                             child: Text(
-                              '4.3',
+                              review[items['clubname']] ?? '',
                               style: TextStyle(
                                 color: Color(0xFF929292),
                                 fontSize: 14,

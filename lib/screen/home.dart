@@ -60,9 +60,24 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Center(
+          child: Text(
+            "หน้าหลัก",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w400,
+              height: 0,
+            ),
+          ),
+        ),
+        backgroundColor: Color(0xFF00537A),
+      ),
       body: SingleChildScrollView(
           child: Padding(
-        padding: EdgeInsets.fromLTRB(10, 40, 10, 20),
+        padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
         child: Column(
           children: [
             Container(
@@ -110,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => TabBarViewBottom()),
+                                builder: (context) => TabBarViewFindEvent()),
                           );
                         },
                         style: ElevatedButton.styleFrom(

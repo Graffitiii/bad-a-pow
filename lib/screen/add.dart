@@ -33,7 +33,8 @@ List<String> selectedlevel = [];
 final List<String> clubname = [];
 
 class Add extends StatefulWidget {
-  const Add({super.key});
+  final club;
+  const Add({this.club, super.key});
 
   @override
   State<Add> createState() => _AddState();
@@ -76,6 +77,13 @@ class _AddState extends State<Add> {
 
   void initState() {
     initializeState();
+    print(widget.club);
+    setState(() {
+      if (widget.club != null) {
+        selectedclub = widget.club;
+        club.text = widget.club;
+      }
+    });
     super.initState();
   }
 
@@ -218,7 +226,11 @@ class _AddState extends State<Add> {
       jsonResponse = jsonDecode(response.body);
 
       clubname.clear();
-      for (var item in jsonResponse['data']) {
+      for (var item in jsonResponse['Owner']) {
+        // print(item['clubname']);
+        clubname.add(item['clubname']);
+      }
+      for (var item in jsonResponse['Admin']) {
         // print(item['clubname']);
         clubname.add(item['clubname']);
       }
@@ -367,55 +379,88 @@ class _AddState extends State<Add> {
                   SizedBox(
                     height: 15,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 0),
-                    child: DropdownButtonHideUnderline(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors
-                              .grey[200], // กำหนดสีพื้นหลังของกล่อง Dropdown
-                          borderRadius: BorderRadius.circular(
-                              5.0), // กำหนดรูปร่างของกล่อง Dropdown
-                        ),
-                        child: DropdownButton2<String>(
-                          isExpanded: true,
-                          hint: Text(
-                            'ชื่อที่ใช้',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  Colors.black.withOpacity(0.3100000023841858),
+                  if (widget.club == null) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 0),
+                      child: DropdownButtonHideUnderline(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors
+                                .grey[200], // กำหนดสีพื้นหลังของกล่อง Dropdown
+                            borderRadius: BorderRadius.circular(
+                                5.0), // กำหนดรูปร่างของกล่อง Dropdown
+                          ),
+                          child: DropdownButton2<String>(
+                            isExpanded: true,
+                            hint: Text(
+                              'ชื่อที่ใช้',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black
+                                    .withOpacity(0.3100000023841858),
+                              ),
                             ),
-                          ),
-                          items: clubname
-                              .map((String item) => DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Text(
-                                      item,
-                                      style: const TextStyle(
-                                        fontSize: 14,
+                            items: clubname
+                                .map((String item) => DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Text(
+                                        item,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                  ))
-                              .toList(),
-                          value: selectedclub,
-                          onChanged: (String? value) {
-                            setState(() {
-                              selectedclub = value;
-                            });
-                          },
-                          buttonStyleData: const ButtonStyleData(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            height: 48,
-                            width: double.infinity,
-                          ),
-                          menuItemStyleData: const MenuItemStyleData(
-                            height: 40,
+                                    ))
+                                .toList(),
+                            value: selectedclub,
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedclub = value;
+                              });
+                            },
+                            buttonStyleData: const ButtonStyleData(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              height: 48,
+                              width: double.infinity,
+                            ),
+                            menuItemStyleData: const MenuItemStyleData(
+                              height: 40,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ] else ...[
+                    TextFormField(
+                      enabled: false,
+                      controller: club,
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1.0),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                        labelStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.3100000023841858),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        fillColor: Color(0xFFEFEFEF),
+                        filled: true,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                        border: InputBorder.none,
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1.0, color: Colors.red),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1.0, color: Colors.red),
+                        ),
+                        errorStyle: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
                   SizedBox(
                     height: 15,
                   ),
@@ -695,7 +740,7 @@ class _AddState extends State<Add> {
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
-                              labelText: 'จำนวน (คน)',
+                              labelText: 'จำนวนสมาชิกสูงสุด',
                               labelStyle: TextStyle(
                                 color: Colors.black
                                     .withOpacity(0.3100000023841858),
