@@ -246,11 +246,30 @@ class _ProfileState extends State<Profile> {
                           margin: EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle, // กำหนดให้เป็นรูปร่างวงกลม
-                            image: DecorationImage(
-                              image: NetworkImage(userInfo['picture']),
-                              fit: BoxFit.cover,
-                            ),
                           ),
+                          child: ClipOval(
+                              child: SizedBox.fromSize(
+                            size: Size.fromRadius(105),
+                            child: Image.network(
+                              userInfo['picture'],
+                              fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                            ),
+                          )),
                         ),
                       ] else ...[
                         Container(

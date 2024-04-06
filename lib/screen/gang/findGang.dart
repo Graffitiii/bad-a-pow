@@ -49,10 +49,12 @@ class _FindGangState extends State<FindGang> {
   TextEditingController eventtime = TextEditingController();
   TextEditingController eventdate = TextEditingController();
   TextEditingController distance = TextEditingController();
+  TextEditingController search = TextEditingController();
   String formattedStartTime = '';
   String formattedEndTime = '';
   late Set<String> _selectedValues = {};
-  var filterlist = {};
+  List filterlist = [];
+  var distancelist = {};
   final _formKey = GlobalKey<FormState>();
   String placename = '';
   double latitude = 0;
@@ -70,9 +72,7 @@ class _FindGangState extends State<FindGang> {
   void initializeState() async {
     await initSharedPref();
     await getUserControl();
-    getTodoList();
-
-    // getFilters();
+    getFilters();
   }
 
   Future<void> initSharedPref() async {
@@ -82,36 +82,6 @@ class _FindGangState extends State<FindGang> {
     });
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
     username = jwtDecodedToken['userName'];
-  }
-
-  void getTodoList() async {
-    var uri = Uri.http(getUrl, '/getEventList');
-    var response = await http.get(uri);
-
-    var jsonResponse = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      jsonResponse = jsonDecode(response.body);
-      setState(() {
-        eventlist = jsonResponse;
-      });
-
-      // print(eventlist);
-      List<Future> reviewFutures = [];
-      for (var club in jsonResponse['eventlistdata']) {
-        reviewFutures.add(getReview(club['club']));
-      }
-
-      await Future.wait(reviewFutures);
-
-      print(review);
-    } else {
-      print(response.statusCode);
-    }
-
-    setState(() {
-      eventLoading = false;
-    });
   }
 
   Future<Position> getLocation() async {
@@ -183,17 +153,21 @@ class _FindGangState extends State<FindGang> {
     });
   }
 
+  void onSearch(ssss) {
+    getFilters();
+  }
+
   Future<void> getFilters() async {
-    // DateTime eventStart = dateR("");
-    // var queryParameters = {
-    //   'level': _selectedValues,
-    //   'eventdate_start': "${eventdate.text} ${eventtime.text}",
-    // };
-    print(_selectedValues);
+    setState(() {
+      eventLoading = true;
+    });
     var queryParameters = {
       'level': _selectedValues,
       'eventdate_start': "",
-      'distance': distance.text
+      'distance': distance.text,
+      'latitude': latitude.toString(),
+      'longitude': longitude.toString(),
+      'club': search.text
     };
     var uri = Uri.http(getUrl, '/getFilter', queryParameters);
     var response = await http.get(uri);
@@ -202,22 +176,29 @@ class _FindGangState extends State<FindGang> {
     print(eventtime.text);
     if (response.statusCode == 200) {
       jsonResponse = jsonDecode(response.body);
+      // print(jsonResponse['distance']);
       setState(() {
-        filterlist = jsonResponse;
+        filterlist = jsonResponse['data'];
+        distancelist = jsonResponse['distance'];
       });
-      print("filterlist: $filterlist");
-      // for (var item in jsonResponse['success']) {
-      //   print(item['club']);
-      // }
+      print(distancelist);
 
+      List<Future> reviewFutures = [];
+      for (var club in filterlist) {
+        reviewFutures.add(getReview(club['club']));
+      }
+
+      await Future.wait(reviewFutures);
+
+      print(review);
+
+      setState(() {
+        eventLoading = false;
+      });
       // print(formattedStartTime);
     } else {
       print(response.statusCode);
     }
-
-    // setState(() {
-    //   loading = false;
-    // });
   }
 
   Future<void> onSaveLocation(username, placename, latitude, longitude) async {
@@ -267,12 +248,6 @@ class _FindGangState extends State<FindGang> {
 
     // print(formattedDateTime + "-" + formattedEndTime);
     return formattedDateTime + " - " + formattedEndTime;
-  }
-
-  void onQueryChanged(String newQuery) {
-    setState(() {
-      query = newQuery;
-    });
   }
 
   Future<void> getReview(clubname) async {
@@ -861,8 +836,8 @@ class _FindGangState extends State<FindGang> {
                                                                               .clear();
                                                                           eventdate
                                                                               .clear();
-                                                                          filterlist
-                                                                              .clear();
+                                                                          // filterlist
+                                                                          //     .clear();
                                                                         },
                                                                         style: ElevatedButton
                                                                             .styleFrom(
@@ -974,7 +949,8 @@ class _FindGangState extends State<FindGang> {
                             shadowColor: Color.fromARGB(255, 0, 0, 0),
                             borderRadius: new BorderRadius.circular(30),
                             child: TextFormField(
-                              onChanged: onQueryChanged,
+                              controller: search,
+                              onChanged: onSearch,
                               decoration: InputDecoration(
                                 prefixIcon: Padding(
                                   padding: EdgeInsets.only(left: 15),
@@ -1014,8 +990,7 @@ class _FindGangState extends State<FindGang> {
                                 ? CircularProgressIndicator()
                                 : Column(
                                     //if everything fine, show the JSON as widget
-                                    children: eventlist['eventlistdata']
-                                        .map<Widget>((items) {
+                                    children: filterlist.map<Widget>((items) {
                                       return Padding(
                                           padding: EdgeInsets.only(bottom: 15),
                                           child: GestureDetector(
@@ -1091,7 +1066,7 @@ class _FindGangState extends State<FindGang> {
                                                                     maxWidth: MediaQuery.of(context)
                                                                             .size
                                                                             .width *
-                                                                        0.6), // Adjust the value as needed
+                                                                        0.5), // Adjust the value as needed
                                                                 child:
                                                                     Container(
                                                                   margin: EdgeInsets
@@ -1108,6 +1083,35 @@ class _FindGangState extends State<FindGang> {
                                                                         TextStyle(
                                                                       color: Color(
                                                                           0xFF929292),
+                                                                      fontSize:
+                                                                          14,
+                                                                      fontFamily:
+                                                                          'Inter',
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w400,
+                                                                      height: 0,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              ConstrainedBox(
+                                                                constraints: BoxConstraints(
+                                                                    maxWidth: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.15), // Adjust the value as needed
+                                                                child:
+                                                                    Container(
+                                                                  child: Text(
+                                                                    "(${distancelist[items['_id']].toString()} กม.)",
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Color(
+                                                                          0xFFF5A201),
                                                                       fontSize:
                                                                           14,
                                                                       fontFamily:
@@ -1319,8 +1323,11 @@ class _FindGangState extends State<FindGang> {
                                                               ),
                                                               Text(
                                                                 items['join']
-                                                                    .length
-                                                                    .toString(),
+                                                                        .length
+                                                                        .toString() +
+                                                                    "/" +
+                                                                    items['userlimit']
+                                                                        .toString(),
                                                                 style:
                                                                     TextStyle(
                                                                   color: Color(
@@ -1333,7 +1340,7 @@ class _FindGangState extends State<FindGang> {
                                                                           .w600,
                                                                   height: 0,
                                                                 ),
-                                                              )
+                                                              ),
                                                             ],
                                                           ),
                                                         ],

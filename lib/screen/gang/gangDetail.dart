@@ -666,9 +666,35 @@ class _GangDetailState extends State<GangDetail> {
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(
                                                 10), // กำหนดให้เป็นรูปร่างวงกลม
-                                            image: DecorationImage(
-                                              image: NetworkImage(items),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            child: Image.network(
+                                              items,
+                                              width: 400,
                                               fit: BoxFit.cover,
+                                              loadingBuilder:
+                                                  (BuildContext context,
+                                                      Widget child,
+                                                      ImageChunkEvent?
+                                                          loadingProgress) {
+                                                if (loadingProgress == null)
+                                                  return child;
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
                                             ),
                                           ),
                                         );
@@ -681,7 +707,7 @@ class _GangDetailState extends State<GangDetail> {
                                         autoPlayCurve: Curves.fastOutSlowIn,
                                         enableInfiniteScroll: false,
                                         autoPlayAnimationDuration:
-                                            Duration(milliseconds: 1000),
+                                            Duration(milliseconds: 2000),
                                         viewportFraction: 0.8,
                                       ),
                                     ),
