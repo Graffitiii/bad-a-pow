@@ -600,6 +600,30 @@ class _ProfileEditState extends State<ProfileEdit> {
                           ],
                         ),
                       ),
+                      SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          LoginScreen()));
+                            },
+                            child: Text(
+                              'สมัครสมาชิก',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                height: 0,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ],
                   ),
                 ],

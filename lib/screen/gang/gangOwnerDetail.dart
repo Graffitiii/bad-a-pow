@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_new, sort_child_properties_last
 
 import 'dart:convert';
+import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/add.dart';
 import 'package:finalmo/screen/gang/admin_of.dart';
 import 'package:finalmo/screen/gang/gangDetail.dart';
@@ -34,17 +35,9 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
   List<Map<String, dynamic>> inActiveEventList = [];
   var follower = '';
 
-  // late AnimationController controller;
   @override
   void initState() {
     super.initState();
-    // controller = AnimationController(
-    //   vsync: this,
-    //   duration: const Duration(seconds: 2),
-    // )..addListener(() {
-    //     setState(() {});
-    //   });
-    // controller.repeat(reverse: false);
     initSharedPref();
     print(widget.club);
     getClubDetail(widget.club);
@@ -75,7 +68,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
       setState(() {
         clubInfo = jsonResponse['club'];
       });
-      print(clubInfo);
+      print("clubInfo: $clubInfo");
       if (clubInfo['follower'].contains(username)) {
         print('$username found in the list.');
         setState(() {
@@ -195,6 +188,21 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
     rating = formattedAverage;
   }
 
+  void deleteClub(id, clubname) async {
+    // print(id);
+    var regBody = {"_id": id, "clubname": clubname};
+    print(regBody);
+    var response = await http.delete(Uri.parse(delClub),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(regBody));
+    jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+    } else {
+      print('SDadw');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -291,7 +299,78 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                 onPressed: () => {onFollow()}),
                           )
                         ]
-                      ]
+                      ] else if (username == clubInfo['owner']) ...[
+                        Spacer(),
+                        Padding(
+                          padding: EdgeInsets.only(top: 15),
+                          child: InkWell(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: new Icon(Icons.delete),
+                                        title: new Text('ลบกลุ่มกิจกรรม'),
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                AlertDialog(
+                                              title:
+                                                  const Text('ลบกลุ่มกิจกรรม'),
+                                              content: const Text(
+                                                  'ต้องการลบกลุ่มนี้ใช่หรือไม่'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                          context, 'Cancel'),
+                                                  child: const Text('ยกเลิก'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () => {
+                                                    deleteClub(clubInfo['_id'],
+                                                        clubInfo['clubname']),
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              TabBarViewMyEvent()),
+                                                    ),
+                                                  },
+                                                  child: const Text('ยืนยัน'),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+
+                                      // DialogExample(),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              height: 35,
+                              width: 35,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.expand_more,
+                                color: Color(0xFFF5A201),
+                                size: 18.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   SizedBox(height: 10),
@@ -544,6 +623,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                     builder: (BuildContext context) =>
                                         GangDetail(
                                           id: items['_id'],
+                                          club: clubInfo['clubname'],
                                         )));
                           },
                           child: Material(
@@ -557,7 +637,15 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                 color: Color.fromARGB(255, 255, 255, 255),
                                 shape: RoundedRectangleBorder(
                                   side: BorderSide(
-                                      width: 2, color: Color(0xFFF5A201)),
+                                    width: 2,
+                                    color: clubInfo['owner'] == username &&
+                                            items['pending'].length > 0
+                                        ? Color(0xFFFF5B5B)
+                                        : clubInfo['owner'] == username &&
+                                                items['pending'].length < 0
+                                            ? Color(0xFFFFA201)
+                                            : Color(0xFFFFA201),
+                                  ),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
@@ -708,27 +796,29 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                         ),
                                       ],
                                       SizedBox(height: 7),
-                                      Row(children: [
-                                        Icon(
-                                          Icons.stars,
-                                          color:
-                                              Color.fromARGB(255, 255, 154, 3),
-                                          size: 20.0,
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(left: 5),
-                                          child: Text(
-                                            '4.3',
-                                            style: TextStyle(
-                                              color: Color(0xFF929292),
-                                              fontSize: 14,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w400,
-                                              height: 0,
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.stars,
+                                            color: Color.fromARGB(
+                                                255, 255, 154, 3),
+                                            size: 20.0,
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(left: 5),
+                                            child: Text(
+                                              rating,
+                                              style: TextStyle(
+                                                color: Color(0xFF929292),
+                                                fontSize: 14,
+                                                fontFamily: 'Inter',
+                                                fontWeight: FontWeight.w400,
+                                                height: 0,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ]),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                   Spacer(),
@@ -737,31 +827,61 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                     // mainAxisSize: MainAxisSize.max,
                                     children: [
                                       Spacer(),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: Color.fromARGB(
-                                                255, 255, 154, 3),
-                                            size: 36.0,
+                                      if (clubInfo['owner'] == username) ...[
+                                        if (items['pending'].length > 0) ...[
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Color(0xFFFF5B5B),
+                                                size: 36.0,
+                                              ),
+                                            ],
                                           ),
+                                          Spacer(),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "กำลังรอ" +
+                                                    "  " +
+                                                    items['pending']
+                                                        .length
+                                                        .toString(),
+                                                style: TextStyle(
+                                                  color: Color(0xFFFF5B5B),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  height: 0,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ] else ...[
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: Color.fromARGB(
+                                                    255, 255, 154, 3),
+                                                size: 36.0,
+                                              ),
+                                            ],
+                                          ),
+                                          Spacer(),
                                         ],
-                                      ),
-                                      Spacer(),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '4 / 20',
-                                            style: TextStyle(
-                                              color: Color(0xFF013C58),
-                                              fontSize: 16,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w600,
-                                              height: 0,
+                                      ] else ...[
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: Color.fromARGB(
+                                                  255, 255, 154, 3),
+                                              size: 36.0,
                                             ),
-                                          )
-                                        ],
-                                      ),
+                                          ],
+                                        ),
+                                        Spacer(),
+                                      ],
                                     ],
                                   )
                                 ]),
@@ -797,6 +917,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                     builder: (BuildContext context) =>
                                         GangDetail(
                                           id: items['_id'],
+                                          club: clubInfo['clubname'],
                                         )));
                           },
                           child: Material(
@@ -810,7 +931,9 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                 color: Color.fromARGB(255, 255, 255, 255),
                                 shape: RoundedRectangleBorder(
                                   side: BorderSide(
-                                      width: 2, color: Color(0xFFF5A201)),
+                                      width: 2,
+                                      color:
+                                          Color.fromARGB(255, 116, 116, 116)),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
@@ -964,14 +1087,14 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                       Row(children: [
                                         Icon(
                                           Icons.stars,
-                                          color:
-                                              Color.fromARGB(255, 255, 154, 3),
+                                          color: Color.fromARGB(
+                                              255, 116, 116, 116),
                                           size: 20.0,
                                         ),
                                         Container(
                                           margin: EdgeInsets.only(left: 5),
                                           child: Text(
-                                            '4.3',
+                                            rating,
                                             style: TextStyle(
                                               color: Color(0xFF929292),
                                               fontSize: 14,
@@ -995,26 +1118,12 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                           Icon(
                                             Icons.arrow_forward_ios,
                                             color: Color.fromARGB(
-                                                255, 255, 154, 3),
+                                                255, 116, 116, 116),
                                             size: 36.0,
                                           ),
                                         ],
                                       ),
                                       Spacer(),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '4 / 20',
-                                            style: TextStyle(
-                                              color: Color(0xFF013C58),
-                                              fontSize: 16,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w600,
-                                              height: 0,
-                                            ),
-                                          )
-                                        ],
-                                      ),
                                     ],
                                   )
                                 ]),

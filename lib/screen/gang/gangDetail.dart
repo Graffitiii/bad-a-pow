@@ -104,21 +104,6 @@ class _GangDetailState extends State<GangDetail> {
     } else {}
   }
 
-  void deleteEvent(id) async {
-    // print(id);
-    var regBody = {"_id": id};
-
-    var response = await http.delete(Uri.parse(delEvent),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(regBody));
-    jsonResponse = jsonDecode(response.body);
-    if (jsonResponse['status']) {
-      // getTodoList();
-    } else {
-      print('SDadw');
-    }
-  }
-
   void getClubDetail(clubname) async {
     var queryParameters = {
       'clubname': clubname,
@@ -379,8 +364,7 @@ class _GangDetailState extends State<GangDetail> {
                       clubInfo['admin'] != null &&
                       !clubInfo['admin'].contains(username)) ...[
                     if (!pending && !join) ...[
-                      //ส่งคำขอ
-                      if (userJoin.length < eventeach['userlimit']) ...[
+                      if (!eventeach['active']) ...[
                         Expanded(
                           flex: 6,
                           child: Container(
@@ -390,39 +374,7 @@ class _GangDetailState extends State<GangDetail> {
                                 height: 50,
                                 child: TextButton(
                                     child: Text(
-                                      'ส่งคำขอเข้าร่วม',
-                                      style: TextStyle(
-                                        color: const Color.fromARGB(
-                                            255, 255, 255, 255),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    style: TextButton.styleFrom(
-                                      elevation: 2,
-                                      backgroundColor: const Color(0xFF013C58),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    onPressed: () => {
-                                          setState(() {
-                                            requestPending();
-                                          }),
-                                        }),
-                              )),
-                        ),
-                      ] else ...[
-                        Expanded(
-                          flex: 6,
-                          child: Container(
-                              alignment: Alignment.center,
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: TextButton(
-                                    child: Text(
-                                      'กิจกรรมนี้มีผู้เข้าร่วมครบแล้ว',
+                                      'กิจกรรมนี้ยังไม่เปิดให้เข้าร่วม',
                                       style: TextStyle(
                                         color: const Color.fromARGB(
                                             255, 255, 255, 255),
@@ -441,7 +393,74 @@ class _GangDetailState extends State<GangDetail> {
                                     onPressed: () => {}),
                               )),
                         ),
-                      ]
+                      ] else ...[
+                        if (userJoin.length <= eventeach['userlimit']) ...[
+                          Expanded(
+                            flex: 6,
+                            child: Container(
+                                alignment: Alignment.center,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: TextButton(
+                                      child: Text(
+                                        'ส่งคำขอเข้าร่วม',
+                                        style: TextStyle(
+                                          color: const Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      style: TextButton.styleFrom(
+                                        elevation: 2,
+                                        backgroundColor:
+                                            const Color(0xFF013C58),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                      onPressed: () => {
+                                            setState(() {
+                                              requestPending();
+                                            }),
+                                          }),
+                                )),
+                          ),
+                        ] else ...[
+                          Expanded(
+                            flex: 6,
+                            child: Container(
+                                alignment: Alignment.center,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: TextButton(
+                                      child: Text(
+                                        'กิจกรรมนี้มีผู้เข้าร่วมครบแล้ว',
+                                        style: TextStyle(
+                                          color: const Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      style: TextButton.styleFrom(
+                                        elevation: 2,
+                                        backgroundColor:
+                                            Color.fromARGB(255, 146, 146, 146),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                      onPressed: () => {}),
+                                )),
+                          ),
+                        ],
+                      ],
+                      //ส่งคำขอ
                     ] else if (pending && !join) ...[
                       //กำลังรอ
                       Expanded(

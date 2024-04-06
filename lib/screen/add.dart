@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:finalmo/postModel.dart';
+import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/myGang/addclub.dart';
 import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/foundation.dart';
@@ -182,7 +183,29 @@ class _AddState extends State<Add> {
       print(jsonResponse['status']);
 
       if (jsonResponse['status']) {
-        Navigator.pop(context);
+        showDialog<String>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('สร้างกิจกรรมสำเร็จ '),
+            content: const Text(
+              'สร้างกิจกรรมสำเร็จ”',
+              style: TextStyle(fontSize: 18),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TabBarViewFindEvent()),
+                  );
+                },
+                child: const Text('ตกลง'),
+              ),
+            ],
+          ),
+        );
         // print(jsonResponse['clublistdata']);
         getTodoList(() {
           // เมื่อ getTodoList() เสร็จสิ้น สามารถทำอะไรก็ได้ในนี้
@@ -260,6 +283,7 @@ class _AddState extends State<Add> {
       if (!jsonResponse['data']['ownerPermission']) {
         showDialog<String>(
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) => AlertDialog(
             title: const Text('ไม่สามารถสร้างก๊วนได้ '),
             content: const Text(
@@ -268,7 +292,13 @@ class _AddState extends State<Add> {
             ),
             actions: <Widget>[
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TabBarViewProfile()),
+                  );
+                },
                 child: const Text('ตกลง'),
               ),
             ],

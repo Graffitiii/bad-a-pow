@@ -226,7 +226,7 @@ Widget menu() {
           icon: Icon(Icons.home),
         ),
         Tab(
-          text: "หาก๊วน",
+          text: "หากิจกรรม",
           icon: Icon(Icons.business),
         ),
         Tab(
@@ -237,7 +237,7 @@ Widget menu() {
           ),
         ),
         Tab(
-          text: "ก๊วนของฉัน",
+          text: "กลุ่มของฉัน",
           icon: Icon(Icons.school),
         ),
         Tab(

@@ -398,6 +398,45 @@ class _EditEventState extends State<EditEvent> {
     });
   }
 
+  void deleteEvent(id) async {
+    // print(id);
+    var regBody = {"_id": id};
+
+    var response = await http.delete(Uri.parse(delEvent),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(regBody));
+    jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      // getTodoList();
+      // showDialog(
+      //   context: context,
+      //   builder: (_) {
+      //     return AlertDialog(
+      //       title: const Text("Dialog Title"),
+      //       content: const Text("This is the dialog content."),
+      //       actions: [
+      //         TextButton(
+      //           onPressed: () {
+      //             // Define action for Action 1
+      //             Navigator.of(context).pop(); // Close the dialog
+      //           },
+      //           child: const Text("Action 1"),
+      //         ),
+      //         TextButton(
+      //           onPressed: () {
+      //             // Define action for Action 2
+      //           },
+      //           child: const Text("Action 2"),
+      //         ),
+      //       ],
+      //     );
+      //   },
+      // );
+    } else {
+      print('SDadw');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -972,56 +1011,158 @@ class _EditEventState extends State<EditEvent> {
                     //   profile.email = email;
                     // },
                   ),
-                  Container(
-                    width: 150,
-                    height: 85,
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0x3F000000),
-                              blurRadius: 5,
-                              offset: Offset(0, 7),
-                              spreadRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            saveEvent();
-                            Navigator.pop(context, 'OK');
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    GangDetail(id: eventDetail['_id']),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            primary: Color(0xFF013C58),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 0, // Remove default button elevation
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              'เพิ่ม',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  SizedBox(
+                    height: 15,
                   ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: TextButton(
+                                child: Text(
+                                  'ลบกิจกรรม',
+                                  style: TextStyle(
+                                    color: const Color.fromARGB(
+                                        255, 255, 255, 255),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                style: TextButton.styleFrom(
+                                  elevation: 2,
+                                  backgroundColor: Color(0xFFFF5B5B),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () => {
+                                  // deleteEvent(eventDetail['_id']),
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) =>
+                                  //           TabBarViewFindEvent()),
+                                  // ),
+                                  showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text('ลบกิจกรรม'),
+                                      content: const Text(
+                                          'ต้องการลบกิจกรรมใช่หรือไม่'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Cancel'),
+                                          child: const Text('ยกเลิก'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => {
+                                            deleteEvent(eventDetail['_id']),
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TabBarViewFindEvent()),
+                                            ),
+                                          },
+                                          child: const Text('ยืนยัน'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                },
+                              ),
+                            )),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: SizedBox(),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: TextButton(
+                                  child: Text(
+                                    'สำเร็จ',
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    elevation: 2,
+                                    backgroundColor: Color(0xFF02D417),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () => {}),
+                            )),
+                      ),
+                    ],
+                  ),
+                  // Container(
+                  //   width: 150,
+                  //   height: 85,
+                  //   child: Padding(
+                  //     padding: EdgeInsets.all(20),
+                  //     child: Container(
+                  //       decoration: BoxDecoration(
+                  //         borderRadius: BorderRadius.circular(10),
+                  //         boxShadow: [
+                  //           BoxShadow(
+                  //             color: Color(0x3F000000),
+                  //             blurRadius: 5,
+                  //             offset: Offset(0, 7),
+                  //             spreadRadius: 0,
+                  //           ),
+                  //         ],
+                  //       ),
+                  //       child: ElevatedButton(
+                  //         onPressed: () {
+                  //           saveEvent();
+                  //           Navigator.pop(context, 'OK');
+                  //           Navigator.pushReplacement(
+                  //             context,
+                  //             MaterialPageRoute(
+                  //               builder: (BuildContext context) =>
+                  //                   GangDetail(id: eventDetail['_id']),
+                  //             ),
+                  //           );
+                  //         },
+                  //         style: ElevatedButton.styleFrom(
+                  //           primary: Color(0xFF013C58),
+                  //           shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(10),
+                  //           ),
+                  //           elevation: 0, // Remove default button elevation
+                  //         ),
+                  //         child: Padding(
+                  //           padding: const EdgeInsets.all(10),
+                  //           child: Text(
+                  //             'เพิ่ม',
+                  //             style: TextStyle(
+                  //               fontSize: 14,
+                  //               color: Colors.white,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ))),

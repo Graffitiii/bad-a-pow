@@ -256,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                               width: 60,
                               color: Color(0xFFF0F0F0),
                               child: Icon(
-                                Icons.calendar_month,
+                                Icons.favorite,
                                 size: 50,
                                 color: Color(0xFF013C58),
                               ),
