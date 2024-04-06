@@ -26,7 +26,7 @@ class _MyGangState extends State<MyGang> {
         appBar: AppBar(
           title: Center(
             child: Text(
-              'ก๊วนของฉัน',
+              'กลุ่มของฉัน',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -43,7 +43,7 @@ class _MyGangState extends State<MyGang> {
             tabs: <Widget>[
               Tab(
                 icon: Icon(Icons.favorite),
-                text: 'ก๊วนที่ติดตาม',
+                text: 'ที่ติดตาม',
               ),
               Tab(
                 icon: Icon(Icons.how_to_reg),
@@ -51,7 +51,7 @@ class _MyGangState extends State<MyGang> {
               ),
               Tab(
                 icon: Icon(Icons.admin_panel_settings),
-                text: 'ก๊วนที่ดูแล',
+                text: 'ที่ดูแล',
               ),
             ],
           ),
