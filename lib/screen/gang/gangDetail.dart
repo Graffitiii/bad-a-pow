@@ -1677,8 +1677,6 @@ class _GangDetailState extends State<GangDetail> {
                                                                             ? Color(0xFFFC7FFF)
                                                                             : Color(0xFFFC7FFF),
                                                                 fontSize: 12,
-                                                                fontFamily:
-                                                                    'Inter',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400,

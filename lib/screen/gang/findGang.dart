@@ -50,10 +50,14 @@ class _FindGangState extends State<FindGang> {
   TextEditingController eventdate = TextEditingController();
   TextEditingController distance = TextEditingController();
   TextEditingController search = TextEditingController();
+
+  String afterEventtime = '';
+  String afterEventdate = '';
   String formattedStartTime = '';
   String formattedEndTime = '';
   late Set<String> _selectedValues = {};
   List filterlist = [];
+
   var distancelist = {};
   final _formKey = GlobalKey<FormState>();
   String placename = '';
@@ -161,9 +165,11 @@ class _FindGangState extends State<FindGang> {
     setState(() {
       eventLoading = true;
     });
+
     var queryParameters = {
       'level': _selectedValues,
-      'eventdate_start': "",
+      'eventdate_start': afterEventdate,
+      'event_time': afterEventtime,
       'distance': distance.text,
       'latitude': latitude.toString(),
       'longitude': longitude.toString(),
@@ -173,14 +179,48 @@ class _FindGangState extends State<FindGang> {
     var response = await http.get(uri);
 
     var jsonResponse = jsonDecode(response.body);
-    print(eventtime.text);
+
     if (response.statusCode == 200) {
       jsonResponse = jsonDecode(response.body);
       // print(jsonResponse['distance']);
       setState(() {
-        filterlist = jsonResponse['data'];
+        if (afterEventtime != '' && afterEventdate == '') {
+          // filterlist = jsonResponse['data'];
+          List listnew = [];
+          listnew = jsonResponse['data'];
+          print("newdata: $listnew");
+          List result = [];
+          for (int i = 0; i < listnew.length; i++) {
+            listnew[i]['eventdate_start'] =
+                listnew[i]['eventdate_start'].substring(11, 24);
+            if (listnew[i]['eventdate_start'] == afterEventtime) {
+              result.add({'_id': listnew[i]['_id']});
+            }
+          }
+
+          print("result: $result");
+          print("Old filterlist: $filterlist");
+          List filteredList = [];
+          for (var item in filterlist) {
+            for (var res in result) {
+              if (item['_id'] == res['_id']) {
+                filteredList.add(item);
+              }
+            }
+          }
+          print("filteredListyyyyyy: $filteredList");
+
+          filterlist = filteredList;
+          print("New filterlist: $filterlist");
+        } else {
+          filterlist = jsonResponse['data'];
+          print("filterlist: $filterlist");
+          print("LLLLLLLLLLLLLLLLLLLLLLLL");
+        }
+
         distancelist = jsonResponse['distance'];
       });
+
       print(distancelist);
 
       List<Future> reviewFutures = [];
@@ -286,6 +326,70 @@ class _FindGangState extends State<FindGang> {
     return rating;
   }
 
+  Future<TimeOfDay?> getTime({
+    required BuildContext context,
+    String? title,
+    TimeOfDay? initialTime,
+    String? cancelText,
+    String? confirmText,
+  }) async {
+    TimeOfDay? time = await showTimePicker(
+      initialEntryMode: TimePickerEntryMode.dial,
+      context: context,
+      initialTime: initialTime ?? TimeOfDay.now(),
+      cancelText: cancelText ?? "ยกเลิก",
+      confirmText: confirmText ?? "บันทึก",
+      helpText: title ?? "Select time",
+      builder: (context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
+
+    return time;
+  }
+
+  String formatTime(TimeOfDay time) {
+    String hour = time.hour.toString().padLeft(2, '0');
+    String minute = time.minute.toString().padLeft(2, '0');
+    // print("$hour:$minute");
+    return '$hour:$minute';
+  }
+
+  String formatNewTime(String time) {
+    List<String> timeParts = time.split(':');
+    int hour = int.parse(timeParts[0]);
+    int minute = int.parse(timeParts[1]);
+
+    // ลบ 7 ชั่วโมง
+    hour -= 7;
+
+    // แปลงค่าลูกน้ำต้องการให้เป็นตัวเลขบวก
+    if (hour < 0) {
+      hour += 24; // 24 ชั่วโมงในวัน
+    }
+
+    String formattedTime =
+        '${_addLeadingZero(hour)}:${_addLeadingZero(minute)}:00.000Z';
+    return '$formattedTime';
+  }
+
+  String formatDate(String date) {
+    List<String> dateParts = date.split('/');
+    String formattedDate =
+        '${dateParts[2]}-${_addLeadingZero(int.parse(dateParts[0]))}-${_addLeadingZero(int.parse(dateParts[1]))}';
+
+    // เพิ่มโค้ดในการแปลงเวลาตามต้องการ
+
+    return '$formattedDate';
+  }
+
+  String _addLeadingZero(int value) {
+    return value < 10 ? '0$value' : '$value';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -296,7 +400,6 @@ class _FindGangState extends State<FindGang> {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
-                fontFamily: 'Inter',
                 fontWeight: FontWeight.w400,
                 height: 0,
               ),
@@ -341,7 +444,6 @@ class _FindGangState extends State<FindGang> {
                                 style: TextStyle(
                                   color: Color(0xFFFF3333),
                                   fontSize: 16,
-                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w400,
                                   height: 0,
                                 ),
@@ -356,7 +458,6 @@ class _FindGangState extends State<FindGang> {
                                   style: TextStyle(
                                     color: Color(0xFF00537A),
                                     fontSize: 18,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w400,
                                     height: 0,
                                   ),
@@ -388,6 +489,7 @@ class _FindGangState extends State<FindGang> {
 
                                         // test();
                                       });
+
                                       print(_selectedValues);
                                       showModalBottomSheet(
                                         context: context,
@@ -420,28 +522,28 @@ class _FindGangState extends State<FindGang> {
                                                                   "ที่อยู่ของฉัน"),
                                                             ),
                                                             Spacer(),
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
-                                                              },
-                                                              child: Row(
-                                                                children: [
-                                                                  Text(
-                                                                    'ดูทั้งหมด',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                    ),
-                                                                  ),
-                                                                  Icon(Icons
-                                                                      .arrow_forward_ios),
-                                                                ],
-                                                              ),
-                                                            ),
+                                                            // TextButton(
+                                                            //   onPressed: () {
+                                                            //     // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
+                                                            //   },
+                                                            //   child: Row(
+                                                            //     children: [
+                                                            //       Text(
+                                                            //         'ดูทั้งหมด',
+                                                            //         style:
+                                                            //             TextStyle(
+                                                            //           color: Colors
+                                                            //               .black,
+                                                            //           fontWeight:
+                                                            //               FontWeight
+                                                            //                   .w600,
+                                                            //         ),
+                                                            //       ),
+                                                            //       Icon(Icons
+                                                            //           .arrow_forward_ios),
+                                                            //     ],
+                                                            //   ),
+                                                            // ),
                                                           ],
                                                         ),
                                                         Padding(
@@ -662,9 +764,6 @@ class _FindGangState extends State<FindGang> {
                                                                   decoration:
                                                                       _buildInputUser(
                                                                           'ระยะทาง (กม.)'),
-                                                                  // onSaved: (String password) {
-                                                                  //   profile.password = password;
-                                                                  // },
                                                                   keyboardType:
                                                                       TextInputType
                                                                           .number,
@@ -721,9 +820,108 @@ class _FindGangState extends State<FindGang> {
                                                                   width: 370,
                                                                   height: 50,
                                                                   child:
-                                                                      DatePicker(
-                                                                    eventdate:
-                                                                        eventdate,
+                                                                      Container(
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      boxShadow: [
+                                                                        BoxShadow(
+                                                                          color:
+                                                                              Color(0x3F000000),
+                                                                          blurRadius:
+                                                                              4,
+                                                                          offset: Offset(
+                                                                              0,
+                                                                              4),
+                                                                          spreadRadius:
+                                                                              0,
+                                                                        ),
+                                                                      ],
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5.0),
+                                                                      color: Color(
+                                                                          0xFFEFEFEF),
+                                                                    ),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding: EdgeInsets.symmetric(
+                                                                          vertical:
+                                                                              0,
+                                                                          horizontal:
+                                                                              0),
+                                                                      child:
+                                                                          TextField(
+                                                                        controller:
+                                                                            eventdate,
+                                                                        decoration:
+                                                                            InputDecoration(
+                                                                          labelText:
+                                                                              "เลือกวันที่*",
+                                                                          labelStyle:
+                                                                              TextStyle(
+                                                                            color:
+                                                                                Colors.black.withOpacity(0.3100000023841858),
+                                                                            fontSize:
+                                                                                14,
+                                                                            fontWeight:
+                                                                                FontWeight.w400,
+                                                                          ),
+                                                                          focusedBorder:
+                                                                              OutlineInputBorder(
+                                                                            borderSide:
+                                                                                BorderSide(width: 1.0),
+                                                                          ),
+                                                                          enabledBorder:
+                                                                              OutlineInputBorder(
+                                                                            borderSide:
+                                                                                BorderSide.none,
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(5.0),
+                                                                          ),
+                                                                          border:
+                                                                              InputBorder.none,
+                                                                          filled:
+                                                                              true,
+                                                                          fillColor:
+                                                                              Color(0xFFEFEFEF),
+                                                                          contentPadding: EdgeInsets.symmetric(
+                                                                              vertical: 0,
+                                                                              horizontal: 12),
+                                                                        ),
+                                                                        readOnly:
+                                                                            true,
+                                                                        onTap:
+                                                                            () async {
+                                                                          DateTime?
+                                                                              pickedDate =
+                                                                              await showDatePicker(
+                                                                            context:
+                                                                                context,
+                                                                            initialDate:
+                                                                                DateTime.now(),
+                                                                            firstDate:
+                                                                                DateTime(2000),
+                                                                            lastDate:
+                                                                                DateTime(2101),
+                                                                          );
+                                                                          if (pickedDate !=
+                                                                              null) {
+                                                                            String
+                                                                                formattedDate =
+                                                                                DateFormat.yMd().format(pickedDate);
+                                                                            eventdate.text =
+                                                                                formattedDate.toString();
+
+                                                                            setState(() {
+                                                                              afterEventdate = formatDate(eventdate.text);
+                                                                              print("newdate: " + afterEventdate);
+                                                                            });
+                                                                          } else {
+                                                                            print("Not selected");
+                                                                          }
+                                                                        },
+                                                                      ),
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
@@ -768,9 +966,57 @@ class _FindGangState extends State<FindGang> {
                                                                           10),
                                                               child: Row(
                                                                 children: [
-                                                                  TimePick(
-                                                                    eventtime:
-                                                                        eventtime,
+                                                                  Expanded(
+                                                                    child:
+                                                                        FractionallySizedBox(
+                                                                      child:
+                                                                          GestureDetector(
+                                                                        onTap:
+                                                                            () async {
+                                                                          TimeOfDay?
+                                                                              time =
+                                                                              await getTime(
+                                                                            context:
+                                                                                context,
+                                                                            title:
+                                                                                "เลือกเวลาเริ่มกิจกรรม",
+                                                                          );
+                                                                          if (time !=
+                                                                              null) {
+                                                                            String
+                                                                                formattedTime =
+                                                                                formatTime(time);
+                                                                            eventtime.text =
+                                                                                formattedTime;
+                                                                            // print("formattedTime" + formattedTime);
+                                                                            print(eventtime.text);
+
+                                                                            setState(() {
+                                                                              afterEventtime = formatNewTime(eventtime.text);
+                                                                              print("newtime: " + afterEventtime);
+                                                                            });
+                                                                          }
+                                                                        },
+                                                                        child:
+                                                                            Container(
+                                                                          decoration:
+                                                                              _buildBoxUser(),
+                                                                          child:
+                                                                              Center(
+                                                                            child:
+                                                                                TextFormField(
+                                                                              controller: eventtime,
+                                                                              enabled: false,
+                                                                              decoration: InputDecoration(
+                                                                                hintText: 'เลือกเวลา*',
+                                                                                border: InputBorder.none,
+                                                                                contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
                                                                   ),
                                                                 ],
                                                               ),
@@ -831,11 +1077,10 @@ class _FindGangState extends State<FindGang> {
                                                                           ElevatedButton(
                                                                         onPressed:
                                                                             () {
-                                                                          // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่มล้างข้อมูล
-                                                                          eventtime
-                                                                              .clear();
-                                                                          eventdate
-                                                                              .clear();
+                                                                          // eventtime
+                                                                          //     .clear();
+                                                                          // eventdate
+                                                                          //     .clear();
                                                                           // filterlist
                                                                           //     .clear();
                                                                         },
@@ -890,6 +1135,7 @@ class _FindGangState extends State<FindGang> {
                                                                           }
 
                                                                           await getFilters();
+
                                                                           // print(eventtime.text);
 
                                                                           // print(
@@ -1044,8 +1290,6 @@ class _FindGangState extends State<FindGang> {
                                                               color: Color(
                                                                   0xFF013C58),
                                                               fontSize: 20,
-                                                              fontFamily:
-                                                                  'Inter',
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w800,
@@ -1085,8 +1329,6 @@ class _FindGangState extends State<FindGang> {
                                                                           0xFF929292),
                                                                       fontSize:
                                                                           14,
-                                                                      fontFamily:
-                                                                          'Inter',
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w400,
@@ -1114,8 +1356,6 @@ class _FindGangState extends State<FindGang> {
                                                                           0xFFF5A201),
                                                                       fontSize:
                                                                           14,
-                                                                      fontFamily:
-                                                                          'Inter',
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w400,
@@ -1156,8 +1396,6 @@ class _FindGangState extends State<FindGang> {
                                                                         0xFF929292),
                                                                     fontSize:
                                                                         14,
-                                                                    fontFamily:
-                                                                        'Inter',
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w400,
@@ -1237,8 +1475,6 @@ class _FindGangState extends State<FindGang> {
                                                                                       : Color(0xFFFC7FFF),
                                                                           fontSize:
                                                                               12,
-                                                                          fontFamily:
-                                                                              'Inter',
                                                                           fontWeight:
                                                                               FontWeight.w400,
                                                                           height:
@@ -1275,8 +1511,6 @@ class _FindGangState extends State<FindGang> {
                                                                   color: Color(
                                                                       0xFF929292),
                                                                   fontSize: 14,
-                                                                  fontFamily:
-                                                                      'Inter',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w400,
@@ -1333,8 +1567,6 @@ class _FindGangState extends State<FindGang> {
                                                                   color: Color(
                                                                       0xFF013C58),
                                                                   fontSize: 14,
-                                                                  fontFamily:
-                                                                      'Inter',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -1533,149 +1765,73 @@ class _ChipLevelState extends State<ChipLevel> {
   }
 }
 
-class TimePick extends StatefulWidget {
-  final TextEditingController eventtime;
+// class DatePicker extends StatelessWidget {
+//   final TextEditingController eventdate;
+//   DatePicker({Key? key, required this.eventdate}) : super(key: key);
 
-  TimePick({
-    Key? key,
-    required this.eventtime,
-  }) : super(key: key);
-  @override
-  State<StatefulWidget> createState() {
-    return _TimePickState();
-  }
-}
-
-class _TimePickState extends State<TimePick> {
-  TextEditingController eventtime = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: FractionallySizedBox(
-        child: GestureDetector(
-          onTap: () async {
-            TimeOfDay? time = await getTime(
-              context: context,
-              title: "เลือกเวลาเริ่มกิจกรรม",
-            );
-            if (time != null) {
-              String formattedTime = formatTime(time);
-              eventtime.text = formattedTime;
-              // print("formattedTime" + formattedTime);
-              // print(eventtime.text);
-            }
-          },
-          child: Container(
-            decoration: _buildBoxUser(),
-            child: Center(
-              child: TextFormField(
-                controller: eventtime,
-                enabled: false,
-                decoration: InputDecoration(
-                  hintText: 'เลือกเวลา*',
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<TimeOfDay?> getTime({
-    required BuildContext context,
-    String? title,
-    TimeOfDay? initialTime,
-    String? cancelText,
-    String? confirmText,
-  }) async {
-    TimeOfDay? time = await showTimePicker(
-      initialEntryMode: TimePickerEntryMode.dial,
-      context: context,
-      initialTime: initialTime ?? TimeOfDay.now(),
-      cancelText: cancelText ?? "ยกเลิก",
-      confirmText: confirmText ?? "บันทึก",
-      helpText: title ?? "Select time",
-      builder: (context, Widget? child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
-          child: child!,
-        );
-      },
-    );
-
-    return time;
-  }
-
-  String formatTime(TimeOfDay time) {
-    String hour = time.hour.toString().padLeft(2, '0');
-    String minute = time.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
-}
-
-class DatePicker extends StatelessWidget {
-  final TextEditingController eventdate;
-  DatePicker({Key? key, required this.eventdate}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x3F000000),
-            blurRadius: 4,
-            offset: Offset(0, 4),
-            spreadRadius: 0,
-          ),
-        ],
-        borderRadius: BorderRadius.circular(5.0),
-        color: Color(0xFFEFEFEF),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-        child: TextField(
-          controller: eventdate,
-          decoration: InputDecoration(
-            labelText: "เลือกวันที่*",
-            labelStyle: TextStyle(
-              color: Colors.black.withOpacity(0.3100000023841858),
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(width: 1.0),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            border: InputBorder.none,
-            filled: true,
-            fillColor: Color(0xFFEFEFEF),
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-          ),
-          readOnly: true,
-          onTap: () async {
-            DateTime? pickedDate = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2101),
-            );
-            if (pickedDate != null) {
-              String formattedDate = DateFormat.yMd().format(pickedDate);
-              eventdate.text = formattedDate.toString();
-            } else {
-              print("Not selected");
-            }
-          },
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         boxShadow: [
+//           BoxShadow(
+//             color: Color(0x3F000000),
+//             blurRadius: 4,
+//             offset: Offset(0, 4),
+//             spreadRadius: 0,
+//           ),
+//         ],
+//         borderRadius: BorderRadius.circular(5.0),
+//         color: Color(0xFFEFEFEF),
+//       ),
+//       child: Padding(
+//         padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+//         child: TextField(
+//           controller: eventdate,
+//           decoration: InputDecoration(
+//             labelText: "เลือกวันที่*",
+//             labelStyle: TextStyle(
+//               color: Colors.black.withOpacity(0.3100000023841858),
+//               fontSize: 14,
+//               fontWeight: FontWeight.w400,
+//             ),
+//             focusedBorder: OutlineInputBorder(
+//               borderSide: BorderSide(width: 1.0),
+//             ),
+//             enabledBorder: OutlineInputBorder(
+//               borderSide: BorderSide.none,
+//               borderRadius: BorderRadius.circular(5.0),
+//             ),
+//             border: InputBorder.none,
+//             filled: true,
+//             fillColor: Color(0xFFEFEFEF),
+//             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+//           ),
+//           readOnly: true,
+//           onTap: () async {
+//             DateTime? pickedDate = await showDatePicker(
+//               context: context,
+//               initialDate: DateTime.now(),
+//               firstDate: DateTime(2000),
+//               lastDate: DateTime(2101),
+//             );
+//             if (pickedDate != null) {
+//               String formattedDate = DateFormat.yMd().format(pickedDate);
+//               eventdate.text = formattedDate.toString();
+//               if (afterEventdate == '') {
+//                 setState(() {
+//                   afterEventdate = formatDate(eventdate.text);
+//                   print("newdate: " + afterEventdate);
+//                 });
+//               } else {
+//                 print("อะไรก็ได้");
+//               }
+//             } else {
+//               print("Not selected");
+//             }
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }

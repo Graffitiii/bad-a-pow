@@ -35,6 +35,7 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 5,
         child: Scaffold(
@@ -84,6 +85,7 @@ class _TabBarViewFindEventState extends State<TabBarViewFindEvent> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 5,
         initialIndex: 1,
@@ -134,6 +136,7 @@ class _TabBarViewMyEventState extends State<TabBarViewMyEvent> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 5,
         initialIndex: 3,
@@ -184,6 +187,7 @@ class _TabBarViewProfileState extends State<TabBarViewProfile> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 5,
         initialIndex: 4,

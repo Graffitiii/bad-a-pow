@@ -637,7 +637,6 @@ class _EditEventState extends State<EditEvent> {
                       labelStyle: TextStyle(
                         color: Colors.black.withOpacity(0.3100000023841858),
                         fontSize: 14,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
                       fillColor: Color(0xFFEFEFEF),
@@ -681,7 +680,6 @@ class _EditEventState extends State<EditEvent> {
                                 color: Colors.black
                                     .withOpacity(0.3100000023841858),
                                 fontSize: 14,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                               ),
                               fillColor: Color(0xFFEFEFEF),
@@ -821,7 +819,6 @@ class _EditEventState extends State<EditEvent> {
                       labelStyle: TextStyle(
                         color: Colors.black.withOpacity(0.3100000023841858),
                         fontSize: 14,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
                       fillColor: Color(0xFFEFEFEF),
@@ -864,7 +861,6 @@ class _EditEventState extends State<EditEvent> {
                       labelStyle: TextStyle(
                         color: Colors.black.withOpacity(0.3100000023841858),
                         fontSize: 14,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
                       fillColor: Color(0xFFEFEFEF),
@@ -909,7 +905,6 @@ class _EditEventState extends State<EditEvent> {
                                 color: Colors.black
                                     .withOpacity(0.3100000023841858),
                                 fontSize: 14,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                               ),
                               fillColor: Color(0xFFEFEFEF),
@@ -948,7 +943,6 @@ class _EditEventState extends State<EditEvent> {
                                 color: Colors.black
                                     .withOpacity(0.3100000023841858),
                                 fontSize: 14,
-                                fontFamily: 'Inter',
                                 fontWeight: FontWeight.w400,
                               ),
                               fillColor: Color(0xFFEFEFEF),
@@ -988,7 +982,6 @@ class _EditEventState extends State<EditEvent> {
                       labelStyle: TextStyle(
                         color: Colors.black.withOpacity(0.3100000023841858),
                         fontSize: 14,
-                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
                       ),
                       fillColor: Color(0xFFEFEFEF),
