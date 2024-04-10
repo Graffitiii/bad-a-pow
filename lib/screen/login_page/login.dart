@@ -392,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: Text(
                               'สมัครสมาชิก',
-                              style: GoogleFonts.inter(
+                              style: TextStyle(
                                 color: Color(0xFF013C58),
                                 fontWeight: FontWeight.w900,
                                 fontSize: 16,

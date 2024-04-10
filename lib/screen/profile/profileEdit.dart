@@ -572,7 +572,6 @@ class _ProfileEditState extends State<ProfileEdit> {
                                     color: Colors.black
                                         .withOpacity(0.3100000023841858),
                                     fontSize: 14,
-                                    fontFamily: 'Inter',
                                     fontWeight: FontWeight.w400,
                                   ),
                                   fillColor: Color(0xFFEFEFEF),

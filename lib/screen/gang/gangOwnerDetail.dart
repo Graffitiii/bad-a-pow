@@ -474,8 +474,9 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                 children: List<Widget>.generate(
                                   clubInfo['admin'].length,
                                   (index) => Text(
-                                    clubInfo['admin'][index] + " , ",
+                                    clubInfo['admin'][index] + ", ",
                                     style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
                                       color: Color(0xFF929292),
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -679,7 +680,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                           style: TextStyle(
                                             color: Color(0xFF013C58),
                                             fontSize: 20,
-                                            fontFamily: 'Inter',
                                             fontWeight: FontWeight.w800,
                                             height: 0,
                                           ),
@@ -697,7 +697,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                               style: TextStyle(
                                                 color: Color(0xFF929292),
                                                 fontSize: 14,
-                                                fontFamily: 'Inter',
                                                 fontWeight: FontWeight.w400,
                                                 height: 0,
                                               ),
@@ -720,7 +719,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                               style: TextStyle(
                                                 color: Color(0xFF929292),
                                                 fontSize: 14,
-                                                fontFamily: 'Inter',
                                                 fontWeight: FontWeight.w400,
                                                 height: 0,
                                               ),
@@ -809,7 +807,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                                                     : Color(
                                                                         0xFFFC7FFF),
                                                         fontSize: 12,
-                                                        fontFamily: 'Inter',
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         height: 0,
@@ -836,7 +833,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                                 style: TextStyle(
                                                   color: Color(0xFF929292),
                                                   fontSize: 14,
-                                                  fontFamily: 'Inter',
                                                   fontWeight: FontWeight.w400,
                                                   height: 0,
                                                 ),
@@ -975,7 +971,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                           style: TextStyle(
                                             color: Color(0xFF013C58),
                                             fontSize: 20,
-                                            fontFamily: 'Inter',
                                             fontWeight: FontWeight.w800,
                                             height: 0,
                                           ),
@@ -993,7 +988,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                               style: TextStyle(
                                                 color: Color(0xFF929292),
                                                 fontSize: 14,
-                                                fontFamily: 'Inter',
                                                 fontWeight: FontWeight.w400,
                                                 height: 0,
                                               ),
@@ -1016,7 +1010,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                               style: TextStyle(
                                                 color: Color(0xFF929292),
                                                 fontSize: 14,
-                                                fontFamily: 'Inter',
                                                 fontWeight: FontWeight.w400,
                                                 height: 0,
                                               ),
@@ -1105,7 +1098,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                                                     : Color(
                                                                         0xFFFC7FFF),
                                                         fontSize: 12,
-                                                        fontFamily: 'Inter',
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         height: 0,
@@ -1131,7 +1123,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                               style: TextStyle(
                                                 color: Color(0xFF929292),
                                                 fontSize: 14,
-                                                fontFamily: 'Inter',
                                                 fontWeight: FontWeight.w400,
                                                 height: 0,
                                               ),

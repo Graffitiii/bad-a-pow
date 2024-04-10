@@ -74,7 +74,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 16,
-                                                fontFamily: 'Inter',
                                                 fontWeight: FontWeight.w400,
                                               ),
                                             ),
@@ -202,7 +201,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                     },
                                     child: Text(
                                       'ย้อนกลับ',
-                                      style: GoogleFonts.inter(
+                                      style: TextStyle(
                                         color: Color(0xFF013C58),
                                         fontWeight: FontWeight.w600,
                                         fontSize: 14,

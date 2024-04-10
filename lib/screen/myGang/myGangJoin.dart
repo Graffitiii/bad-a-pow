@@ -237,7 +237,6 @@ class _MyGangJoinState extends State<MyGangJoin> {
                                     style: TextStyle(
                                       color: Color(0xFF929292),
                                       fontSize: 14,
-                                      fontFamily: 'Inter',
                                       fontWeight: FontWeight.w400,
                                       height: 0,
                                     ),
@@ -300,7 +299,6 @@ class _MyGangJoinState extends State<MyGangJoin> {
                                                         ? Color(0xFFFC7FFF)
                                                         : Color(0xFFFC7FFF),
                                             fontSize: 12,
-                                            fontFamily: 'Inter',
                                             fontWeight: FontWeight.w400,
                                             height: 0,
                                           ),

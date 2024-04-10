@@ -198,7 +198,6 @@ class _AdiminOfState extends State<AdiminOf> {
                                                   style: TextStyle(
                                                     color: Color(0xFF013C58),
                                                     fontSize: 14,
-                                                    fontFamily: 'Inter',
                                                     fontWeight: FontWeight.w600,
                                                     height: 0,
                                                   ),
@@ -243,7 +242,6 @@ class _AdiminOfState extends State<AdiminOf> {
                                           style: TextStyle(
                                             color: Color(0xFF013C58),
                                             fontSize: 14,
-                                            fontFamily: 'Inter',
                                             fontWeight: FontWeight.w600,
                                             height: 0,
                                           ),
