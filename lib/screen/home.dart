@@ -18,20 +18,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late String username;
+  String username = '';
+  var myToken;
   late SharedPreferences prefs;
 
   @override
   void initState() {
+    initializeState();
     super.initState();
-    initSharedPref();
-    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
-    username = jwtDecodedToken['userName'];
-    print(JwtDecoder.getRemainingTime(widget.token));
+    // print(JwtDecoder.getRemainingTime(widget.token));
   }
 
-  void initSharedPref() async {
+  void initializeState() async {
+    await initSharedPref();
+  }
+
+  Future<void> initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
+
+    setState(() {
+      username = jwtDecodedToken['userName'];
+    });
   }
 
   void logout() {
@@ -67,7 +78,6 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
-              fontFamily: 'Inter',
               fontWeight: FontWeight.w400,
               height: 0,
             ),
@@ -82,23 +92,30 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
               width: double.infinity,
-              height: 160,
+              height: 140,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                image: DecorationImage(
-                  image: AssetImage('assets/images/badHome.jpg'),
-                  colorFilter: ColorFilter.mode(
-                    Color.fromARGB(255, 56, 56, 56),
-                    BlendMode.hardLight,
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ),
+                  borderRadius: BorderRadius.circular(15),
+                  gradient: LinearGradient(
+                    stops: [0.1, 1],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [Color(0xFF013C58), Color(0xFF0074AB)],
+                  )),
               child: Padding(
                   padding: EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        'ยินดีต้อนรับ',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          height: 0,
+                        ),
+                      ),
+                      SizedBox(height: 10),
                       Text(
                         username,
                         style: TextStyle(
@@ -109,40 +126,53 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      Text(
-                        'หาก๊วนกันเลย!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          height: 0,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          // logout();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TabBarViewFindEvent()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Color(0xFF013C58),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          elevation: 0, // Remove default button elevation
-                        ),
-                        child: Text(
-                          'เริ่มหาก๊วน',
-                          style: TextStyle(
-                            fontSize: 14,
+                      Opacity(
+                        opacity: 0.80,
+                        child: Container(
+                          child: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                'สถานะ : Owner',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  height: 0,
+                                ),
+                              )),
+                          // width: 87,
+                          // height: 17,
+                          decoration: ShapeDecoration(
                             color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5)),
                           ),
                         ),
                       ),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     // logout();
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //           builder: (context) => TabBarViewFindEvent()),
+                      //     );
+                      //   },
+                      //   style: ElevatedButton.styleFrom(
+                      //     primary: Color(0xFF013C58),
+                      //     shape: RoundedRectangleBorder(
+                      //       borderRadius: BorderRadius.circular(10),
+                      //     ),
+                      //     elevation: 0, // Remove default button elevation
+                      //   ),
+                      //   child: Text(
+                      //     'เริ่มหาก๊วน',
+                      //     style: TextStyle(
+                      //       fontSize: 14,
+                      //       color: Colors.white,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   )),
             ),

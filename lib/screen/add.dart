@@ -520,13 +520,13 @@ class _AddState extends State<Add> {
                               startTime: (startTime) {
                                 setState(() {
                                   formattedStartTime = startTime;
-                                  // print(formattedStartTime);
+                                  print("plpl $formattedStartTime");
                                 });
                               },
                               endTime: (endTime) {
                                 setState(() {
                                   formattedEndTime = endTime;
-                                  // print(formattedEndTime);
+                                  print("asdf $formattedEndTime");
                                 });
                               },
                             ),
