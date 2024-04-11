@@ -4,9 +4,10 @@ import 'dart:async';
 import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/gang/findGang.dart';
 import 'package:finalmo/screen/home.dart';
+import 'package:finalmo/screen/login_page/forgetConfirmOtp.dart';
+import 'package:finalmo/screen/login_page/forgetPhonenumber.dart';
 import 'package:finalmo/screen/login_page/signup.dart';
 import 'package:flutter/material.dart';
-import 'package:finalmo/screen/login_page/forgetpassword.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -367,7 +368,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          ForgetPasswordScreen()));
+                                          ForgetPhonenumber()));
                             },
                             child: Text(
                               'ลืมรหัสผ่าน',

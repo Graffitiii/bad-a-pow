@@ -197,18 +197,6 @@ class _EditEventState extends State<EditEvent> {
         contact.text = eventDetail['contact'];
       });
     }
-    // if (eventDetail['eventdate_start'] != "") {
-    //   setState(() {
-    //     eventdate.text = eventDetail['eventdate_start'];
-    //   });
-    // }
-    // if (eventDetail['eventdate_end'] != "") {
-    //   print("dsedw" + eventtime.text);
-
-    //   setState(() {
-    //     eventtime.text = eventDetail['eventdate_end'];
-    //   });
-    // }
     if (eventDetail['level'] != "") {
       setState(() {
         selectedlevel = (eventDetail['level'] as List<dynamic>).cast<String>();
@@ -246,6 +234,11 @@ class _EditEventState extends State<EditEvent> {
         });
       });
     }
+    if (eventDetail['image'].length == 0) {
+      setState(() {
+        loading = false;
+      });
+    }
     if (eventDetail['details'] != "") {
       setState(() {
         details.text = eventDetail['details'];
@@ -270,47 +263,11 @@ class _EditEventState extends State<EditEvent> {
       } catch (err) {
         print(err);
       }
-      // String url = item;
-      // int startIndex = url.indexOf('event_image%2F');
-      // startIndex += 'event_image%2F'.length;
-      // int endIndex = url.indexOf('?');
-      // String imageName = url.substring(startIndex, endIndex);
-
-      // String imagePath = "event_image/${imageName}";
-      // print(imagePath);
     });
   }
 
   void saveEvent() async {
     var regBody;
-    // if (images.length != 0) {
-    //   for (int i = 0; i < images.length; i++) {
-    //     String url = await uploadFile(images[i]);
-    //     downloadUrls.add(url);
-
-    //     if (i == images.length - 1) {
-    //       regBody = {
-    //         "image": downloadUrls,
-    //         "club": selectedclub,
-    //         "contact": contact.text,
-    //         "eventdate_start": "${eventdate.text} $formattedStartTime",
-    //         "eventdate_end": "${eventdate.text} $formattedEndTime",
-    //         "price_badminton": priceBadminton.text,
-    //         "priceplay": priceplay.text,
-    //         "level": selectedlevel,
-    //         "brand": brand.text,
-    //         "details": details.text,
-    //         "active": false,
-    //         "placename": placename.text,
-    //         "latitude": latitude,
-    //         "longitude": longitude,
-    //         "userlimit": userlimit.text
-    //       };
-
-    //       print(regBody);
-    //     }
-    //   }
-    // } else {
 
     if (newImages.length != 0) {
       for (int i = 0; i < newImages.length; i++) {
@@ -353,8 +310,8 @@ class _EditEventState extends State<EditEvent> {
       showDialog<String>(
         context: this.context,
         builder: (BuildContext context) => AlertDialog(
-          title: const Text('บันทึกโปรไฟล์สำเร็จ'),
-          content: const Text('บันทึกโปรไฟล์สำเร็จ'),
+          title: const Text('แก้ไขกิจกรรมสำเร็จ'),
+          content: const Text('แก้ไขกิจกรรมสำเร็จ'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -1429,56 +1386,6 @@ class _EditEventState extends State<EditEvent> {
                                 ),
                               ],
                             ),
-                            // Container(
-                            //   width: 150,
-                            //   height: 85,
-                            //   child: Padding(
-                            //     padding: EdgeInsets.all(20),
-                            //     child: Container(
-                            //       decoration: BoxDecoration(
-                            //         borderRadius: BorderRadius.circular(10),
-                            //         boxShadow: [
-                            //           BoxShadow(
-                            //             color: Color(0x3F000000),
-                            //             blurRadius: 5,
-                            //             offset: Offset(0, 7),
-                            //             spreadRadius: 0,
-                            //           ),
-                            //         ],
-                            //       ),
-                            //       child: ElevatedButton(
-                            //         onPressed: () {
-                            //           saveEvent();
-                            //           Navigator.pop(context, 'OK');
-                            //           Navigator.pushReplacement(
-                            //             context,
-                            //             MaterialPageRoute(
-                            //               builder: (BuildContext context) =>
-                            //                   GangDetail(id: eventDetail['_id']),
-                            //             ),
-                            //           );
-                            //         },
-                            //         style: ElevatedButton.styleFrom(
-                            //           primary: Color(0xFF013C58),
-                            //           shape: RoundedRectangleBorder(
-                            //             borderRadius: BorderRadius.circular(10),
-                            //           ),
-                            //           elevation: 0, // Remove default button elevation
-                            //         ),
-                            //         child: Padding(
-                            //           padding: const EdgeInsets.all(10),
-                            //           child: Text(
-                            //             'เพิ่ม',
-                            //             style: TextStyle(
-                            //               fontSize: 14,
-                            //               color: Colors.white,
-                            //             ),
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
                           ],
                         ),
                       ))),
@@ -1540,117 +1447,3 @@ class DatePicker extends StatelessWidget {
     );
   }
 }
-
-// class TimePick extends StatefulWidget {
-//   final TextEditingController eventtime;
-//   final Function(String) startTime;
-//   final Function(String) endTime;
-
-//   TimePick(
-//       {Key? key,
-//       required this.eventtime,
-//       required this.startTime,
-//       required this.endTime})
-//       : super(key: key);
-//   @override
-//   State<StatefulWidget> createState() {
-//     return _TimePickState();
-//   }
-// }
-
-// class _TimePickState extends State<TimePick> {
-//   TimeOfDay _startTime = TimeOfDay.now();
-//   TimeOfDay _endTime =
-//       TimeOfDay.fromDateTime(DateTime.now().add(const Duration(hours: 3)));
-//   TextEditingController eventtime = TextEditingController();
-//   String formattedStartTime = '';
-//   String formattedEndTime = '';
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: ListView(children: [
-//         TextField(
-//           controller: eventtime,
-//           decoration: InputDecoration(
-//             prefixIcon: Icon(
-//               Icons.timer,
-//               color: Colors.grey,
-//             ),
-//             labelText: "Enter Time",
-//             labelStyle: TextStyle(
-//               color: Colors.black.withOpacity(0.3100000023841858),
-//               fontSize: 14,
-//               fontWeight: FontWeight.w400,
-//             ),
-//             focusedBorder: OutlineInputBorder(
-//               borderSide: BorderSide(width: 1.0),
-//             ),
-//             enabledBorder: OutlineInputBorder(
-//               borderSide: BorderSide.none,
-//               borderRadius: BorderRadius.circular(5.0),
-//             ),
-//             border: InputBorder.none,
-//             filled: true,
-//             fillColor: Color(0xFFEFEFEF),
-//             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-//           ),
-//           readOnly: true,
-//           onTap: () async {
-//             TimeRange? result = await showTimeRangePicker(
-//                 context: context,
-//                 start: const TimeOfDay(hour: 9, minute: 0),
-//                 end: const TimeOfDay(hour: 12, minute: 0),
-//                 disabledColor: Colors.red.withOpacity(0.5),
-//                 strokeWidth: 4,
-//                 ticks: 24,
-//                 ticksOffset: -7,
-//                 ticksLength: 15,
-//                 ticksColor: Colors.grey,
-//                 labels: [
-//                   "12 am",
-//                   "3 am",
-//                   "6 am",
-//                   "9 am",
-//                   "12 pm",
-//                   "3 pm",
-//                   "6 pm",
-//                   "9 pm"
-//                 ].asMap().entries.map((e) {
-//                   return ClockLabel.fromIndex(
-//                       idx: e.key, length: 8, text: e.value);
-//                 }).toList(),
-//                 labelOffset: 35,
-//                 rotateLabels: false,
-//                 padding: 60);
-
-//             if (kDebugMode) {
-//               if (result != null) {
-//                 // ดึงข้อมูลเวลาเริ่มและเวลาสิ้นสุด
-//                 TimeOfDay startTime = result.startTime;
-//                 TimeOfDay endTime = result.endTime;
-
-//                 // ฟอร์แมตเวลาให้เป็นรูปแบบที่ต้องการ
-//                 String formattedStartTime =
-//                     '${startTime.hour}:${startTime.minute.toString().padLeft(2, '0')}';
-
-//                 String formattedEndTime =
-//                     '${endTime.hour}:${endTime.minute.toString().padLeft(2, '0')}';
-
-//                 widget.startTime(formattedStartTime);
-//                 widget.endTime(formattedEndTime);
-
-//                 // print('Pick time: $formattedStartTime - $formattedEndTime');
-//                 eventtime.text = '$formattedStartTime - $formattedEndTime';
-//                 print('time: ' + eventtime.text);
-//                 setState(() {});
-//               } else {
-//                 print("ไม่ได้เลือกเวลา");
-//               }
-//             }
-//           },
-//         ),
-//       ]),
-//     );
-//   }
-// }

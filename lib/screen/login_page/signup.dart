@@ -186,9 +186,11 @@ class _SignUpObjectState extends State<SignUpObject> {
 
     var response = await http.get(uri);
     print(otpId);
-    print(response.statusCode);
+    var jsonResponse = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
+    print(jsonResponse);
+
+    if (jsonResponse['status'] == "0") {
       setState(() {
         regisButton = true;
       });

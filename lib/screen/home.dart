@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
               width: double.infinity,
-              height: 140,
+              height: 150,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   gradient: LinearGradient(
