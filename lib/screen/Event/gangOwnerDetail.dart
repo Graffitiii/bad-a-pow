@@ -3,12 +3,14 @@
 import 'dart:convert';
 import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/add.dart';
-import 'package:finalmo/screen/gang/admin_of.dart';
-import 'package:finalmo/screen/gang/gangDetail.dart';
-import 'package:finalmo/screen/gang/review.dart';
+import 'package:finalmo/screen/Event/admin_of.dart';
+import 'package:finalmo/screen/Event/gangDetail.dart';
+import 'package:finalmo/screen/Event/review.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -201,6 +203,25 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
     } else {
       print('SDadw');
     }
+  }
+
+  String formattingDate(start, end) {
+    initializeDateFormatting('th', null);
+
+    DateTime eventStart = DateTime.parse(start);
+    DateTime eventEnd = DateTime.parse(end);
+    // print(eventStart);
+    DateTime thaiDateStartTime = eventStart.add(Duration(hours: 7));
+    DateTime thaiDateEndTime = eventEnd.add(Duration(hours: 7));
+
+    String formattedDateTime =
+        DateFormat('d MMMM H:mm', 'th').format(thaiDateStartTime);
+
+    String formattedEndTime =
+        DateFormat('H:mm น.', 'th').format(thaiDateEndTime);
+
+    // print(formattedDateTime + "-" + formattedEndTime);
+    return formattedDateTime + " - " + formattedEndTime;
   }
 
   Future<bool> _onBackPressed() async {
@@ -690,15 +711,23 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                             color: Color(0xFFFF3333),
                                             size: 20.0,
                                           ),
-                                          Container(
-                                            margin: EdgeInsets.only(left: 5),
-                                            child: Text(
-                                              'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
+                                          ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                maxWidth: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.5), // Adjust the value as needed
+                                            child: Container(
+                                              margin: EdgeInsets.only(left: 5),
+                                              child: Text(
+                                                items['placename'],
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color: Color(0xFF929292),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 0,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -715,7 +744,9 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                           Container(
                                             margin: EdgeInsets.only(left: 5),
                                             child: Text(
-                                              'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
+                                              formattingDate(
+                                                  items['eventdate_start'],
+                                                  items['eventdate_end']),
                                               style: TextStyle(
                                                 color: Color(0xFF929292),
                                                 fontSize: 14,

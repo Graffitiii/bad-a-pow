@@ -1,5 +1,5 @@
 import 'package:finalmo/screen/add.dart';
-import 'package:finalmo/screen/gang/findGang.dart';
+import 'package:finalmo/screen/Event/findGang.dart';
 import 'package:finalmo/screen/home.dart';
 import 'package:finalmo/screen/myGang/myGang.dart';
 import 'package:finalmo/screen/profile/profile.dart';

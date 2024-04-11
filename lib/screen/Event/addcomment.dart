@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
-import 'package:finalmo/screen/gang/review.dart';
+import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
+import 'package:finalmo/screen/Event/review.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
@@ -108,14 +108,14 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
               onPressed: () {
                 addComment();
                 setState(() {});
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     fullscreenDialog: true,
-                //     builder: (context) => GangOwnerDetail(club: widget.club),
-                //   ),
-                // );
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReviewScreen(club: widget.club),
+                  ),
+                );
+
+                // Navigator.pop(context);
               },
             )
           ]),

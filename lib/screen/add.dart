@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:finalmo/postModel.dart';
 import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/myGang/addclub.dart';
 import 'package:finalmo/screen/profile/profile.dart';
@@ -59,12 +58,11 @@ class _AddState extends State<Add> {
   String formattedEndTime = '';
   List<String> selectedlevel = [];
   String? selectedclub;
-  List<EventList> eventlist = [];
 
   late String username;
   late SharedPreferences prefs;
   var myToken;
-  List<ClubList> clublist = [];
+
   var jsonResponse;
   bool status = false;
   bool loading = false;

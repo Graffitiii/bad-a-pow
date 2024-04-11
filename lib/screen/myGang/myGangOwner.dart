@@ -1,8 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:finalmo/postModel.dart';
-import 'package:finalmo/screen/gang/gangDetail.dart';
-import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
+import 'package:finalmo/screen/Event/gangDetail.dart';
+import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
 import 'package:finalmo/screen/myGang/addclub.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -22,7 +21,6 @@ class _MyGangOwnerState extends State<MyGangOwner> {
   late String username;
   late SharedPreferences prefs;
   var myToken;
-  List<ClubList> clublist = [];
   var jsonResponse;
   bool status = false;
   bool loading = false;

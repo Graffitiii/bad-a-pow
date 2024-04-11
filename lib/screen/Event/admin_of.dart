@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:finalmo/screen/gang/gangDetail.dart';
+import 'package:finalmo/screen/Event/gangDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';

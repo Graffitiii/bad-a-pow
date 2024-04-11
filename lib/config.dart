@@ -25,3 +25,4 @@ final saveLocation = url + 'saveLocation';
 final assingAdmin = url + 'assingAdmin';
 final unAssingAdmin = url + 'unAssingAdmin';
 final delClub = url + "deleteClub";
+final cancelEvent = url + "cancelEvent";

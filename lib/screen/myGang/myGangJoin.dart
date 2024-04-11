@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unnecessary_new
 
 import 'package:finalmo/screen/calender.dart';
-import 'package:finalmo/screen/gang/gangDetail.dart';
+import 'package:finalmo/screen/Event/gangDetail.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;

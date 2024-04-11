@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:finalmo/screen/TabbarButton.dart';
-import 'package:finalmo/screen/gang/findGang.dart';
+import 'package:finalmo/screen/Event/findGang.dart';
 import 'package:finalmo/screen/home.dart';
 import 'package:finalmo/screen/login_page/signup.dart';
 import 'package:flutter/material.dart';
