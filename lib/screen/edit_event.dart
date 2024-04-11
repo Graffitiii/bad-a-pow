@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:finalmo/postModel.dart';
 import 'package:finalmo/screen/TabbarButton.dart';
-import 'package:finalmo/screen/gang/findGang.dart';
-import 'package:finalmo/screen/gang/gangDetail.dart';
-import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
+import 'package:finalmo/screen/Event/findGang.dart';
+import 'package:finalmo/screen/Event/gangDetail.dart';
+import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -378,31 +377,6 @@ class _EditEventState extends State<EditEvent> {
         body: jsonEncode(regBody));
     jsonResponse = jsonDecode(response.body);
     if (jsonResponse['status']) {
-      // getTodoList();
-      // showDialog(
-      //   context: context,
-      //   builder: (_) {
-      //     return AlertDialog(
-      //       title: const Text("Dialog Title"),
-      //       content: const Text("This is the dialog content."),
-      //       actions: [
-      //         TextButton(
-      //           onPressed: () {
-      //             // Define action for Action 1
-      //             Navigator.of(context).pop(); // Close the dialog
-      //           },
-      //           child: const Text("Action 1"),
-      //         ),
-      //         TextButton(
-      //           onPressed: () {
-      //             // Define action for Action 2
-      //           },
-      //           child: const Text("Action 2"),
-      //         ),
-      //       ],
-      //     );
-      //   },
-      // );
     } else {
       print('SDadw');
     }

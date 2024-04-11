@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_new
 
-import 'package:finalmo/screen/gang/gangDetail.dart';
+import 'package:finalmo/screen/Event/gangDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -182,36 +182,37 @@ class _FindGangState extends State<FindGang> {
 
     if (response.statusCode == 200) {
       jsonResponse = jsonDecode(response.body);
-      // print(jsonResponse['distance']);
+
       setState(() {
         if (afterEventtime != '' && afterEventdate == '') {
-          // filterlist = jsonResponse['data'];
-          List listnew = [];
-          listnew = jsonResponse['data'];
-          print("newdata: $listnew");
+          List listnew = List.from(jsonResponse['data']);
           List result = [];
+          List result2 = []; //check eventdate_start
           for (int i = 0; i < listnew.length; i++) {
-            listnew[i]['eventdate_start'] =
-                listnew[i]['eventdate_start'].substring(11, 24);
-            if (listnew[i]['eventdate_start'] == afterEventtime) {
-              result.add({'_id': listnew[i]['_id']});
+            result2.add({
+              '_id': listnew[i]['_id'],
+              'eventdate_start': listnew[i]['eventdate_start']
+            });
+          }
+
+          for (int i = 0; i < result2.length; i++) {
+            result2[i]['eventdate_start'] =
+                result2[i]['eventdate_start'].substring(11, 24);
+            if (result2[i]['eventdate_start'] == afterEventtime) {
+              result.add({'_id': result2[i]['_id']});
             }
           }
 
-          print("result: $result");
-          print("Old filterlist: $filterlist");
           List filteredList = [];
-          for (var item in filterlist) {
+          for (var item in listnew) {
             for (var res in result) {
               if (item['_id'] == res['_id']) {
                 filteredList.add(item);
               }
             }
           }
-          print("filteredListyyyyyy: $filteredList");
 
           filterlist = filteredList;
-          print("New filterlist: $filterlist");
         } else {
           filterlist = jsonResponse['data'];
           print("filterlist: $filterlist");
@@ -221,7 +222,7 @@ class _FindGangState extends State<FindGang> {
         distancelist = jsonResponse['distance'];
       });
 
-      print(distancelist);
+      // print(distancelist);
 
       List<Future> reviewFutures = [];
       for (var club in filterlist) {
@@ -230,7 +231,7 @@ class _FindGangState extends State<FindGang> {
 
       await Future.wait(reviewFutures);
 
-      print(review);
+      // print(review);
 
       setState(() {
         eventLoading = false;
@@ -249,7 +250,7 @@ class _FindGangState extends State<FindGang> {
       "longitude": longitude
     };
 
-    print(locationBody);
+    // print(locationBody);
     await http.put(Uri.parse(saveLocation),
         headers: {"Content-type": "application/json"},
         body: jsonEncode(locationBody));

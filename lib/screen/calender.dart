@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:finalmo/screen/gang/gangDetail.dart';
+import 'package:finalmo/screen/Event/gangDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';

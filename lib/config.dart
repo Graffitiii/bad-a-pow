@@ -1,6 +1,4 @@
 // final url = 'http://192.168.87.229:3000/';
-import 'package:finalmo/screen/login_page/resetPassword.dart';
-
 final getUrl = '192.168.87.229:3000';
 final url = 'http://192.168.87.229:3000/';
 final registration = url + "registration";
@@ -29,3 +27,4 @@ final unAssingAdmin = url + 'unAssingAdmin';
 final delClub = url + "deleteClub";
 final checkUser = url + "checkUser";
 final resetPassword = url + "resetPassword";
+final cancelEvent = url + "cancelEvent";

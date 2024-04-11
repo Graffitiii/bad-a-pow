@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:finalmo/screen/TabbarButton.dart';
-import 'package:finalmo/screen/gang/findGang.dart';
-import 'package:finalmo/screen/gang/gangDetail.dart';
+import 'package:finalmo/screen/Event/findGang.dart';
+import 'package:finalmo/screen/Event/gangDetail.dart';
 import 'package:finalmo/screen/home.dart';
 import 'package:finalmo/screen/login_page/login.dart';
 import 'package:finalmo/screen/login_page/signup.dart';

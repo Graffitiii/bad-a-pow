@@ -1,8 +1,7 @@
-import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
+import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:finalmo/postModel.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finalmo/config.dart';

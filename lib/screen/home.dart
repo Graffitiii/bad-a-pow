@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:convert';
+
+import 'package:finalmo/config.dart';
 import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/calender.dart';
 import 'package:finalmo/screen/login_page/login.dart';
@@ -8,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   final token;
@@ -21,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   String username = '';
   var myToken;
   late SharedPreferences prefs;
+  var clubInfo;
 
   @override
   void initState() {
@@ -43,6 +48,24 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       username = jwtDecodedToken['userName'];
     });
+  }
+
+  void getClubDetail(clubname) async {
+    var queryParameters = {
+      'clubname': clubname,
+    };
+
+    var uri = Uri.http(getUrl, '/getClub', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      setState(() {
+        clubInfo = jsonResponse['club'];
+      });
+      print("clubInfo: $clubInfo");
+    }
   }
 
   void logout() {
@@ -92,7 +115,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
               width: double.infinity,
-              height: 150,
+              height: 130,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   gradient: LinearGradient(
@@ -102,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                     colors: [Color(0xFF013C58), Color(0xFF0074AB)],
                   )),
               child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.fromLTRB(15, 15, 10, 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -110,12 +133,12 @@ class _HomePageState extends State<HomePage> {
                         'ยินดีต้อนรับ',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
                           height: 0,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 5),
                       Text(
                         username,
                         style: TextStyle(
@@ -135,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                                 'สถานะ : Owner',
                                 style: TextStyle(
                                   color: Color.fromARGB(255, 0, 0, 0),
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                   height: 0,
                                 ),

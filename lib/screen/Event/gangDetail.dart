@@ -1,9 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:finalmo/postModel.dart';
 import 'package:finalmo/screen/edit_event.dart';
-import 'package:finalmo/screen/gang/gangOwnerDetail.dart';
-import 'package:finalmo/screen/gang/map.dart';
+import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
+import 'package:finalmo/screen/Event/map.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:convert';
@@ -18,8 +17,6 @@ String username = '';
 late SharedPreferences prefs;
 var myToken;
 
-// bool loading = true;
-List<EventList> eventlist = [];
 var jsonResponse;
 bool status = true;
 
@@ -250,6 +247,20 @@ class _GangDetailState extends State<GangDetail> {
     //     join = false;
     //   });
     // }
+  }
+
+  void cancelE(id) async {
+    // print(id);
+    var regBody = {"_id": id};
+
+    var response = await http.delete(Uri.parse(cancelEvent),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(regBody));
+    jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+    } else {
+      print('SDadw');
+    }
   }
 
   Future<void> initSharedPref() async {
@@ -609,7 +620,8 @@ class _GangDetailState extends State<GangDetail> {
                                     ),
                                   ),
                                   onPressed: () => {
-                                        changeStatus()
+                                        changeStatus(),
+                                        cancelE(eventeach['_id'])
                                         // setState(() {
                                         //   // openevent = false;
                                         //   changeStatus();
@@ -1346,90 +1358,6 @@ class _GangDetailState extends State<GangDetail> {
                                                             FontWeight.w600,
                                                         height: 0,
                                                       ),
-                                                    ),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 5),
-                                                      height: 25,
-                                                      width: 25,
-                                                      decoration: BoxDecoration(
-                                                          color:
-                                                              Color(0xFFFFFAD6),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                          border: Border.all(
-                                                              color: Color(
-                                                                  0xFFFFF17A))),
-                                                      child: Center(
-                                                          child: Text(
-                                                        'M',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Color(0xFFFFF17A),
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          height: 0,
-                                                        ),
-                                                      )),
-                                                    ),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 5),
-                                                      height: 25,
-                                                      width: 25,
-                                                      decoration: BoxDecoration(
-                                                          color:
-                                                              Color(0xFFE5FFD6),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                          border: Border.all(
-                                                              color: Color(
-                                                                  0xFF8CFF7A))),
-                                                      child: Center(
-                                                          child: Text(
-                                                        'W',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Color(0xFF8CFF7A),
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          height: 0,
-                                                        ),
-                                                      )),
-                                                    ),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 5),
-                                                      height: 25,
-                                                      width: 25,
-                                                      decoration: BoxDecoration(
-                                                          color:
-                                                              Color(0xFFE3D6FF),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                          border: Border.all(
-                                                              color: Color(
-                                                                  0xFFA47AFF))),
-                                                      child: Center(
-                                                          child: Text(
-                                                        'S',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Color(0xFFA47AFF),
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          height: 0,
-                                                        ),
-                                                      )),
                                                     ),
                                                   ],
                                                 ),
