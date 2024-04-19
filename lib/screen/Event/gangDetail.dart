@@ -129,21 +129,45 @@ class _GangDetailState extends State<GangDetail> {
     }
   }
 
-  void changeStatus() async {
-    var regBody = {
-      "eventId": eventeach['_id'],
-      "status": eventeach['active'],
-    };
+  void onStartEvent() async {
+    final now = DateTime.now();
 
-    var response = await http.put(Uri.parse(putEventStatus),
-        headers: {"Content-type": "application/json"},
-        body: jsonEncode(regBody));
+    if (DateTime.parse(eventeach['eventdate_start']).isAfter(now)) {
+      var regBody = {
+        "eventId": eventeach['_id'],
+        "event_start": eventeach['eventdate_start']
+      };
 
-    // print(regBody);
-    var jsonResponse = jsonDecode(response.body);
+      var response = await http.put(Uri.parse(startEvent),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode(regBody));
 
-    if (jsonResponse['edit']) {
-      getEvent(eventeach['_id']);
+      // print(regBody);
+      var jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse['edit']) {
+        getEvent(eventeach['_id']);
+      }
+    } else {
+      showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('ไม่สามารถเปิดให้เข้าร่วมได้ '),
+          content: const Text(
+            '"เนื่องจากกิจกรรมนี้ได้ผ่านไปแล้ว กรุณาแก้ไขวัน-เวลา"',
+            style: TextStyle(fontSize: 18),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('ตกลง'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -591,7 +615,7 @@ class _GangDetailState extends State<GangDetail> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
-                                  onPressed: () => {changeStatus()}),
+                                  onPressed: () => {onStartEvent()}),
                             )),
                       ),
                     ] else ...[
@@ -620,8 +644,28 @@ class _GangDetailState extends State<GangDetail> {
                                     ),
                                   ),
                                   onPressed: () => {
-                                        changeStatus(),
-                                        cancelE(eventeach['_id'])
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              AlertDialog(
+                                            title: const Text('ยกเลิกกิจกรรม'),
+                                            content: const Text(
+                                                'ต้องการยกเลิกกิจกรรมนี้ใช่หรือไม่'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                    context, 'Cancel'),
+                                                child: const Text('ยกเลิก'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () =>
+                                                    {cancelE(eventeach['_id'])},
+                                                child: const Text('ยืนยัน'),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
                                         // setState(() {
                                         //   // openevent = false;
                                         //   changeStatus();

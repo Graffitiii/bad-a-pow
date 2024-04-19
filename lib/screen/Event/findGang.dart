@@ -58,6 +58,7 @@ class _FindGangState extends State<FindGang> {
   late Set<String> _selectedValues = {};
   List filterlist = [];
 
+  bool openEvent = true;
   var distancelist = {};
   final _formKey = GlobalKey<FormState>();
   String placename = '';
@@ -173,7 +174,8 @@ class _FindGangState extends State<FindGang> {
       'distance': distance.text,
       'latitude': latitude.toString(),
       'longitude': longitude.toString(),
-      'club': search.text
+      'club': search.text,
+      'status': openEvent.toString()
     };
     var uri = Uri.http(getUrl, '/getFilter', queryParameters);
     var response = await http.get(uri);
@@ -397,7 +399,7 @@ class _FindGangState extends State<FindGang> {
         appBar: AppBar(
           title: Center(
             child: Text(
-              "หาก๊วน",
+              "หากิจกรรม",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -722,6 +724,50 @@ class _FindGangState extends State<FindGang> {
                                                               CrossAxisAlignment
                                                                   .start,
                                                           children: [
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          10,
+                                                                      horizontal:
+                                                                          20),
+                                                              child: Row(
+                                                                children: [
+                                                                  Text(
+                                                                    "แสดงเฉพาะกิจกรรมที่เปิด",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          16,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w400,
+                                                                    ),
+                                                                  ),
+                                                                  Spacer(),
+                                                                  Switch(
+                                                                    value:
+                                                                        openEvent,
+                                                                    activeColor:
+                                                                        Colors
+                                                                            .green,
+                                                                    onChanged: (bool
+                                                                        value) {
+                                                                      setState(
+                                                                          () {
+                                                                        openEvent =
+                                                                            value;
+                                                                        // print(value);
+                                                                        // print("Value of light: $light");
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                  // เพิ่มระยะห่างระหว่างข้อความกับไอคอนดาว
+                                                                ],
+                                                              ),
+                                                            ),
                                                             Padding(
                                                               padding: EdgeInsets
                                                                   .symmetric(
@@ -1267,8 +1313,13 @@ class _FindGangState extends State<FindGang> {
                                                   shape: RoundedRectangleBorder(
                                                     side: BorderSide(
                                                         width: 2,
-                                                        color:
-                                                            Color(0xFFF5A201)),
+                                                        color: items['active']
+                                                            ? Color(0xFFF5A201)
+                                                            : Color.fromARGB(
+                                                                255,
+                                                                116,
+                                                                116,
+                                                                116)),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10),
@@ -1311,7 +1362,7 @@ class _FindGangState extends State<FindGang> {
                                                                     maxWidth: MediaQuery.of(context)
                                                                             .size
                                                                             .width *
-                                                                        0.5), // Adjust the value as needed
+                                                                        0.45), // Adjust the value as needed
                                                                 child:
                                                                     Container(
                                                                   margin: EdgeInsets
@@ -1533,12 +1584,20 @@ class _FindGangState extends State<FindGang> {
                                                               Icon(
                                                                 Icons
                                                                     .arrow_forward_ios,
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        255,
-                                                                        154,
-                                                                        3),
+                                                                color: items[
+                                                                        'active']
+                                                                    ? Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            255,
+                                                                            154,
+                                                                            3)
+                                                                    : Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            116,
+                                                                            116,
+                                                                            116),
                                                                 size: 36.0,
                                                               ),
                                                             ],

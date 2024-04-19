@@ -1,5 +1,6 @@
 import 'package:finalmo/screen/Event/addcomment.dart';
 import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
+import 'package:finalmo/screen/add.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -19,6 +20,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
   var jsonResponse;
   bool status = true;
   bool loading = true;
+  bool reviewAllow = false;
 
   var username = '';
   // late String username;
@@ -29,14 +31,19 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   @override
   void initState() {
-    getReview(widget.club);
+    initializeState();
     super.initState();
-    initSharedPref();
     print(widget.club);
     print(widget.owner);
   }
 
-  void initSharedPref() async {
+  void initializeState() async {
+    await initSharedPref();
+    getReview(widget.club);
+    getHistory();
+  }
+
+  Future<void> initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {
       myToken = prefs.getString('token');
@@ -68,6 +75,29 @@ class _ReviewScreenState extends State<ReviewScreen> {
     setState(() {
       loading = false;
     });
+  }
+
+  void getHistory() async {
+    var queryParameters = {
+      'username': username,
+    };
+
+    var uri = Uri.http(getUrl, '/findHistory', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['status']) {
+      for (var item in jsonResponse['result']) {
+        print(item['clubname']);
+        if (item['clubname'] == widget.club) {
+          setState(() {
+            reviewAllow = true;
+          });
+          break;
+        }
+      }
+    }
   }
 
   String AverageScore() {
@@ -118,7 +148,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
           ),
           backgroundColor: Color(0xFF00537A),
         ),
-        bottomNavigationBar: widget.owner != username
+        bottomNavigationBar: reviewAllow
             ? Container(
                 decoration: BoxDecoration(
                   border: Border(
