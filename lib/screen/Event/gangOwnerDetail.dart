@@ -458,56 +458,55 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
 
                     SizedBox(height: 20),
 
-                    if (clubInfo['owner'] == username ||
-                        clubInfo['admin'].contains(username)) ...[
-                      Row(
-                        children: [
-                          Column(
-                            children: [
-                              Container(
-                                height: 35,
-                                width: 35,
-                                decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 255, 230, 179),
-                                    shape: BoxShape.circle),
-                                child: Icon(
-                                  Icons.manage_accounts,
-                                  color: Color(0xFFF5A201),
-                                  size: 18.0,
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Admin',
-                                style: TextStyle(
-                                  color: Color(0xFF013C58),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  height: 0,
-                                ),
+                    Row(
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              height: 35,
+                              width: 35,
+                              decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 255, 230, 179),
+                                  shape: BoxShape.circle),
+                              child: Icon(
+                                Icons.manage_accounts,
+                                color: Color(0xFFF5A201),
+                                size: 18.0,
                               ),
-                              Row(
-                                children: List<Widget>.generate(
-                                  clubInfo['admin'].length,
-                                  (index) => Text(
-                                    clubInfo['admin'][index] + ", ",
-                                    style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
-                                      color: Color(0xFF929292),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                      height: 0,
-                                    ),
+                            )
+                          ],
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Admin',
+                              style: TextStyle(
+                                color: Color(0xFF013C58),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                height: 0,
+                              ),
+                            ),
+                            Row(
+                              children: List<Widget>.generate(
+                                clubInfo['admin'].length,
+                                (index) => Text(
+                                  clubInfo['admin'][index] + ", ",
+                                  style: TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    color: Color(0xFF929292),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
+                        if (clubInfo['owner'] == username) ...[
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
@@ -539,10 +538,11 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                               ],
                             ),
                           )
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                    ],
+                        ]
+                      ],
+                    ),
+                    SizedBox(height: 20),
+
                     Container(
                       width: double.infinity,
                       height: 1,
@@ -670,7 +670,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                               shadowColor: Color.fromARGB(192, 0, 0, 0),
                               borderRadius: new BorderRadius.circular(30),
                               child: Container(
-                                height: 160,
+                                height: 135,
                                 width: double.infinity,
                                 decoration: ShapeDecoration(
                                   color: Color.fromARGB(255, 255, 255, 255),
@@ -768,78 +768,93 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                                   i++)
                                                 Container(
                                                   margin: i > 0
-                                                      ? EdgeInsets.only(
-                                                          left: 10)
+                                                      ? EdgeInsets.only(left: 5)
                                                       : EdgeInsets.zero,
                                                   height: 22,
                                                   width: 22,
                                                   decoration: BoxDecoration(
-                                                    color: items['level'][i] ==
-                                                            'N'
-                                                        ? Color(
-                                                            0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                        : items['level'][i] ==
-                                                                'S'
-                                                            ? Color(0x5B009020)
-                                                            : items['level']
-                                                                        [i] ==
-                                                                    'P'
-                                                                ? Color(
-                                                                    0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                : Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        222,
-                                                                        234,
-                                                                        255),
+                                                    color: {
+                                                          'N': Color(
+                                                              0xFFB2EBF2), // Purple
+                                                          'S': Color(
+                                                              0xFFFFCC80), // Green
+                                                          'P': Color(
+                                                              0xFFF8BBD0), // Light Purple
+                                                          'NB': Color(
+                                                              0xFFCFD8DC), // Blue
+                                                          'N-': Color(
+                                                              0xFFBBDEFB), //Dark Purple
+                                                          'P+': Color(
+                                                              0xFFE3D6FF), // Pink
+                                                          'P-': Color(
+                                                              0xFFFEDEFF), // Dark Red
+                                                          'C': Color(
+                                                              0x5B009020), // Orange
+                                                          'C+': Color(
+                                                              0xFFB2DFDB), // Dark Orange
+                                                        }[items['level'][i]] ??
+                                                        Color(
+                                                            0xFFFC7FFF), // Default color
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            7), // กำหนด radius ให้กรอบสี่เหลี่ยม
+                                                            7),
                                                     border: Border.all(
                                                       width: 2,
-                                                      color: items['level']
-                                                                  [i] ==
-                                                              'N'
-                                                          ? Color(
-                                                              0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                          : items['level'][i] ==
-                                                                  'S'
-                                                              ? Color(
-                                                                  0xFF00901F)
-                                                              : items['level']
-                                                                          [i] ==
-                                                                      'P'
-                                                                  ? Color(
-                                                                      0xFFFC7FFF)
-                                                                  : Color(
-                                                                      0xFFFC7FFF),
+                                                      color: {
+                                                            'N': Color(
+                                                                0xFF26C6DA), // Purple
+                                                            'S': Color(
+                                                                0xFFFF9800), // Green
+                                                            'P': Color(
+                                                                0xffff63ca), // Pink
+                                                            'NB': Color(
+                                                                0xFF607D8B), // Blue
+                                                            'N-': Color(
+                                                                0xff2962ff), // Dark Purple
+                                                            'P+': Color(
+                                                                0xFFA47AFF), // Pink
+                                                            'P-': Color(
+                                                                0xFFFC7FFF), // Dark Red
+                                                            'C': Color(
+                                                                0xFF00901F), // Pink
+                                                            'C+': Color(
+                                                                0xFF00695C), // Dark Orange
+                                                          }[items['level']
+                                                              [i]] ??
+                                                          Color(
+                                                              0xFFFC7FFF), // Default color
                                                     ),
                                                   ),
                                                   child: Center(
                                                     child: Text(
                                                       items['level'][i],
                                                       style: TextStyle(
-                                                        color: items['level']
-                                                                    [i] ==
-                                                                'N'
-                                                            ? Color(
-                                                                0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                            : items['level']
-                                                                        [i] ==
-                                                                    'S'
-                                                                ? Color(
-                                                                    0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                : items['level']
-                                                                            [
-                                                                            i] ==
-                                                                        'P'
-                                                                    ? Color(
-                                                                        0xFFFC7FFF)
-                                                                    : Color(
-                                                                        0xFFFC7FFF),
-                                                        fontSize: 12,
+                                                        color: {
+                                                              'N': Color(
+                                                                  0xFF00838F), // Purple
+                                                              'S': Color(
+                                                                  0xFFE65100), // Green
+                                                              'P': Color(
+                                                                  0xffff63ca), // Pink
+                                                              'NB': Color(
+                                                                  0xFF37474F), // Blue
+                                                              'N-': Color(
+                                                                  0xFF0000FF), // Dark Purple
+                                                              'P+': Color(
+                                                                  0xFFA47AFF), // Pink
+                                                              'P-': Color(
+                                                                  0xFFFC7FFF), // Dark Red
+                                                              'C': Color(
+                                                                  0xFF00901F), // Pink
+                                                              'C+': Color(
+                                                                  0xFF009688), // Dark Orange
+                                                            }[items['level']
+                                                                [i]] ??
+                                                            Color(
+                                                                0xFFFC7FFF), // Default color
+                                                        fontSize: 9,
                                                         fontWeight:
-                                                            FontWeight.w400,
+                                                            FontWeight.w600,
                                                         height: 0,
                                                       ),
                                                     ),
@@ -848,29 +863,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                             ],
                                           ),
                                         ],
-                                        SizedBox(height: 7),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.stars,
-                                              color: Color.fromARGB(
-                                                  255, 255, 154, 3),
-                                              size: 20.0,
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.only(left: 5),
-                                              child: Text(
-                                                rating,
-                                                style: TextStyle(
-                                                  color: Color(0xFF929292),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400,
-                                                  height: 0,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
                                       ],
                                     ),
                                     Spacer(),
@@ -977,7 +969,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                               shadowColor: Color.fromARGB(192, 0, 0, 0),
                               borderRadius: new BorderRadius.circular(30),
                               child: Container(
-                                height: 160,
+                                height: 135,
                                 width: double.infinity,
                                 decoration: ShapeDecoration(
                                   color: Color.fromARGB(255, 255, 255, 255),
@@ -1037,7 +1029,9 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                           Container(
                                             margin: EdgeInsets.only(left: 5),
                                             child: Text(
-                                              'จันทร์ , พุธ , เสาร์ 19.00 - 22.00 น.',
+                                              formattingDate(
+                                                  items['eventdate_start'],
+                                                  items['eventdate_end']),
                                               style: TextStyle(
                                                 color: Color(0xFF929292),
                                                 fontSize: 14,
@@ -1059,78 +1053,93 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                                   i++)
                                                 Container(
                                                   margin: i > 0
-                                                      ? EdgeInsets.only(
-                                                          left: 10)
+                                                      ? EdgeInsets.only(left: 5)
                                                       : EdgeInsets.zero,
                                                   height: 22,
                                                   width: 22,
                                                   decoration: BoxDecoration(
-                                                    color: items['level'][i] ==
-                                                            'N'
-                                                        ? Color(
-                                                            0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                        : items['level'][i] ==
-                                                                'S'
-                                                            ? Color(0x5B009020)
-                                                            : items['level']
-                                                                        [i] ==
-                                                                    'P'
-                                                                ? Color(
-                                                                    0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                : Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        222,
-                                                                        234,
-                                                                        255),
+                                                    color: {
+                                                          'N': Color(
+                                                              0xFFB2EBF2), // Purple
+                                                          'S': Color(
+                                                              0xFFFFCC80), // Green
+                                                          'P': Color(
+                                                              0xFFF8BBD0), // Light Purple
+                                                          'NB': Color(
+                                                              0xFFCFD8DC), // Blue
+                                                          'N-': Color(
+                                                              0xFFBBDEFB), //Dark Purple
+                                                          'P+': Color(
+                                                              0xFFE3D6FF), // Pink
+                                                          'P-': Color(
+                                                              0xFFFEDEFF), // Dark Red
+                                                          'C': Color(
+                                                              0x5B009020), // Orange
+                                                          'C+': Color(
+                                                              0xFFB2DFDB), // Dark Orange
+                                                        }[items['level'][i]] ??
+                                                        Color(
+                                                            0xFFFC7FFF), // Default color
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            7), // กำหนด radius ให้กรอบสี่เหลี่ยม
+                                                            7),
                                                     border: Border.all(
                                                       width: 2,
-                                                      color: items['level']
-                                                                  [i] ==
-                                                              'N'
-                                                          ? Color(
-                                                              0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                          : items['level'][i] ==
-                                                                  'S'
-                                                              ? Color(
-                                                                  0xFF00901F)
-                                                              : items['level']
-                                                                          [i] ==
-                                                                      'P'
-                                                                  ? Color(
-                                                                      0xFFFC7FFF)
-                                                                  : Color(
-                                                                      0xFFFC7FFF),
+                                                      color: {
+                                                            'N': Color(
+                                                                0xFF26C6DA), // Purple
+                                                            'S': Color(
+                                                                0xFFFF9800), // Green
+                                                            'P': Color(
+                                                                0xffff63ca), // Pink
+                                                            'NB': Color(
+                                                                0xFF607D8B), // Blue
+                                                            'N-': Color(
+                                                                0xff2962ff), // Dark Purple
+                                                            'P+': Color(
+                                                                0xFFA47AFF), // Pink
+                                                            'P-': Color(
+                                                                0xFFFC7FFF), // Dark Red
+                                                            'C': Color(
+                                                                0xFF00901F), // Pink
+                                                            'C+': Color(
+                                                                0xFF00695C), // Dark Orange
+                                                          }[items['level']
+                                                              [i]] ??
+                                                          Color(
+                                                              0xFFFC7FFF), // Default color
                                                     ),
                                                   ),
                                                   child: Center(
                                                     child: Text(
                                                       items['level'][i],
                                                       style: TextStyle(
-                                                        color: items['level']
-                                                                    [i] ==
-                                                                'N'
-                                                            ? Color(
-                                                                0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                            : items['level']
-                                                                        [i] ==
-                                                                    'S'
-                                                                ? Color(
-                                                                    0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                : items['level']
-                                                                            [
-                                                                            i] ==
-                                                                        'P'
-                                                                    ? Color(
-                                                                        0xFFFC7FFF)
-                                                                    : Color(
-                                                                        0xFFFC7FFF),
-                                                        fontSize: 12,
+                                                        color: {
+                                                              'N': Color(
+                                                                  0xFF00838F), // Purple
+                                                              'S': Color(
+                                                                  0xFFE65100), // Green
+                                                              'P': Color(
+                                                                  0xffff63ca), // Pink
+                                                              'NB': Color(
+                                                                  0xFF37474F), // Blue
+                                                              'N-': Color(
+                                                                  0xFF0000FF), // Dark Purple
+                                                              'P+': Color(
+                                                                  0xFFA47AFF), // Pink
+                                                              'P-': Color(
+                                                                  0xFFFC7FFF), // Dark Red
+                                                              'C': Color(
+                                                                  0xFF00901F), // Pink
+                                                              'C+': Color(
+                                                                  0xFF009688), // Dark Orange
+                                                            }[items['level']
+                                                                [i]] ??
+                                                            Color(
+                                                                0xFFFC7FFF), // Default color
+                                                        fontSize: 9,
                                                         fontWeight:
-                                                            FontWeight.w400,
+                                                            FontWeight.w600,
                                                         height: 0,
                                                       ),
                                                     ),
@@ -1139,27 +1148,6 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                             ],
                                           ),
                                         ],
-                                        SizedBox(height: 7),
-                                        Row(children: [
-                                          Icon(
-                                            Icons.stars,
-                                            color: Color.fromARGB(
-                                                255, 116, 116, 116),
-                                            size: 20.0,
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(left: 5),
-                                            child: Text(
-                                              rating,
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
                                       ],
                                     ),
                                     Spacer(),

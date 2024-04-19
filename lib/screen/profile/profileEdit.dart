@@ -31,7 +31,19 @@ class _ProfileEditState extends State<ProfileEdit> {
   var userInfo;
   List<String> gender = ['ชาย', 'หญิง', 'ไม่ระบุ'];
   List<String> showAge = ['แสดง', 'ไม่แสดง'];
-  List<String> level = ['N', 'S', 'P', 'ไม่ระบุ'];
+
+  List<String> level = [
+    'NB',
+    'N-',
+    'N',
+    'S',
+    'P-',
+    'P',
+    'P+',
+    'C',
+    'C+',
+    'ไม่ระบุ'
+  ];
   TextEditingController details = TextEditingController();
   String? genderSelect;
   String? showAgeSelect;

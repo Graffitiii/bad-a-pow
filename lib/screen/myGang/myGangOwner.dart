@@ -144,14 +144,12 @@ class _MyGangOwnerState extends State<MyGangOwner> {
     jsonResponse = jsonDecode(response.body);
     if (jsonResponse['status']) {
       if (jsonResponse['data']['ownerPermission']) {
-        showModalBottomSheet(
+        showDialog(
           context: context,
-          isScrollControlled: true,
-          backgroundColor: Color(0xFF515151),
           builder: (BuildContext context) {
             return AddClub(
               username: username,
-            ); // เรียกใช้ AddClubModal ที่เราสร้างไว้
+            );
           },
         );
       } else {
@@ -165,7 +163,7 @@ class _MyGangOwnerState extends State<MyGangOwner> {
             ),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
+                onPressed: () => Navigator.pop(context, 'ยกเลิก'),
                 child: const Text('ตกลง'),
               ),
             ],
