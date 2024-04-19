@@ -39,71 +39,43 @@ class _AddClubState extends State<AddClub> {
 
   @override
   Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      heightFactor: 0.5,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Row(
-                      children: [
-                        Text(
-                          'ยกเลิก',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Spacer(),
-                Text(
-                  "สร้างกลุ่ม",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-                Spacer(),
-                TextButton(
-                  onPressed: () {
-                    addClubtoData();
-                    Navigator.of(context).pop();
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        'เสร็จสิ้น',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child:
-                  buildTextFieldWithTitle("ชื่อกลุ่ม", "ชื่อกลุ่ม*", clubname),
-            ),
-          ],
-        ),
+    return AlertDialog(
+      title: const Text('สร้างกลุ่ม'),
+      content: TextField(
+        controller: clubname,
+        decoration: InputDecoration(hintText: "ใส่ชื่อกลุ่มที่ต้องการ"),
       ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Cancel'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: const Text('Submit'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            addClubtoData();
+            showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: const Text('สร้างสำเร็จ'),
+                content: const Text(
+                  'กลุ่มได้ถูกสร้างแล้ว',
+                  style: TextStyle(fontSize: 18),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'ยกเลิก'),
+                    child: const Text('ตกลง'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

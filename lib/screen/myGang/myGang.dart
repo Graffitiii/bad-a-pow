@@ -4,7 +4,8 @@ import 'package:finalmo/screen/myGang/myGangOwner.dart';
 import 'package:flutter/material.dart';
 
 class MyGang extends StatefulWidget {
-  const MyGang({super.key});
+  final numpage;
+  const MyGang({this.numpage, Key? key}) : super(key: key);
 
   @override
   State<MyGang> createState() => _MyGangState();
@@ -20,7 +21,7 @@ class _MyGangState extends State<MyGang> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: 1,
+      initialIndex: widget.numpage,
       length: 3,
       child: Scaffold(
         appBar: AppBar(

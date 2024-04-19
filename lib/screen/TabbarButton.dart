@@ -46,7 +46,10 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
               // Container(child: FindGang()),
               Container(child: FindGang()),
               Container(child: Add()),
-              Container(child: MyGang()),
+              Container(
+                  child: MyGang(
+                numpage: 0,
+              )),
               Container(child: Profile()),
             ],
           ),
@@ -97,7 +100,10 @@ class _TabBarViewFindEventState extends State<TabBarViewFindEvent> {
               // Container(child: FindGang()),
               Container(child: FindGang()),
               Container(child: Add()),
-              Container(child: MyGang()),
+              Container(
+                  child: MyGang(
+                numpage: 0,
+              )),
               Container(child: Profile()),
             ],
           ),
@@ -148,7 +154,10 @@ class _TabBarViewMyEventState extends State<TabBarViewMyEvent> {
               // Container(child: FindGang()),
               Container(child: FindGang()),
               Container(child: Add()),
-              Container(child: MyGang()),
+              Container(
+                  child: MyGang(
+                numpage: 0,
+              )),
               Container(child: Profile()),
             ],
           ),
@@ -199,7 +208,10 @@ class _TabBarViewProfileState extends State<TabBarViewProfile> {
               // Container(child: FindGang()),
               Container(child: FindGang()),
               Container(child: Add()),
-              Container(child: MyGang()),
+              Container(
+                  child: MyGang(
+                numpage: 0,
+              )),
               Container(child: Profile()),
             ],
           ),

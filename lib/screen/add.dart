@@ -24,10 +24,17 @@ typedef TodoListCallback = void Function();
 
 // const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
 final List<String> level = [
+  'NB',
+  'N-',
   'N',
   'S',
+  'P-',
   'P',
+  'P+',
+  'C',
+  'C+',
 ];
+
 List<String> selectedlevel = [];
 
 final List<String> clubname = [];

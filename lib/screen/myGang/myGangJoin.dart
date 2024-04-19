@@ -256,50 +256,77 @@ class _MyGangJoinState extends State<MyGangJoin> {
                                       i++)
                                     Container(
                                       margin: i > 0
-                                          ? EdgeInsets.only(left: 10)
+                                          ? EdgeInsets.only(left: 5)
                                           : EdgeInsets.zero,
                                       height: 22,
                                       width: 22,
                                       decoration: BoxDecoration(
-                                        color: items['level'][i] == 'N'
-                                            ? Color(
-                                                0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                            : items['level'][i] == 'S'
-                                                ? Color(0x5B009020)
-                                                : items['level'][i] == 'P'
-                                                    ? Color(
-                                                        0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                    : Color.fromARGB(
-                                                        255, 222, 234, 255),
-                                        borderRadius: BorderRadius.circular(
-                                            7), // กำหนด radius ให้กรอบสี่เหลี่ยม
+                                        color: {
+                                              'N': Color(0xFFB2EBF2), // Purple
+                                              'S': Color(0xFFFFCC80), // Green
+                                              'P': Color(
+                                                  0xFFF8BBD0), // Light Purple
+                                              'NB': Color(0xFFCFD8DC), // Blue
+                                              'N-': Color(
+                                                  0xFFBBDEFB), //Dark Purple
+                                              'P+': Color(0xFFE3D6FF), // Pink
+                                              'P-':
+                                                  Color(0xFFFEDEFF), // Dark Red
+                                              'C': Color(0x5B009020), // Orange
+                                              'C+': Color(
+                                                  0xFFB2DFDB), // Dark Orange
+                                            }[items['level'][i]] ??
+                                            Color(0xFFFC7FFF), // Default color
+                                        borderRadius: BorderRadius.circular(7),
                                         border: Border.all(
                                           width: 2,
-                                          color: items['level'][i] == 'N'
-                                              ? Color(
-                                                  0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                              : items['level'][i] == 'S'
-                                                  ? Color(0xFF00901F)
-                                                  : items['level'][i] == 'P'
-                                                      ? Color(0xFFFC7FFF)
-                                                      : Color(0xFFFC7FFF),
+                                          color: {
+                                                'N':
+                                                    Color(0xFF26C6DA), // Purple
+                                                'S': Color(0xFFFF9800), // Green
+                                                'P': Color(0xffff63ca), // Pink
+                                                'NB': Color(0xFF607D8B), // Blue
+                                                'N-': Color(
+                                                    0xff2962ff), // Dark Purple
+                                                'P+': Color(0xFFA47AFF), // Pink
+                                                'P-': Color(
+                                                    0xFFFC7FFF), // Dark Red
+                                                'C': Color(0xFF00901F), // Pink
+                                                'C+': Color(
+                                                    0xFF00695C), // Dark Orange
+                                              }[items['level'][i]] ??
+                                              Color(
+                                                  0xFFFC7FFF), // Default color
                                         ),
                                       ),
                                       child: Center(
                                         child: Text(
                                           items['level'][i],
                                           style: TextStyle(
-                                            color: items['level'][i] == 'N'
-                                                ? Color(
-                                                    0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                : items['level'][i] == 'S'
-                                                    ? Color(
-                                                        0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                    : items['level'][i] == 'P'
-                                                        ? Color(0xFFFC7FFF)
-                                                        : Color(0xFFFC7FFF),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
+                                            color: {
+                                                  'N': Color(
+                                                      0xFF00838F), // Purple
+                                                  'S': Color(
+                                                      0xFFE65100), // Green
+                                                  'P':
+                                                      Color(0xffff63ca), // Pink
+                                                  'NB':
+                                                      Color(0xFF37474F), // Blue
+                                                  'N-': Color(
+                                                      0xFF0000FF), // Dark Purple
+                                                  'P+':
+                                                      Color(0xFFA47AFF), // Pink
+                                                  'P-': Color(
+                                                      0xFFFC7FFF), // Dark Red
+                                                  'C':
+                                                      Color(0xFF00901F), // Pink
+                                                  'C+': Color(
+                                                      0xFF009688), // Dark Orange
+                                                }[items['level'][i]] ??
+                                                Color(
+                                                    0xFFFC7FFF), // Default color
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w600,
                                             height: 0,
                                           ),
                                         ),

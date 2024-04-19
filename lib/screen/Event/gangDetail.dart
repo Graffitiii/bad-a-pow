@@ -1532,57 +1532,66 @@ class _GangDetailState extends State<GangDetail> {
                                                         Container(
                                                           margin: i > 0
                                                               ? EdgeInsets.only(
-                                                                  left: 10)
+                                                                  left: 5)
                                                               : EdgeInsets.zero,
                                                           height: 22,
                                                           width: 22,
                                                           decoration:
                                                               BoxDecoration(
-                                                            color: eventeach[
-                                                                            'level']
-                                                                        [i] ==
-                                                                    'N'
-                                                                ? Color(
-                                                                    0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                                : eventeach['level']
-                                                                            [
-                                                                            i] ==
-                                                                        'S'
-                                                                    ? Color(
-                                                                        0x5B009020)
-                                                                    : eventeach['level'][i] ==
-                                                                            'P'
-                                                                        ? Color(
-                                                                            0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                        : Color.fromARGB(
-                                                                            255,
-                                                                            222,
-                                                                            234,
-                                                                            255),
+                                                            color: {
+                                                                  'N': Color(
+                                                                      0xFFB2EBF2), // Purple
+                                                                  'S': Color(
+                                                                      0xFFFFCC80), // Green
+                                                                  'P': Color(
+                                                                      0xFFF8BBD0), // Light Purple
+                                                                  'NB': Color(
+                                                                      0xFFCFD8DC), // Blue
+                                                                  'N-': Color(
+                                                                      0xFFBBDEFB), //Dark Purple
+                                                                  'P+': Color(
+                                                                      0xFFE3D6FF), // Pink
+                                                                  'P-': Color(
+                                                                      0xFFFEDEFF), // Dark Red
+                                                                  'C': Color(
+                                                                      0x5B009020), // Orange
+                                                                  'C+': Color(
+                                                                      0xFFB2DFDB), // Dark Orange
+                                                                }[eventeach[
+                                                                        'level']
+                                                                    [i]] ??
+                                                                Color(
+                                                                    0xFFFC7FFF), // Default color
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
-                                                                        7), // กำหนด radius ให้กรอบสี่เหลี่ยม
+                                                                        7),
                                                             border: Border.all(
                                                               width: 2,
-                                                              color: eventeach[
-                                                                              'level']
-                                                                          [i] ==
-                                                                      'N'
-                                                                  ? Color(
-                                                                      0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                                  : eventeach['level']
-                                                                              [
-                                                                              i] ==
-                                                                          'S'
-                                                                      ? Color(
-                                                                          0xFF00901F)
-                                                                      : eventeach['level'][i] ==
-                                                                              'P'
-                                                                          ? Color(
-                                                                              0xFFFC7FFF)
-                                                                          : Color(
-                                                                              0xFFFC7FFF),
+                                                              color: {
+                                                                    'N': Color(
+                                                                        0xFF26C6DA), // Purple
+                                                                    'S': Color(
+                                                                        0xFFFF9800), // Green
+                                                                    'P': Color(
+                                                                        0xffff63ca), // Pink
+                                                                    'NB': Color(
+                                                                        0xFF607D8B), // Blue
+                                                                    'N-': Color(
+                                                                        0xff2962ff), // Dark Purple
+                                                                    'P+': Color(
+                                                                        0xFFA47AFF), // Pink
+                                                                    'P-': Color(
+                                                                        0xFFFC7FFF), // Dark Red
+                                                                    'C': Color(
+                                                                        0xFF00901F), // Pink
+                                                                    'C+': Color(
+                                                                        0xFF00695C), // Dark Orange
+                                                                  }[eventeach[
+                                                                          'level']
+                                                                      [i]] ??
+                                                                  Color(
+                                                                      0xFFFC7FFF), // Default color
                                                             ),
                                                           ),
                                                           child: Center(
@@ -1590,24 +1599,34 @@ class _GangDetailState extends State<GangDetail> {
                                                               eventeach['level']
                                                                   [i],
                                                               style: TextStyle(
-                                                                color: eventeach['level']
-                                                                            [
-                                                                            i] ==
-                                                                        'N'
-                                                                    ? Color(
-                                                                        0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                                    : eventeach['level'][i] ==
-                                                                            'S'
-                                                                        ? Color(
-                                                                            0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                        : eventeach['level'][i] ==
-                                                                                'P'
-                                                                            ? Color(0xFFFC7FFF)
-                                                                            : Color(0xFFFC7FFF),
-                                                                fontSize: 12,
+                                                                color: {
+                                                                      'N': Color(
+                                                                          0xFF00838F), // Purple
+                                                                      'S': Color(
+                                                                          0xFFE65100), // Green
+                                                                      'P': Color(
+                                                                          0xffff63ca), // Pink
+                                                                      'NB': Color(
+                                                                          0xFF37474F), // Blue
+                                                                      'N-': Color(
+                                                                          0xFF0000FF), // Dark Purple
+                                                                      'P+': Color(
+                                                                          0xFFA47AFF), // Pink
+                                                                      'P-': Color(
+                                                                          0xFFFC7FFF), // Dark Red
+                                                                      'C': Color(
+                                                                          0xFF00901F), // Pink
+                                                                      'C+': Color(
+                                                                          0xFF009688), // Dark Orange
+                                                                    }[eventeach[
+                                                                            'level']
+                                                                        [i]] ??
+                                                                    Color(
+                                                                        0xFFFC7FFF), // Default color
+                                                                fontSize: 9,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w400,
+                                                                        .w600,
                                                                 height: 0,
                                                               ),
                                                             ),

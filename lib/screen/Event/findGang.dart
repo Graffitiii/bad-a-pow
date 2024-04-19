@@ -17,11 +17,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
 // const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
-final List<String> level = [
-  'N',
-  'S',
-  'P',
-];
+final List<String> level = ['N', 'S', 'P', 'NB', 'P+', 'P-', 'N-', 'C', 'C+'];
 List<String> selectedlevel = [];
 
 List<String> selectedtime = [];
@@ -764,7 +760,7 @@ class _FindGangState extends State<FindGang> {
                                                                       distance,
                                                                   decoration:
                                                                       _buildInputUser(
-                                                                          'ระยะทาง (กม.)'),
+                                                                          '10 กม.'),
                                                                   keyboardType:
                                                                       TextInputType
                                                                           .number,
@@ -1425,38 +1421,57 @@ class _FindGangState extends State<FindGang> {
                                                                             0
                                                                         ? EdgeInsets.only(
                                                                             left:
-                                                                                10)
+                                                                                5)
                                                                         : EdgeInsets
                                                                             .zero,
                                                                     height: 22,
                                                                     width: 22,
                                                                     decoration:
                                                                         BoxDecoration(
-                                                                      color: items['level'][i] ==
-                                                                              'N'
-                                                                          ? Color(
-                                                                              0xFFE3D6FF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                                          : items['level'][i] == 'S'
-                                                                              ? Color(0x5B009020)
-                                                                              : items['level'][i] == 'P'
-                                                                                  ? Color(0xFFFEDEFF) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                                  : Color.fromARGB(255, 222, 234, 255),
+                                                                      color: {
+                                                                            'N':
+                                                                                Color(0xFFB2EBF2), // Purple
+                                                                            'S':
+                                                                                Color(0xFFFFCC80), // Green
+                                                                            'P':
+                                                                                Color(0xFFF8BBD0), // Light Purple
+                                                                            'NB':
+                                                                                Color(0xFFCFD8DC), // Blue
+                                                                            'N-':
+                                                                                Color(0xFFBBDEFB), //Dark Purple
+                                                                            'P+':
+                                                                                Color(0xFFE3D6FF), // Pink
+                                                                            'P-':
+                                                                                Color(0xFFFEDEFF), // Dark Red
+                                                                            'C':
+                                                                                Color(0x5B009020), // Orange
+                                                                            'C+':
+                                                                                Color(0xFFB2DFDB), // Dark Orange
+                                                                          }[items['level']
+                                                                              [
+                                                                              i]] ??
+                                                                          Color(
+                                                                              0xFFFC7FFF), // Default color
                                                                       borderRadius:
                                                                           BorderRadius.circular(
-                                                                              7), // กำหนด radius ให้กรอบสี่เหลี่ยม
+                                                                              7),
                                                                       border:
                                                                           Border
                                                                               .all(
                                                                         width:
                                                                             2,
-                                                                        color: items['level'][i] ==
-                                                                                'N'
-                                                                            ? Color(0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                                            : items['level'][i] == 'S'
-                                                                                ? Color(0xFF00901F)
-                                                                                : items['level'][i] == 'P'
-                                                                                    ? Color(0xFFFC7FFF)
-                                                                                    : Color(0xFFFC7FFF),
+                                                                        color: {
+                                                                              'N': Color(0xFF26C6DA), // Purple
+                                                                              'S': Color(0xFFFF9800), // Green
+                                                                              'P': Color(0xffff63ca), // Pink
+                                                                              'NB': Color(0xFF607D8B), // Blue
+                                                                              'N-': Color(0xff2962ff), // Dark Purple
+                                                                              'P+': Color(0xFFA47AFF), // Pink
+                                                                              'P-': Color(0xFFFC7FFF), // Dark Red
+                                                                              'C': Color(0xFF00901F), // Pink
+                                                                              'C+': Color(0xFF00695C), // Dark Orange
+                                                                            }[items['level'][i]] ??
+                                                                            Color(0xFFFC7FFF), // Default color
                                                                       ),
                                                                     ),
                                                                     child:
@@ -1467,17 +1482,22 @@ class _FindGangState extends State<FindGang> {
                                                                             [i],
                                                                         style:
                                                                             TextStyle(
-                                                                          color: items['level'][i] == 'N'
-                                                                              ? Color(0xFFA47AFF) // ถ้า level เป็น "N" กำหนดสีม่วง
-                                                                              : items['level'][i] == 'S'
-                                                                                  ? Color(0xFF00901F) // ถ้า level เป็น "S" กำหนดสีเขียว
-                                                                                  : items['level'][i] == 'P'
-                                                                                      ? Color(0xFFFC7FFF)
-                                                                                      : Color(0xFFFC7FFF),
+                                                                          color: {
+                                                                                'N': Color(0xFF00838F), // Purple
+                                                                                'S': Color(0xFFE65100), // Green
+                                                                                'P': Color(0xffff63ca), // Pink
+                                                                                'NB': Color(0xFF37474F), // Blue
+                                                                                'N-': Color(0xFF0000FF), // Dark Purple
+                                                                                'P+': Color(0xFFA47AFF), // Pink
+                                                                                'P-': Color(0xFFFC7FFF), // Dark Red
+                                                                                'C': Color(0xFF00901F), // Pink
+                                                                                'C+': Color(0xFF009688), // Dark Orange
+                                                                              }[items['level'][i]] ??
+                                                                              Color(0xFFFC7FFF), // Default color
                                                                           fontSize:
-                                                                              12,
+                                                                              9,
                                                                           fontWeight:
-                                                                              FontWeight.w400,
+                                                                              FontWeight.w600,
                                                                           height:
                                                                               0,
                                                                         ),
@@ -1689,25 +1709,49 @@ class _ChipLevelState extends State<ChipLevel> {
   late List<bool> _isSelected;
 
   final List<Color> chipColors = [
-    Color(0xFFF5A201),
+    Color(0xFF607D8B),
+    Color(0xff2962ff),
+    Color(0xFF26C6DA),
+    Color(0xFFFF9800), // Green
     Color(0xFFFC7FFF),
-    Color(0xFF43DC65),
+    Color(0xffff63ca), // Pink
+    Color(0xFFA47AFF), // Pink
+    Color(0xFF00901F), // Pink
+    Color(0xFF00695C),
   ];
 
   @override
   void initState() {
     super.initState();
     _selectedValues = widget.select;
-    _isSelected = List<bool>.filled(3, false);
+    _isSelected = List<bool>.filled(9, false);
     setState(() {
-      if (widget.select.contains('N')) {
+      if (widget.select.contains('NB')) {
         _isSelected[0] = true;
       }
-      if (widget.select.contains('S')) {
+      if (widget.select.contains('N-')) {
         _isSelected[1] = true;
       }
-      if (widget.select.contains('P')) {
+      if (widget.select.contains('N')) {
         _isSelected[2] = true;
+      }
+      if (widget.select.contains('S')) {
+        _isSelected[3] = true;
+      }
+      if (widget.select.contains('P-')) {
+        _isSelected[4] = true;
+      }
+      if (widget.select.contains('P')) {
+        _isSelected[5] = true;
+      }
+      if (widget.select.contains('P+')) {
+        _isSelected[6] = true;
+      }
+      if (widget.select.contains('C')) {
+        _isSelected[7] = true;
+      }
+      if (widget.select.contains('C+')) {
+        _isSelected[8] = true;
       }
     });
   }
@@ -1719,7 +1763,7 @@ class _ChipLevelState extends State<ChipLevel> {
       child: Wrap(
         alignment: WrapAlignment.center,
         spacing: 3.0,
-        children: List.generate(3, (index) {
+        children: List.generate(9, (index) {
           return ChoiceChip(
             pressElevation: 0.0,
             selectedColor: chipColors[index],
@@ -1755,11 +1799,23 @@ class _ChipLevelState extends State<ChipLevel> {
   String _getLevel(int index) {
     switch (index) {
       case 0:
-        return "N";
+        return "NB";
       case 1:
-        return "S";
+        return "N-";
       case 2:
+        return "N";
+      case 3:
+        return "S";
+      case 4:
+        return "P-";
+      case 5:
         return "P";
+      case 6:
+        return "P+";
+      case 7:
+        return "C";
+      case 8:
+        return "C+";
       default:
         return "";
     }
