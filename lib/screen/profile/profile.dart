@@ -277,7 +277,7 @@ class _ProfileState extends State<Profile> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle, // กำหนดให้เป็นรูปร่างวงกลม
                             image: DecorationImage(
-                              image:
+                              image: 
                                   AssetImage('assets/images/user_default.png'),
                               fit: BoxFit.cover,
                             ),

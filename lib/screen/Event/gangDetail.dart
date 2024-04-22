@@ -43,6 +43,7 @@ class _GangDetailState extends State<GangDetail> {
 
   var reviewlist = {};
   var rating = '';
+  var imageList = {};
 
   void initState() {
     super.initState();
@@ -97,6 +98,17 @@ class _GangDetailState extends State<GangDetail> {
           join = false;
         });
       }
+
+      for (var uJoin in userJoin) {
+        imageList[uJoin] = await getUserImg(uJoin);
+      }
+
+      for (var uPend in userPending) {
+        imageList[uPend] = await getUserImg(uPend);
+      }
+
+      print(imageList);
+
       getClubDetail(eventeach['club']);
     } else {}
   }
@@ -123,9 +135,25 @@ class _GangDetailState extends State<GangDetail> {
           followStatus = true;
         });
       }
-      setState(() {
-        loading = false;
-      });
+
+      // setState(() {
+      //   loading = false;
+      // });
+    }
+  }
+
+  Future<String> getUserImg(param) async {
+    var queryParameters = {
+      'userName': param,
+    };
+    var uri = Uri.http(getUrl, '/getUserImage', queryParameters);
+    var response = await http.get(uri);
+
+    jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      return jsonResponse['data'];
+    } else {
+      return "";
     }
   }
 
@@ -301,19 +329,25 @@ class _GangDetailState extends State<GangDetail> {
 
     DateTime eventStart = DateTime.parse(start);
     DateTime eventEnd = DateTime.parse(end);
-
     DateTime thaiDateStartTime = eventStart.add(Duration(hours: 7));
     DateTime thaiDateEndTime = eventEnd.add(Duration(hours: 7));
 
+    // Convert year from Gregorian calendar (AD) to Buddhist calendar (BE)
+    int buddhistYearStart = thaiDateStartTime.year + 543;
+    int buddhistYearEnd = thaiDateEndTime.year + 543;
+
     String formattedDateTime =
-        DateFormat('d MMMM H:mm', 'th').format(thaiDateStartTime);
+        DateFormat('d MMMM yyyy H:mm', 'th').format(thaiDateStartTime);
 
     String formattedEndTime =
         DateFormat('H:mm น.', 'th').format(thaiDateEndTime);
 
-    // print(formattedDateTime +
-    //     "-" +
-    //     formattedEndTime);
+    // Format with Buddhist year (BE)
+    formattedDateTime = formattedDateTime.replaceFirst(
+        thaiDateStartTime.year.toString(), buddhistYearStart.toString());
+    formattedEndTime = formattedEndTime.replaceFirst(
+        thaiDateEndTime.year.toString(), buddhistYearEnd.toString());
+
     return formattedDateTime + " - " + formattedEndTime;
   }
 
@@ -1094,9 +1128,15 @@ class _GangDetailState extends State<GangDetail> {
                                                                                               children: [
                                                                                                 Row(
                                                                                                   children: [
-                                                                                                    CircleAvatar(
-                                                                                                      backgroundImage: AssetImage('assets/images/profile1.jpg'),
-                                                                                                    ),
+                                                                                                    if (imageList[items] != "") ...[
+                                                                                                      CircleAvatar(
+                                                                                                        backgroundImage: NetworkImage(imageList[items]),
+                                                                                                      )
+                                                                                                    ] else ...[
+                                                                                                      CircleAvatar(
+                                                                                                        backgroundImage: AssetImage('assets/images/user_default.png'),
+                                                                                                      )
+                                                                                                    ],
                                                                                                     SizedBox(width: 25),
                                                                                                     Text(
                                                                                                       items,
@@ -1168,9 +1208,15 @@ class _GangDetailState extends State<GangDetail> {
                                                                                               children: [
                                                                                                 Row(
                                                                                                   children: [
-                                                                                                    CircleAvatar(
-                                                                                                      backgroundImage: AssetImage('assets/images/profile1.jpg'),
-                                                                                                    ),
+                                                                                                    if (imageList[items] != "") ...[
+                                                                                                      CircleAvatar(
+                                                                                                        backgroundImage: NetworkImage(imageList[items]),
+                                                                                                      )
+                                                                                                    ] else ...[
+                                                                                                      CircleAvatar(
+                                                                                                        backgroundImage: AssetImage('assets/images/user_default.png'),
+                                                                                                      )
+                                                                                                    ],
                                                                                                     SizedBox(width: 25),
                                                                                                     Text(
                                                                                                       items,

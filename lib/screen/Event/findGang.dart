@@ -275,17 +275,25 @@ class _FindGangState extends State<FindGang> {
 
     DateTime eventStart = DateTime.parse(start);
     DateTime eventEnd = DateTime.parse(end);
-    // print(eventStart);
     DateTime thaiDateStartTime = eventStart.add(Duration(hours: 7));
     DateTime thaiDateEndTime = eventEnd.add(Duration(hours: 7));
 
+    // Convert year from Gregorian calendar (AD) to Buddhist calendar (BE)
+    int buddhistYearStart = thaiDateStartTime.year + 543;
+    int buddhistYearEnd = thaiDateEndTime.year + 543;
+
     String formattedDateTime =
-        DateFormat('d MMMM H:mm', 'th').format(thaiDateStartTime);
+        DateFormat('d MMMM yyyy H:mm', 'th').format(thaiDateStartTime);
 
     String formattedEndTime =
         DateFormat('H:mm น.', 'th').format(thaiDateEndTime);
 
-    // print(formattedDateTime + "-" + formattedEndTime);
+    // Format with Buddhist year (BE)
+    formattedDateTime = formattedDateTime.replaceFirst(
+        thaiDateStartTime.year.toString(), buddhistYearStart.toString());
+    formattedEndTime = formattedEndTime.replaceFirst(
+        thaiDateEndTime.year.toString(), buddhistYearEnd.toString());
+
     return formattedDateTime + " - " + formattedEndTime;
   }
 

@@ -103,19 +103,25 @@ class _ProfileEditState extends State<ProfileEdit> {
       bool ageShowBody = false;
       String imageBody = "";
       if (showAgeSelect == 'แสดง') {
-        setState(() {
-          ageShowBody = true;
-        });
+        if (mounted) {
+          setState(() {
+            ageShowBody = true;
+          });
+        }
       }
       if (showAgeSelect == 'ไม่แสดง') {
-        setState(() {
-          ageShowBody = false;
-        });
+        if (mounted) {
+          setState(() {
+            ageShowBody = false;
+          });
+        }
       }
       if (imageUrl == "") {
-        setState(() {
-          imageBody = userInfo['picture'];
-        });
+        if (mounted) {
+          setState(() {
+            imageBody = userInfo['picture'];
+          });
+        }
       }
       if (imageUrl != "") {
         imageBody = imageUrl;
@@ -137,19 +143,28 @@ class _ProfileEditState extends State<ProfileEdit> {
       print(jsonResponse['status']);
       if (jsonResponse['status']) {
         print(jsonResponse['data']);
-        showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text('บันทึกโปรไฟล์สำเร็จ'),
-            content: const Text('บันทึกโปรไฟล์สำเร็จ'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+        if (mounted) {
+          showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('บันทึกโปรไฟล์สำเร็จ'),
+              content: const Text('บันทึกโปรไฟล์สำเร็จ'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => TabBarViewProfile(),
+                      ),
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
       }
     }
   }
@@ -239,13 +254,6 @@ class _ProfileEditState extends State<ProfileEdit> {
             tooltip: 'บันทึก',
             onPressed: () {
               uploadFile();
-              Navigator.pop(context, 'OK');
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => TabBarViewProfile(),
-                ),
-              );
             },
           ),
         ],

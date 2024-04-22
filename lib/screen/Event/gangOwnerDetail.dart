@@ -16,7 +16,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class GangOwnerDetail extends StatefulWidget {
   final club;
-  const GangOwnerDetail({@required this.club, Key? key}) : super(key: key);
+  final pop;
+  const GangOwnerDetail({@required this.club, this.pop, Key? key})
+      : super(key: key);
 
   @override
   State<GangOwnerDetail> createState() => _GangOwnerDetailState();
@@ -225,10 +227,14 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
   }
 
   Future<bool> _onBackPressed() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TabBarViewMyEvent()),
-    );
+    if (widget.pop == "pop") {
+      Navigator.pop(context);
+    } else {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TabBarViewMyEvent()),
+      );
+    }
 
     // Handle whether to allow back navigation or not
     return true; // Return true if you want to allow back navigation, false otherwise
