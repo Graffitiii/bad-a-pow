@@ -37,7 +37,7 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
-        length: 5,
+        length: 4,
         child: Scaffold(
           bottomNavigationBar: menu(),
           body: TabBarView(
@@ -45,7 +45,7 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
               Container(child: HomePage(token: myToken)),
               // Container(child: FindGang()),
               Container(child: FindGang()),
-              Container(child: Add()),
+
               Container(
                   child: MyGang(
                 numpage: 0,
@@ -90,7 +90,7 @@ class _TabBarViewFindEventState extends State<TabBarViewFindEvent> {
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
-        length: 5,
+        length: 4,
         initialIndex: 1,
         child: Scaffold(
           bottomNavigationBar: menu(),
@@ -99,7 +99,7 @@ class _TabBarViewFindEventState extends State<TabBarViewFindEvent> {
               Container(child: HomePage(token: myToken)),
               // Container(child: FindGang()),
               Container(child: FindGang()),
-              Container(child: Add()),
+
               Container(
                   child: MyGang(
                 numpage: 0,
@@ -144,8 +144,8 @@ class _TabBarViewMyEventState extends State<TabBarViewMyEvent> {
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
-        length: 5,
-        initialIndex: 3,
+        length: 4,
+        initialIndex: 2,
         child: Scaffold(
           bottomNavigationBar: menu(),
           body: TabBarView(
@@ -153,10 +153,118 @@ class _TabBarViewMyEventState extends State<TabBarViewMyEvent> {
               Container(child: HomePage(token: myToken)),
               // Container(child: FindGang()),
               Container(child: FindGang()),
-              Container(child: Add()),
+
               Container(
                   child: MyGang(
                 numpage: 0,
+              )),
+              Container(child: Profile()),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TabBarViewMyEvent1 extends StatefulWidget {
+  const TabBarViewMyEvent1({super.key});
+
+  @override
+  State<TabBarViewMyEvent1> createState() => _TabBarViewMyEvent1State();
+}
+
+class _TabBarViewMyEvent1State extends State<TabBarViewMyEvent1> {
+  late SharedPreferences prefs;
+  var myToken;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    print(myToken);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
+      home: DefaultTabController(
+        length: 4,
+        initialIndex: 2,
+        child: Scaffold(
+          bottomNavigationBar: menu(),
+          body: TabBarView(
+            children: [
+              Container(child: HomePage(token: myToken)),
+              // Container(child: FindGang()),
+              Container(child: FindGang()),
+
+              Container(
+                  child: MyGang(
+                numpage: 1,
+              )),
+              Container(child: Profile()),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TabBarViewMyEvent2 extends StatefulWidget {
+  const TabBarViewMyEvent2({super.key});
+
+  @override
+  State<TabBarViewMyEvent2> createState() => _TabBarViewMyEvent2State();
+}
+
+class _TabBarViewMyEvent2State extends State<TabBarViewMyEvent2> {
+  late SharedPreferences prefs;
+  var myToken;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      myToken = prefs.getString('token');
+    });
+    print(myToken);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
+      home: DefaultTabController(
+        length: 4,
+        initialIndex: 2,
+        child: Scaffold(
+          bottomNavigationBar: menu(),
+          body: TabBarView(
+            children: [
+              Container(child: HomePage(token: myToken)),
+              // Container(child: FindGang()),
+              Container(child: FindGang()),
+
+              Container(
+                  child: MyGang(
+                numpage: 2,
               )),
               Container(child: Profile()),
             ],
@@ -198,8 +306,8 @@ class _TabBarViewProfileState extends State<TabBarViewProfile> {
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
-        length: 5,
-        initialIndex: 4,
+        length: 4,
+        initialIndex: 3,
         child: Scaffold(
           bottomNavigationBar: menu(),
           body: TabBarView(
@@ -207,7 +315,7 @@ class _TabBarViewProfileState extends State<TabBarViewProfile> {
               Container(child: HomePage(token: myToken)),
               // Container(child: FindGang()),
               Container(child: FindGang()),
-              Container(child: Add()),
+
               Container(
                   child: MyGang(
                 numpage: 0,
@@ -244,13 +352,6 @@ Widget menu() {
         Tab(
           text: "หากิจกรรม",
           icon: Icon(Icons.business),
-        ),
-        Tab(
-          text: " ",
-          icon: Icon(
-            Icons.add_box,
-            size: 40,
-          ),
         ),
         Tab(
           text: "กลุ่มของฉัน",

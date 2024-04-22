@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_new
 
 import 'package:finalmo/screen/Event/gangDetail.dart';
+import 'package:finalmo/screen/add.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -414,6 +415,32 @@ class _FindGangState extends State<FindGang> {
           ),
           backgroundColor: Color(0xFF00537A),
         ),
+        floatingActionButton: Padding(
+          padding: EdgeInsets.only(bottom: 10),
+          child: SizedBox(
+            width: 80, // กำหนดความกว้าง
+            height: 40, // กำหนดความสูง
+            child: Container(
+              child: FloatingActionButton(
+                backgroundColor: Color(0xFF00537A),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (BuildContext context) => Add()),
+                  );
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // ปรับรัศมีของมุม
+                ),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         body: SingleChildScrollView(
           child: Container(
             alignment: Alignment.topCenter,
@@ -838,7 +865,7 @@ class _FindGangState extends State<FindGang> {
                                                           child: Row(
                                                             children: [
                                                               Text(
-                                                                'วัน',
+                                                                'วันที่',
                                                                 style:
                                                                     TextStyle(
                                                                   color: Colors
@@ -1128,12 +1155,16 @@ class _FindGangState extends State<FindGang> {
                                                                           ElevatedButton(
                                                                         onPressed:
                                                                             () {
-                                                                          // eventtime
+                                                                          distance
+                                                                              .clear();
+                                                                          eventtime
+                                                                              .clear();
+                                                                          eventdate
+                                                                              .clear();
+                                                                          // _selectedValues
                                                                           //     .clear();
-                                                                          // eventdate
-                                                                          //     .clear();
-                                                                          // filterlist
-                                                                          //     .clear();
+                                                                          // print(
+                                                                          //     _selectedValues);
                                                                         },
                                                                         style: ElevatedButton
                                                                             .styleFrom(
@@ -1528,7 +1559,7 @@ class _FindGangState extends State<FindGang> {
                                                                               'P+': Color(0xFFA47AFF), // Pink
                                                                               'P-': Color(0xFFFC7FFF), // Dark Red
                                                                               'C': Color(0xFF00901F), // Pink
-                                                                              'C+': Color(0xFF00695C), // Dark Orange
+                                                                              'C+': Color(0xFF009688), // Dark Orange
                                                                             }[items['level'][i]] ??
                                                                             Color(0xFFFC7FFF), // Default color
                                                                       ),
@@ -1550,7 +1581,7 @@ class _FindGangState extends State<FindGang> {
                                                                                 'P+': Color(0xFFA47AFF), // Pink
                                                                                 'P-': Color(0xFFFC7FFF), // Dark Red
                                                                                 'C': Color(0xFF00901F), // Pink
-                                                                                'C+': Color(0xFF009688), // Dark Orange
+                                                                                'C+': Color(0xFF00695C), // Dark Orange
                                                                               }[items['level'][i]] ??
                                                                               Color(0xFFFC7FFF), // Default color
                                                                           fontSize:
@@ -1790,6 +1821,11 @@ class _ChipLevelState extends State<ChipLevel> {
   @override
   void initState() {
     super.initState();
+    // if (widget.select == '') {
+    //   for (int i = 0; i < _isSelected.length; i++) {
+    //     _isSelected[i] = false;
+    //   }
+    // }
     _selectedValues = widget.select;
     _isSelected = List<bool>.filled(9, false);
     setState(() {

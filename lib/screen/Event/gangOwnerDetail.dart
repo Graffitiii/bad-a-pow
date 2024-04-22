@@ -212,17 +212,25 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
 
     DateTime eventStart = DateTime.parse(start);
     DateTime eventEnd = DateTime.parse(end);
-    // print(eventStart);
     DateTime thaiDateStartTime = eventStart.add(Duration(hours: 7));
     DateTime thaiDateEndTime = eventEnd.add(Duration(hours: 7));
 
+    // Convert year from Gregorian calendar (AD) to Buddhist calendar (BE)
+    int buddhistYearStart = thaiDateStartTime.year + 543;
+    int buddhistYearEnd = thaiDateEndTime.year + 543;
+
     String formattedDateTime =
-        DateFormat('d MMMM H:mm', 'th').format(thaiDateStartTime);
+        DateFormat('d MMMM yyyy H:mm', 'th').format(thaiDateStartTime);
 
     String formattedEndTime =
         DateFormat('H:mm น.', 'th').format(thaiDateEndTime);
 
-    // print(formattedDateTime + "-" + formattedEndTime);
+    // Format with Buddhist year (BE)
+    formattedDateTime = formattedDateTime.replaceFirst(
+        thaiDateStartTime.year.toString(), buddhistYearStart.toString());
+    formattedEndTime = formattedEndTime.replaceFirst(
+        thaiDateEndTime.year.toString(), buddhistYearEnd.toString());
+
     return formattedDateTime + " - " + formattedEndTime;
   }
 
@@ -1004,25 +1012,38 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                             height: 0,
                                           ),
                                         ),
-                                        Row(children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: Color(0xFFFF3333),
-                                            size: 20.0,
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(left: 5),
-                                            child: Text(
-                                              'สนามเอสแอนด์เอ็ม จรัญ13 (12 กม.)',
-                                              style: TextStyle(
-                                                color: Color(0xFF929292),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                height: 0,
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.location_on,
+                                              color: Color(0xFFFF3333),
+                                              size: 20.0,
+                                            ),
+                                            ConstrainedBox(
+                                              constraints: BoxConstraints(
+                                                  maxWidth: MediaQuery.of(
+                                                              context)
+                                                          .size
+                                                          .width *
+                                                      0.45), // Adjust the value as needed
+                                              child: Container(
+                                                margin:
+                                                    EdgeInsets.only(left: 5),
+                                                child: Text(
+                                                  items['placename'],
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    color: Color(0xFF929292),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    height: 0,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ]),
+                                          ],
+                                        ),
                                         SizedBox(
                                           height: 4,
                                         ),
