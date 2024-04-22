@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:finalmo/screen/Event/findGang.dart';
 import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/myGang/addclub.dart';
 import 'package:finalmo/screen/profile/profile.dart';
@@ -263,7 +264,7 @@ class _AddState extends State<Add> {
         clubname.add(item['clubname']);
       }
       // print(jsonResponse['data'][0]['clubname']);
-      print(clubname);
+      print("clubname: $clubname");
       status = true;
 
       setState(() {
@@ -273,6 +274,78 @@ class _AddState extends State<Add> {
       status = true;
 
       print(response.statusCode);
+    }
+    if (status) {
+      if (clubname.isEmpty) {
+        showDialog<String>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('ไม่สามารถสร้างกิจกรรมได้'),
+            content: const Text(
+              'เนื่องจากคุณยังไม่มีกลุ่มที่ดูแล',
+              style: TextStyle(fontSize: 18),
+            ),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TabBarViewFindEvent()),
+                      );
+                    },
+                    child: const Text('ปิด'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TabBarViewMyEvent2()),
+                      );
+                      showDialog<String>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('สร้างกลุ่มเลย'),
+                          content: const Text(
+                            'คุณต้องการสร้างกลุ่มเลยหรือไม่',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'ยกเลิก'),
+                              child: const Text('ปิด'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AddClub(
+                                      username: username,
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Text('ตกลง'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Text('ไปหน้าสร้างกลุ่ม'),
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -290,7 +363,7 @@ class _AddState extends State<Add> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) => AlertDialog(
-            title: const Text('ไม่สามารถสร้างก๊วนได้ '),
+            title: const Text('ไม่สามารถสร้างกิจกรรมได้ '),
             content: const Text(
               'เนื่องจากคุณไม่ได้เป็นสมาชิกของ “ผู้จัดก๊วน”',
               style: TextStyle(fontSize: 18),

@@ -2,7 +2,9 @@
 
 import 'package:finalmo/screen/Event/gangDetail.dart';
 import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
+import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/myGang/addclub.dart';
+import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -155,6 +157,7 @@ class _MyGangOwnerState extends State<MyGangOwner> {
       } else {
         showDialog<String>(
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) => AlertDialog(
             title: const Text('ไม่สามารถสร้างก๊วนได้ '),
             content: const Text(
@@ -162,10 +165,25 @@ class _MyGangOwnerState extends State<MyGangOwner> {
               style: TextStyle(fontSize: 18),
             ),
             actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'ยกเลิก'),
-                child: const Text('ตกลง'),
-              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('ปิด'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TabBarViewProfile()),
+                      );
+                    },
+                    child: const Text('สมัครเป็นผู้จัดก๊วน'),
+                  ),
+                ],
+              )
             ],
           ),
         );
@@ -533,7 +551,7 @@ class _MyGangOwnerState extends State<MyGangOwner> {
                         //   ),
                         // );
                       },
-                      tooltip: 'Addclub',
+                      tooltip: 'สร้างกลุ่ม',
                       child: const Icon(Icons.add),
                       shape: CircleBorder(), // เปลี่ยนรูปร่างเป็นวงกลม
                       elevation: 8,

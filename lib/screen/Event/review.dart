@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:finalmo/config.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -98,6 +100,26 @@ class _ReviewScreenState extends State<ReviewScreen> {
         }
       }
     }
+  }
+
+  String formattingDate(start) {
+    initializeDateFormatting('th', null);
+
+    DateTime eventStart = DateTime.parse(start);
+
+    DateTime thaiDateStartTime = eventStart.add(Duration(hours: 7));
+
+    // Convert year from Gregorian calendar (AD) to Buddhist calendar (BE)
+    int buddhistYearStart = thaiDateStartTime.year + 543;
+
+    String formattedDateTime =
+        DateFormat('d MMMM yyyy H:mm' + ' น.', 'th').format(thaiDateStartTime);
+
+    // Format with Buddhist year (BE)
+    formattedDateTime = formattedDateTime.replaceFirst(
+        thaiDateStartTime.year.toString(), buddhistYearStart.toString());
+
+    return formattedDateTime;
   }
 
   String AverageScore() {
@@ -283,6 +305,21 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                               ],
                                             ),
                                             SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  formattingDate(
+                                                    items['create_at'],
+                                                  ),
+                                                  style: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 117, 117, 117),
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
                                           ],
                                         ),
                                       ),
