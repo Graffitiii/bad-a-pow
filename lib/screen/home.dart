@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   var clubInfo;
   var historyData;
   bool loadingHis = true;
+  bool ou = true;
 
   @override
   void initState() {
@@ -53,6 +54,7 @@ class _HomePageState extends State<HomePage> {
   void initializeState() async {
     await initSharedPref();
     getHistory();
+    permission();
   }
 
   Future<void> initSharedPref() async {
@@ -150,6 +152,17 @@ class _HomePageState extends State<HomePage> {
         '${_addLeadingZero(hour)}:${_addLeadingZero(minute)}:00.000Z';
     return '$formattedTime';
   }
+  void permission() async {
+    var queryParameters = {
+      'userName': username,
+    };
+    var uri = Uri.http(getUrl, '/getUserControl', queryParameters);
+    var response = await http.get(uri);
+
+    var jsonResponse = jsonDecode(response.body);
+    ou = jsonResponse['data']['ownerPermission'];
+    print(ou);
+  }
 
   String formattingDate(start, end) {
     initializeDateFormatting('th', null);
@@ -233,29 +246,55 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Opacity(
-                          opacity: 0.80,
-                          child: Container(
-                            child: Padding(
-                                padding: EdgeInsets.all(5),
-                                child: Text(
-                                  'สถานะ : Owner',
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    height: 0,
-                                  ),
-                                )),
-                            // width: 87,
-                            // height: 17,
-                            decoration: ShapeDecoration(
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
+                        if (ou) ...[
+                          Opacity(
+                            opacity: 0.80,
+                            child: Container(
+                              child: Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Text(
+                                    'สถานะ : Owner',
+                                    style: TextStyle(
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      height: 0,
+                                    ),
+                                  )),
+                              // width: 87,
+                              // height: 17,
+                              decoration: ShapeDecoration(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
                             ),
                           ),
-                        ),
+                        ] else ...[
+                          Opacity(
+                            opacity: 0.80,
+                            child: Container(
+                              child: Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: Text(
+                                    'สถานะ : User',
+                                    style: TextStyle(
+                                      color: Color.fromARGB(255, 0, 0, 0),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      height: 0,
+                                    ),
+                                  )),
+                              // width: 87,
+                              // height: 17,
+                              decoration: ShapeDecoration(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     )),
               ),
@@ -769,7 +808,7 @@ class _HomePageState extends State<HomePage> {
                                             TabBarViewMyEvent()));
                               },
                               child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
+                                padding: const EdgeInsets.only(right: 10),
                                 child: Column(
                                   children: [
                                     Container(
@@ -789,7 +828,7 @@ class _HomePageState extends State<HomePage> {
                                         color: Color(0xFFF0F0F0),
                                         child: Icon(
                                           Icons.favorite,
-                                          size: 50,
+                                          size: 40,
                                           color: Color(0xFF013C58),
                                         ),
                                       ),
@@ -811,12 +850,10 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            MyGang(
-                                              numpage: 1,
-                                            )));
+                                            TabBarViewMyEvent1()));
                               },
                               child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
+                                padding: const EdgeInsets.only(right: 10),
                                 child: Column(
                                   children: [
                                     Container(
@@ -836,7 +873,7 @@ class _HomePageState extends State<HomePage> {
                                         color: Color(0xFFF0F0F0),
                                         child: Icon(
                                           Icons.how_to_reg,
-                                          size: 50,
+                                          size: 40,
                                           color: Color(0xFF013C58),
                                         ),
                                       ),
@@ -858,10 +895,12 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            TabBarViewProfile()));
+                                            TabBarViewProfile(
+                                              sos: true,
+                                            )));
                               },
                               child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
+                                padding: const EdgeInsets.only(right: 10),
                                 child: Column(
                                   children: [
                                     Container(
@@ -881,7 +920,7 @@ class _HomePageState extends State<HomePage> {
                                         color: Color(0xFFF0F0F0),
                                         child: Icon(
                                           Icons.admin_panel_settings,
-                                          size: 50,
+                                          size: 40,
                                           color: Color(0xFF013C58),
                                         ),
                                       ),
@@ -908,7 +947,7 @@ class _HomePageState extends State<HomePage> {
                                             Calender()));
                               },
                               child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
+                                padding: const EdgeInsets.only(right: 10),
                                 child: Column(
                                   children: [
                                     Container(
@@ -928,7 +967,7 @@ class _HomePageState extends State<HomePage> {
                                         color: Color(0xFFF0F0F0),
                                         child: Icon(
                                           Icons.calendar_month,
-                                          size: 50,
+                                          size: 40,
                                           color: Color(0xFF013C58),
                                         ),
                                       ),

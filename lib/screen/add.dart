@@ -227,7 +227,7 @@ class _AddState extends State<Add> {
 
   void initializeState() async {
     await initSharedPref();
-    getClubList();
+    await getClubList();
     addClubHandle();
   }
 
@@ -240,7 +240,7 @@ class _AddState extends State<Add> {
     username = jwtDecodedToken['userName'];
   }
 
-  void getClubList() async {
+  Future<void> getClubList() async {
     print("ชื่อผู้ใช้ :" + username);
     setState(() {
       loading = true;
@@ -275,78 +275,6 @@ class _AddState extends State<Add> {
 
       print(response.statusCode);
     }
-    if (status) {
-      if (clubname.isEmpty) {
-        showDialog<String>(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text('ไม่สามารถสร้างกิจกรรมได้'),
-            content: const Text(
-              'เนื่องจากคุณยังไม่มีกลุ่มที่ดูแล',
-              style: TextStyle(fontSize: 18),
-            ),
-            actions: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TabBarViewFindEvent()),
-                      );
-                    },
-                    child: const Text('ปิด'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TabBarViewMyEvent2()),
-                      );
-                      showDialog<String>(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text('สร้างกลุ่มเลย'),
-                          content: const Text(
-                            'คุณต้องการสร้างกลุ่มเลยหรือไม่',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'ยกเลิก'),
-                              child: const Text('ปิด'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AddClub(
-                                      username: username,
-                                    );
-                                  },
-                                );
-                              },
-                              child: const Text('ตกลง'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    child: const Text('ไปหน้าสร้างกลุ่ม'),
-                  ),
-                ],
-              )
-            ],
-          ),
-        );
-      }
-    }
   }
 
   void addClubHandle() async {
@@ -357,6 +285,7 @@ class _AddState extends State<Add> {
     var response = await http.get(uri);
 
     jsonResponse = jsonDecode(response.body);
+    print(jsonResponse['data']['ownerPermission']);
     if (jsonResponse['status']) {
       if (!jsonResponse['data']['ownerPermission']) {
         showDialog<String>(
@@ -374,7 +303,9 @@ class _AddState extends State<Add> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TabBarViewProfile()),
+                        builder: (context) => TabBarViewProfile(
+                              sos: true,
+                            )),
                   );
                 },
                 child: const Text('ตกลง'),
@@ -382,6 +313,79 @@ class _AddState extends State<Add> {
             ],
           ),
         );
+      } else {
+        if (clubname.isEmpty) {
+          showDialog<String>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('ไม่สามารถสร้างกิจกรรมได้'),
+              content: const Text(
+                'เนื่องจากคุณยังไม่มีกลุ่มที่ดูแล',
+                style: TextStyle(fontSize: 18),
+              ),
+              actions: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TabBarViewFindEvent()),
+                        );
+                      },
+                      child: const Text('ปิด'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TabBarViewMyEvent2()),
+                        );
+                        showDialog<String>(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text('สร้างกลุ่มเลย'),
+                            content: const Text(
+                              'คุณต้องการสร้างกลุ่มเลยหรือไม่',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(context, 'ยกเลิก'),
+                                child: const Text('ปิด'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AddClub(
+                                        username: username,
+                                      );
+                                    },
+                                  );
+                                },
+                                child: const Text('ตกลง'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: const Text('ไปหน้าสร้างกลุ่ม'),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          );
+        }
       }
     }
   }

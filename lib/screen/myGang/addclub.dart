@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:finalmo/config.dart';
+import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -47,13 +48,13 @@ class _AddClubState extends State<AddClub> {
       ),
       actions: <Widget>[
         TextButton(
-          child: const Text('Cancel'),
+          child: const Text('ยกเลิก'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: const Text('Submit'),
+          child: const Text('สร้าง'),
           onPressed: () {
             Navigator.of(context).pop();
             addClubtoData();
@@ -67,7 +68,14 @@ class _AddClubState extends State<AddClub> {
                 ),
                 actions: <Widget>[
                   TextButton(
-                    onPressed: () => Navigator.pop(context, 'ยกเลิก'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                TabBarViewMyEvent2()),
+                      );
+                    },
                     child: const Text('ตกลง'),
                   ),
                 ],
