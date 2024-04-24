@@ -30,6 +30,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
   var myToken;
 
   var reviewlist = {};
+  var imageList = {};
 
   @override
   void initState() {
@@ -72,7 +73,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
       });
       print(reviewlist);
     }
-    print("sesss:" + clubname);
+
+    for (var reviews in reviewlist['success']) {
+      if (reviews['userName'] != "ผู้ใช้") {
+        imageList[reviews['userName']] = await getUserImg(reviews['userName']);
+      }
+    }
+
+    print(imageList);
 
     setState(() {
       loading = false;
@@ -99,6 +107,21 @@ class _ReviewScreenState extends State<ReviewScreen> {
           break;
         }
       }
+    }
+  }
+
+  Future<String> getUserImg(param) async {
+    var queryParameters = {
+      'userName': param,
+    };
+    var uri = Uri.http(getUrl, '/getUserImage', queryParameters);
+    var response = await http.get(uri);
+
+    jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      return jsonResponse['data'];
+    } else {
+      return "";
     }
   }
 
@@ -265,10 +288,29 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                           children: [
                                             Row(
                                               children: [
-                                                CircleAvatar(
-                                                  backgroundImage: AssetImage(
-                                                      'assets/images/profile1.jpg'),
-                                                ),
+                                                if (items['userName'] ==
+                                                    "ผู้ใช้") ...[
+                                                  CircleAvatar(
+                                                    backgroundImage: AssetImage(
+                                                        'assets/images/user_default.png'),
+                                                  )
+                                                ] else ...[
+                                                  if (imageList[
+                                                          items['userName']] !=
+                                                      "") ...[
+                                                    CircleAvatar(
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                              imageList[items[
+                                                                  'userName']]),
+                                                    )
+                                                  ] else ...[
+                                                    CircleAvatar(
+                                                      backgroundImage: AssetImage(
+                                                          'assets/images/user_default.png'),
+                                                    )
+                                                  ],
+                                                ],
                                                 SizedBox(width: 20),
                                                 Text(
                                                   items['userName'],

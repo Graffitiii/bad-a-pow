@@ -4,6 +4,7 @@ import 'package:finalmo/screen/home.dart';
 import 'package:finalmo/screen/myGang/myGang.dart';
 import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TabBarViewBottom extends StatefulWidget {
@@ -60,7 +61,11 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
 }
 
 class TabBarViewFindEvent extends StatefulWidget {
-  const TabBarViewFindEvent({super.key});
+  final search;
+  TabBarViewFindEvent({
+    Key? key,
+    this.search,
+  }) : super(key: key);
 
   @override
   State<TabBarViewFindEvent> createState() => _TabBarViewFindEventState();
@@ -69,12 +74,23 @@ class TabBarViewFindEvent extends StatefulWidget {
 class _TabBarViewFindEventState extends State<TabBarViewFindEvent> {
   late SharedPreferences prefs;
   var myToken;
+  var searchKey;
 
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+    setState(() {
+      searchKey = widget.search;
+    });
     initSharedPref();
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) => setSearch());
+  }
+
+  void setSearch() {
+    setState(() {
+      searchKey = null;
+    });
   }
 
   void initSharedPref() async {
@@ -98,7 +114,14 @@ class _TabBarViewFindEventState extends State<TabBarViewFindEvent> {
             children: [
               Container(child: HomePage(token: myToken)),
               // Container(child: FindGang()),
-              Container(child: FindGang()),
+              if(searchKey != null) ...[
+                Container(child: FindGang(search: searchKey,)),
+              ]else ...[
+                Container(child: FindGang()),
+              ],
+                
+              
+              
 
               Container(
                   child: MyGang(

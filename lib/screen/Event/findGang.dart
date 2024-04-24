@@ -24,8 +24,10 @@ List<String> selectedlevel = [];
 List<String> selectedtime = [];
 
 class FindGang extends StatefulWidget {
-  const FindGang({
+  final search;
+  FindGang({
     Key? key,
+    this.search,
   }) : super(key: key);
 
   @override
@@ -67,6 +69,9 @@ class _FindGangState extends State<FindGang> {
   String googleAPiKey = "AIzaSyC0DEere3Ykl4YG32qEmfRfG9aCpsl1igw";
   @override
   void initState() {
+    if (widget.search != null) {
+      search.text = widget.search;
+    }
     initializeState();
     super.initState();
   }
@@ -533,7 +538,7 @@ class _FindGangState extends State<FindGang> {
                                               (BuildContext context,
                                                   StateSetter setState) {
                                             return FractionallySizedBox(
-                                              heightFactor: 0.8,
+                                              heightFactor: 0.85,
                                               child: Container(
                                                 child: Form(
                                                   key: _formKey,
@@ -556,28 +561,6 @@ class _FindGangState extends State<FindGang> {
                                                                   "ที่อยู่ของฉัน"),
                                                             ),
                                                             Spacer(),
-                                                            // TextButton(
-                                                            //   onPressed: () {
-                                                            //     // ระบุฟังก์ชันที่ต้องการเมื่อกดปุ่ม
-                                                            //   },
-                                                            //   child: Row(
-                                                            //     children: [
-                                                            //       Text(
-                                                            //         'ดูทั้งหมด',
-                                                            //         style:
-                                                            //             TextStyle(
-                                                            //           color: Colors
-                                                            //               .black,
-                                                            //           fontWeight:
-                                                            //               FontWeight
-                                                            //                   .w600,
-                                                            //         ),
-                                                            //       ),
-                                                            //       Icon(Icons
-                                                            //           .arrow_forward_ios),
-                                                            //     ],
-                                                            //   ),
-                                                            // ),
                                                           ],
                                                         ),
                                                         Padding(
@@ -839,9 +822,14 @@ class _FindGangState extends State<FindGang> {
                                                                     TextFormField(
                                                                   controller:
                                                                       distance,
+                                                                  // decoration:
+                                                                  //     InputDecoration(
+                                                                  //         hintText:
+                                                                  //             "10 กม."),
                                                                   decoration:
                                                                       _buildInputUser(
                                                                           '10 กม.'),
+
                                                                   keyboardType:
                                                                       TextInputType
                                                                           .number,
@@ -1762,12 +1750,13 @@ InputDecoration _buildInputUser(String labelText) {
       borderSide: BorderSide.none,
       borderRadius: BorderRadius.circular(5.0),
     ),
-    labelText: labelText,
-    labelStyle: TextStyle(
-      color: Colors.black.withOpacity(0.3100000023841858),
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-    ),
+    hintText: labelText,
+    // labelText: labelText,
+    // labelStyle: TextStyle(
+    //   color: Colors.black.withOpacity(0.3100000023841858),
+    //   fontSize: 14,
+    //   fontWeight: FontWeight.w400,
+    // ),
     border: InputBorder.none,
     filled: true,
     fillColor: Color(0xFFEFEFEF),
