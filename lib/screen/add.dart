@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:finalmo/screen/Event/findGang.dart';
+import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
 import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/myGang/addclub.dart';
 import 'package:finalmo/screen/profile/profile.dart';
@@ -204,7 +205,8 @@ class _AddState extends State<Add> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TabBarViewFindEvent()),
+                        builder: (context) =>
+                            GangOwnerDetail(club: selectedclub)),
                   );
                 },
                 child: const Text('ตกลง'),

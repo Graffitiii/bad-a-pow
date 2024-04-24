@@ -320,15 +320,18 @@ class _EditEventState extends State<EditEvent> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        GangOwnerDetail(club: eventDetail['club']),
+                    builder: (BuildContext context) => GangDetail(
+                      id: eventDetail['_id'],
+                      from: "edit",
+                    ),
                   ),
                 );
               },
-              child: const Text('OK'),
+              child: const Text('ตกลง'),
             ),
           ],
         ),
@@ -1344,7 +1347,7 @@ class _EditEventState extends State<EditEvent> {
                                         height: 50,
                                         child: TextButton(
                                             child: Text(
-                                              'สำเร็จ',
+                                              'บันทึก',
                                               style: TextStyle(
                                                 color: const Color.fromARGB(
                                                     255, 255, 255, 255),
