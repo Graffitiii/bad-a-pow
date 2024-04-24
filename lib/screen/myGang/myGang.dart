@@ -12,7 +12,6 @@ class MyGang extends StatefulWidget {
 }
 
 class _MyGangState extends State<MyGang> {
-  var clubInfo = {};
   @override
   void initState() {
     super.initState();
@@ -74,13 +73,7 @@ class _MyGangState extends State<MyGang> {
                     children: [MyGangJoin()],
                   ),
                 )),
-            Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [MyGangOwner()],
-                  ),
-                )),
+            MyGangOwner()
           ],
         ),
       ),

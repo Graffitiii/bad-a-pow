@@ -389,7 +389,7 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                                         context,
                                                         MaterialPageRoute(
                                                             builder: (context) =>
-                                                                TabBarViewMyEvent()),
+                                                                TabBarViewMyEvent2()),
                                                       ),
                                                     },
                                                     child: const Text('ยืนยัน'),

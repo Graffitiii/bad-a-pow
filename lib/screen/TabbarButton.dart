@@ -5,6 +5,7 @@ import 'package:finalmo/screen/myGang/myGang.dart';
 import 'package:finalmo/screen/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/scheduler.dart';
 
 class TabBarViewBottom extends StatefulWidget {
   const TabBarViewBottom({super.key});
@@ -276,7 +277,8 @@ class _TabBarViewMyEvent2State extends State<TabBarViewMyEvent2> {
 }
 
 class TabBarViewProfile extends StatefulWidget {
-  const TabBarViewProfile({super.key});
+  final sos;
+  const TabBarViewProfile({this.sos, super.key});
 
   @override
   State<TabBarViewProfile> createState() => _TabBarViewProfileState();
@@ -285,12 +287,26 @@ class TabBarViewProfile extends StatefulWidget {
 class _TabBarViewProfileState extends State<TabBarViewProfile> {
   late SharedPreferences prefs;
   var myToken;
+  var optab;
 
   @override
   void initState() {
     // TODO: implement initState
+    setState(() {
+      optab = widget.sos;
+    });
+
     super.initState();
     initSharedPref();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) => showMBsheet());
+  }
+
+  void showMBsheet() {
+    print('Finish');
+    setState(() {
+      optab = null;
+    });
   }
 
   void initSharedPref() async {
@@ -320,7 +336,11 @@ class _TabBarViewProfileState extends State<TabBarViewProfile> {
                   child: MyGang(
                 numpage: 0,
               )),
-              Container(child: Profile()),
+              if (optab != null) ...[
+                Container(child: Profile(a: widget.sos)),
+              ] else ...[
+                Container(child: Profile(a: null)),
+              ]
             ],
           ),
         ),

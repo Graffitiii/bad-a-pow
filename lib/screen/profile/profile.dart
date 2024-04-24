@@ -10,7 +10,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Profile extends StatefulWidget {
-  const Profile({super.key});
+  final a;
+  const Profile({this.a, super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -27,11 +28,99 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     initializeState();
+    print(widget.a);
+    if (widget.a != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // จะทำงานหลังจากที่ Widget ถูกสร้างและวางบนหน้าจอเสร็จ
+        _openModalBottomSheet(); // เรียกเมทอดเพื่อเปิด showModalBottomSheet ทันที
+      });
+    }
   }
 
   void initializeState() async {
     await initSharedPref();
     getUser();
+  }
+
+  void _openModalBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: new Icon(Icons.manage_accounts),
+              title: new Text('การตั้งค่าโปรไฟล์'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => ProfileEdit(
+                      profile: userInfo,
+                    ),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: new Icon(Icons.logout),
+              title: new Text('ออกจากระบบ'),
+              onTap: () {
+                logout();
+              },
+            ),
+            ListTile(
+              leading: new Icon(Icons.info),
+              title: new Text('เกี่ยวกับ'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute<void>(
+                  builder: (BuildContext context) {
+                    return Scaffold(
+                      appBar: AppBar(
+                        title: const Text('เกี่ยวกับ'),
+                      ),
+                      body: const Center(
+                        child: Text(
+                          'This is the next page',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      ),
+                    );
+                  },
+                ));
+              },
+            ),
+            ListTile(
+              leading: new Icon(Icons.supervisor_account),
+              title: new Text('สมัครเป็นผู้จัดก๊วน'),
+              onTap: () {
+                showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('สมัครเป็นผู้จัดก๊วน'),
+                    content: const Text(
+                      'ต้องการสมัครเป็นผู้จัดก๊วนใช่หรือไม่',
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'Cancel'),
+                        child: const Text('ยกเลิก'),
+                      ),
+                      TextButton(
+                        onPressed: () =>
+                            {Navigator.pop(context, 'Cancel'), regisOwner()},
+                        child: const Text('ยืนยัน'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> initSharedPref() async {
@@ -277,7 +366,7 @@ class _ProfileState extends State<Profile> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle, // กำหนดให้เป็นรูปร่างวงกลม
                             image: DecorationImage(
-                              image: 
+                              image:
                                   AssetImage('assets/images/user_default.png'),
                               fit: BoxFit.cover,
                             ),
