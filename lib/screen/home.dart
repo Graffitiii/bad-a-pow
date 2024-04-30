@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:finalmo/config.dart';
+import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
 import 'package:finalmo/screen/TabbarButton.dart';
 import 'package:finalmo/screen/calender.dart';
 import 'package:finalmo/screen/level_user.dart';
@@ -152,6 +153,7 @@ class _HomePageState extends State<HomePage> {
         '${_addLeadingZero(hour)}:${_addLeadingZero(minute)}:00.000Z';
     return '$formattedTime';
   }
+
   void permission() async {
     var queryParameters = {
       'userName': username,
@@ -1226,7 +1228,16 @@ class _HomePageState extends State<HomePage> {
                                                         MainAxisAlignment.end,
                                                     children: [
                                                       GestureDetector(
-                                                        onTap: () {},
+                                                        onTap: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) =>
+                                                                    GangOwnerDetail(
+                                                                        club: items[
+                                                                            'clubname'])),
+                                                          );
+                                                        },
                                                         child: Row(
                                                           children: [
                                                             Text(

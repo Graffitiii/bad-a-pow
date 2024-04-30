@@ -1268,6 +1268,7 @@ class _FindGangState extends State<FindGang> {
                               controller: search,
                               onChanged: onSearch,
                               decoration: InputDecoration(
+                                hintText: "ค้นหากิจกรรม",
                                 prefixIcon: Padding(
                                   padding: EdgeInsets.only(left: 15),
                                   child: Icon(Icons.search),

@@ -37,6 +37,7 @@ class _TabBarViewBottomState extends State<TabBarViewBottom> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 4,
@@ -105,6 +106,7 @@ class _TabBarViewFindEventState extends State<TabBarViewFindEvent> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 4,
@@ -115,14 +117,14 @@ class _TabBarViewFindEventState extends State<TabBarViewFindEvent> {
             children: [
               Container(child: HomePage(token: myToken)),
               // Container(child: FindGang()),
-              if(searchKey != null) ...[
-                Container(child: FindGang(search: searchKey,)),
-              ]else ...[
+              if (searchKey != null) ...[
+                Container(
+                    child: FindGang(
+                  search: searchKey,
+                )),
+              ] else ...[
                 Container(child: FindGang()),
               ],
-                
-              
-              
 
               Container(
                   child: MyGang(
@@ -166,6 +168,7 @@ class _TabBarViewMyEventState extends State<TabBarViewMyEvent> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 4,
@@ -220,6 +223,7 @@ class _TabBarViewMyEvent1State extends State<TabBarViewMyEvent1> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 4,
@@ -274,6 +278,7 @@ class _TabBarViewMyEvent2State extends State<TabBarViewMyEvent2> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 4,
@@ -343,6 +348,7 @@ class _TabBarViewProfileState extends State<TabBarViewProfile> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blueGrey, fontFamily: 'Noto'),
       home: DefaultTabController(
         length: 4,

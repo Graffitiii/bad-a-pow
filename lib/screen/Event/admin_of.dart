@@ -29,6 +29,8 @@ class _AdiminOfState extends State<AdiminOf> {
   var clubdata;
   var eventeach = {};
   List<Map<String, String>> roleUserList = [];
+  var imageList = {};
+  bool loading = true;
 
   void initState() {
     super.initState();
@@ -51,13 +53,14 @@ class _AdiminOfState extends State<AdiminOf> {
         transformeRole.add({'role': 'owner', 'name': clubdata['owner']});
         var adminNames =
             Set<String>(); // เพิ่มตัวแปรเพื่อเก็บชื่อ admin เพื่อตรวจสอบซ้ำ
-        clubdata['admin'].forEach((admin) {
+        clubdata['admin'].forEach((admin) async {
           transformeRole.add({'role': 'admin', 'name': admin});
           adminNames.add(admin); // เพิ่มชื่อ admin เข้ากลุ่มเพื่อตรวจสอบซ้ำ
         });
 
-        clubdata['follower'].forEach((follower) {
+        clubdata['follower'].forEach((follower) async {
           // เพิ่มเฉพาะ 'follower' ที่ไม่เป็น 'admin' หรือไม่มีชื่อซ้ำกับ 'admin'
+
           if (!adminNames.contains(follower)) {
             transformeRole.add({'role': 'follower', 'name': follower});
           }
@@ -67,7 +70,19 @@ class _AdiminOfState extends State<AdiminOf> {
 
         print("transformeRole: $transformeRole");
       });
+      for (var admin in clubdata['admin']) {
+        imageList[admin] = await getUserImg(admin);
+      }
+
+      for (var follower in clubdata['follower']) {
+        imageList[follower] = await getUserImg(follower);
+      }
+      imageList[clubdata['owner']] = await getUserImg(clubdata['owner']);
+      print("Image: $imageList");
       print("clubdata: $clubdata");
+      setState(() {
+        loading = false;
+      });
     }
   }
 
@@ -119,6 +134,21 @@ class _AdiminOfState extends State<AdiminOf> {
     }
   }
 
+  Future<String> getUserImg(param) async {
+    var queryParameters = {
+      'userName': param,
+    };
+    var uri = Uri.http(getUrl, '/getUserImage', queryParameters);
+    var response = await http.get(uri);
+
+    jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      return jsonResponse['data'];
+    } else {
+      return "";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,138 +167,165 @@ class _AdiminOfState extends State<AdiminOf> {
           backgroundColor: Color(0xFF00537A),
         ),
         body: SafeArea(
-            child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
-            child: Column(
-              children: transformeRole.map<Widget>((item) {
-                String dropdownvalue;
-                if (item['role'] == 'follower') {
-                  dropdownvalue = dropdownvalueMember;
-                } else {
-                  dropdownvalue = dropdownvalueAdmin;
-                }
+            child: loading
+                ? CircularProgressIndicator()
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+                      child: Column(
+                        children: transformeRole.map<Widget>((item) {
+                          String dropdownvalue;
+                          if (item['role'] == 'follower') {
+                            dropdownvalue = dropdownvalueMember;
+                          } else {
+                            dropdownvalue = dropdownvalueAdmin;
+                          }
 
-                return Padding(
-                  padding: EdgeInsetsDirectional.all(5),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage:
-                                AssetImage('assets/images/profile1.jpg'),
-                          ),
-                          SizedBox(width: 25),
-                          Text(
-                            item['name'] ?? '',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          Spacer(),
-                          if (item['role'] != 'owner') ...[
-                            Container(
-                              padding: EdgeInsets.all(10.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
+                          return Padding(
+                            padding: EdgeInsetsDirectional.all(5),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    if (imageList[item['name']] != "") ...[
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            imageList[item['name']]),
+                                      )
+                                    ] else ...[
+                                      CircleAvatar(
+                                        backgroundImage: AssetImage(
+                                            'assets/images/user_default.png'),
+                                      )
+                                    ],
+                                    SizedBox(width: 25),
+                                    Text(
+                                      item['name'] ?? '',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    if (item['role'] != 'owner') ...[
                                       Container(
-                                        height: 40,
-                                        padding: EdgeInsets.all(5.0),
-                                        child: DropdownButtonHideUnderline(
-                                          child: DropdownButton(
-                                            elevation: 0,
-                                            value: dropdownvalue,
-                                            icon: Icon(
-                                              Icons.keyboard_arrow_down,
-                                              size: 25,
-                                            ),
-                                            items: items.map((String items) {
-                                              return DropdownMenuItem(
-                                                value: items,
-                                                child: Text(
-                                                  items,
-                                                  style: TextStyle(
-                                                    color: Color(0xFF013C58),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 0,
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Container(
+                                                  height: 40,
+                                                  padding: EdgeInsets.all(5.0),
+                                                  child:
+                                                      DropdownButtonHideUnderline(
+                                                    child: DropdownButton(
+                                                      elevation: 0,
+                                                      value: dropdownvalue,
+                                                      icon: Icon(
+                                                        Icons
+                                                            .keyboard_arrow_down,
+                                                        size: 25,
+                                                      ),
+                                                      items: items
+                                                          .map((String items) {
+                                                        return DropdownMenuItem(
+                                                          value: items,
+                                                          child: Text(
+                                                            items,
+                                                            style: TextStyle(
+                                                              color: Color(
+                                                                  0xFF013C58),
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              height: 0,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }).toList(),
+                                                      onChanged:
+                                                          (String? newValue) {
+                                                        setState(() {
+                                                          if (item['role'] ==
+                                                              'follower') {
+                                                            dropdownvalue =
+                                                                newValue!;
+                                                            roleGetAdmin(
+                                                                item['name']);
+                                                          } else {
+                                                            dropdownvalue =
+                                                                newValue!;
+                                                            roleUnGetAdmin(
+                                                                item['name']);
+                                                          }
+                                                        });
+                                                      },
+                                                    ),
                                                   ),
                                                 ),
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                if (item['role'] ==
-                                                    'follower') {
-                                                  dropdownvalue = newValue!;
-                                                  roleGetAdmin(item['name']);
-                                                } else {
-                                                  dropdownvalue = newValue!;
-                                                  roleUnGetAdmin(item['name']);
-                                                }
-                                              });
-                                            },
-                                          ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ] else ...[
-                            Container(
-                              padding: EdgeInsets.only(right: 15, top: 10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
+                                    ] else ...[
                                       Container(
-                                        height: 40,
-                                        padding: EdgeInsets.all(5.0),
-                                        child: Text(
-                                          'เจ้าของ',
-                                          style: TextStyle(
-                                            color: Color(0xFF013C58),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            height: 0,
-                                          ),
+                                        padding:
+                                            EdgeInsets.only(right: 15, top: 10),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Container(
+                                                  height: 40,
+                                                  padding: EdgeInsets.all(5.0),
+                                                  child: Text(
+                                                    'เจ้าของ',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ]
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  width: double.infinity,
+                                  height: 1,
+                                  color: Colors.black
+                                      .withOpacity(0.10999999940395355),
+                                ),
+                              ],
                             ),
-                          ]
-                        ],
+                          );
+                        }).toList(),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        height: 1,
-                        color: Colors.black.withOpacity(0.10999999940395355),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        )));
+                    ),
+                  )));
   }
 }
