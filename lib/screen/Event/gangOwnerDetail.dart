@@ -675,9 +675,9 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                   MaterialPageRoute(
                                       builder: (BuildContext context) =>
                                           GangDetail(
-                                            id: items['_id'],
-                                            club: clubInfo['clubname'],
-                                          )));
+                                              id: items['_id'],
+                                              club: clubInfo['clubname'],
+                                              from: "gangdetail")));
                             },
                             child: Material(
                               elevation: 5.0,
@@ -974,9 +974,9 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                   MaterialPageRoute(
                                       builder: (BuildContext context) =>
                                           GangDetail(
-                                            id: items['_id'],
-                                            club: clubInfo['clubname'],
-                                          )));
+                                              id: items['_id'],
+                                              club: clubInfo['clubname'],
+                                              from: "gangdetail")));
                             },
                             child: Material(
                               elevation: 5.0,

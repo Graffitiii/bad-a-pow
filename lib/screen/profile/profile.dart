@@ -1,6 +1,7 @@
 import 'package:finalmo/config.dart';
 import 'package:finalmo/screen/login_page/login.dart';
 import 'package:finalmo/screen/profile/Owner_Apply.dart';
+import 'package:finalmo/screen/profile/history_event.dart';
 import 'package:finalmo/screen/profile/profileEdit.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -64,34 +65,6 @@ class _ProfileState extends State<Profile> {
               },
             ),
             ListTile(
-              leading: new Icon(Icons.logout),
-              title: new Text('ออกจากระบบ'),
-              onTap: () {
-                logout();
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.info),
-              title: new Text('เกี่ยวกับ'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute<void>(
-                  builder: (BuildContext context) {
-                    return Scaffold(
-                      appBar: AppBar(
-                        title: const Text('เกี่ยวกับ'),
-                      ),
-                      body: const Center(
-                        child: Text(
-                          'This is the next page',
-                          style: TextStyle(fontSize: 24),
-                        ),
-                      ),
-                    );
-                  },
-                ));
-              },
-            ),
-            ListTile(
               leading: new Icon(Icons.supervisor_account),
               title: new Text('สมัครเป็นผู้จัดก๊วน'),
               onTap: () {
@@ -115,6 +88,25 @@ class _ProfileState extends State<Profile> {
                     ],
                   ),
                 );
+              },
+            ),
+            ListTile(
+              leading: new Icon(Icons.history),
+              title: new Text('ประวัติการเข้าร่วม'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HistoryScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: new Icon(Icons.logout),
+              title: new Text('ออกจากระบบ'),
+              onTap: () {
+                logout();
               },
             ),
           ],
@@ -254,34 +246,6 @@ class _ProfileState extends State<Profile> {
                         },
                       ),
                       ListTile(
-                          leading: new Icon(Icons.logout),
-                          title: new Text('ออกจากระบบ'),
-                          onTap: () {
-                            logout();
-                          }),
-                      ListTile(
-                        leading: new Icon(Icons.info),
-                        title: new Text('เกี่ยวกับ'),
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute<void>(
-                            builder: (BuildContext context) {
-                              return Scaffold(
-                                appBar: AppBar(
-                                  title: const Text('เกี่ยวกับ'),
-                                ),
-                                body: const Center(
-                                  child: Text(
-                                    'This is the next page',
-                                    style: TextStyle(fontSize: 24),
-                                  ),
-                                ),
-                              );
-                            },
-                          ));
-                        },
-                      ),
-                      // DialogExample(),
-                      ListTile(
                         leading: new Icon(Icons.supervisor_account),
                         title: new Text('สมัครเป็นผู้จัดก๊วน'),
                         onTap: () {
@@ -314,6 +278,27 @@ class _ProfileState extends State<Profile> {
                           );
                         },
                       ),
+
+                      ListTile(
+                        leading: new Icon(Icons.history),
+                        title: new Text('ประวัติการเข้าร่วม'),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HistoryScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      // DialogExample(),
+
+                      ListTile(
+                          leading: new Icon(Icons.logout),
+                          title: new Text('ออกจากระบบ'),
+                          onTap: () {
+                            logout();
+                          }),
                     ],
                   );
                 },

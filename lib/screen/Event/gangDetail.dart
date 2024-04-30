@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:finalmo/screen/add.dart';
 import 'package:finalmo/screen/edit_event.dart';
 import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
 import 'package:finalmo/screen/Event/map.dart';
@@ -23,7 +24,8 @@ bool status = true;
 class GangDetail extends StatefulWidget {
   final id;
   final club;
-  const GangDetail({this.id, this.club, super.key});
+  final from;
+  const GangDetail({this.id, this.club, this.from, super.key});
 
   @override
   State<GangDetail> createState() => _GangDetailState();
@@ -48,6 +50,7 @@ class _GangDetailState extends State<GangDetail> {
   void initState() {
     super.initState();
     initializeState();
+    print(widget.from);
   }
 
   void initializeState() async {
@@ -157,25 +160,54 @@ class _GangDetailState extends State<GangDetail> {
     }
   }
 
+  void openEvent() async {
+    var regBody = {
+      "eventId": eventeach['_id'],
+      "event_start": eventeach['eventdate_start']
+    };
+
+    var response = await http.put(Uri.parse(startEvent),
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode(regBody));
+
+    // print(regBody);
+    var jsonResponse = jsonDecode(response.body);
+
+    if (jsonResponse['edit']) {
+      getEvent(eventeach['_id']);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => GangOwnerDetail(club: clubInfo['clubname'])),
+      );
+    }
+  }
+
   void onStartEvent() async {
     final now = DateTime.now();
 
     if (DateTime.parse(eventeach['eventdate_start']).isAfter(now)) {
-      var regBody = {
-        "eventId": eventeach['_id'],
-        "event_start": eventeach['eventdate_start']
-      };
-
-      var response = await http.put(Uri.parse(startEvent),
-          headers: {"Content-type": "application/json"},
-          body: jsonEncode(regBody));
-
-      // print(regBody);
-      var jsonResponse = jsonDecode(response.body);
-
-      if (jsonResponse['edit']) {
-        getEvent(eventeach['_id']);
-      }
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('เปิดให้เข้าร่วม'),
+          content: const Text('ต้องการเปิดให้เข้าร่วมกิจกรรมนี้ใช่หรือไม่'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () => {
+                Navigator.pop(context),
+                openEvent(),
+              },
+              child: const Text('ยืนยัน'),
+            ),
+          ],
+        ),
+      );
     } else {
       showDialog<String>(
         context: context,
@@ -310,6 +342,11 @@ class _GangDetailState extends State<GangDetail> {
         body: jsonEncode(regBody));
     jsonResponse = jsonDecode(response.body);
     if (jsonResponse['status']) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => GangOwnerDetail(club: clubInfo['clubname'])),
+      );
     } else {
       print('SDadw');
     }
@@ -395,75 +432,63 @@ class _GangDetailState extends State<GangDetail> {
     });
   }
 
+  Future<bool> _onBackPressed() async {
+    if (widget.from == "gangdetail" || widget.from == "edit") {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => GangOwnerDetail(club: clubInfo['clubname'])),
+      );
+      print("ddddddddddddddddddddddddddddddddddd");
+    }
+
+    // Handle whether to allow back navigation or not
+    return true; // Return true if you want to allow back navigation, false otherwise
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Center(
-            child: Text(
-              'รายละเอียด',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                height: 0,
+    return WillPopScope(
+      onWillPop: () async {
+        return await _onBackPressed() ?? false;
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            title: Center(
+              child: Text(
+                'รายละเอียด',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  height: 0,
+                ),
               ),
             ),
+            backgroundColor: Color(0xFF00537A),
           ),
-          backgroundColor: Color(0xFF00537A),
-        ),
-        bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                    width: 1.0, color: Color.fromARGB(255, 153, 153, 153)),
+          bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                      width: 1.0, color: Color.fromARGB(255, 153, 153, 153)),
+                ),
               ),
-            ),
-            height: 70,
-            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-              child: Row(
-                children: <Widget>[
-                  if (clubInfo != null &&
-                      clubInfo.containsKey('owner') &&
-                      clubInfo['owner'] != null &&
-                      username != clubInfo['owner'] &&
-                      clubInfo.containsKey('admin') &&
-                      clubInfo['admin'] != null &&
-                      !clubInfo['admin'].contains(username)) ...[
-                    if (!pending && !join) ...[
-                      if (!eventeach['active']) ...[
-                        Expanded(
-                          flex: 6,
-                          child: Container(
-                              alignment: Alignment.center,
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: TextButton(
-                                    child: Text(
-                                      'กิจกรรมนี้ยังไม่เปิดให้เข้าร่วม',
-                                      style: TextStyle(
-                                        color: const Color.fromARGB(
-                                            255, 255, 255, 255),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    style: TextButton.styleFrom(
-                                      elevation: 2,
-                                      backgroundColor:
-                                          Color.fromARGB(255, 146, 146, 146),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    onPressed: () => {}),
-                              )),
-                        ),
-                      ] else ...[
-                        if (userJoin.length <= eventeach['userlimit']) ...[
+              height: 70,
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                child: Row(
+                  children: <Widget>[
+                    if (clubInfo != null &&
+                        clubInfo.containsKey('owner') &&
+                        clubInfo['owner'] != null &&
+                        username != clubInfo['owner'] &&
+                        clubInfo.containsKey('admin') &&
+                        clubInfo['admin'] != null &&
+                        !clubInfo['admin'].contains(username)) ...[
+                      if (!pending && !join) ...[
+                        if (!eventeach['active']) ...[
                           Expanded(
                             flex: 6,
                             child: Container(
@@ -473,41 +498,7 @@ class _GangDetailState extends State<GangDetail> {
                                   height: 50,
                                   child: TextButton(
                                       child: Text(
-                                        'ส่งคำขอเข้าร่วม',
-                                        style: TextStyle(
-                                          color: const Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      style: TextButton.styleFrom(
-                                        elevation: 2,
-                                        backgroundColor:
-                                            const Color(0xFF013C58),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                      onPressed: () => {
-                                            setState(() {
-                                              requestPending();
-                                            }),
-                                          }),
-                                )),
-                          ),
-                        ] else ...[
-                          Expanded(
-                            flex: 6,
-                            child: Container(
-                                alignment: Alignment.center,
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  height: 50,
-                                  child: TextButton(
-                                      child: Text(
-                                        'กิจกรรมนี้มีผู้เข้าร่วมครบแล้ว',
+                                        'กิจกรรมนี้ยังไม่เปิดให้เข้าร่วม',
                                         style: TextStyle(
                                           color: const Color.fromARGB(
                                               255, 255, 255, 255),
@@ -527,503 +518,864 @@ class _GangDetailState extends State<GangDetail> {
                                       onPressed: () => {}),
                                 )),
                           ),
-                        ],
-                      ],
-                      //ส่งคำขอ
-                    ] else if (pending && !join) ...[
-                      //กำลังรอ
-                      Expanded(
-                        flex: 6,
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  unRequestPending();
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                elevation: 2,
-                                backgroundColor: Color.fromARGB(255, 212, 156,
-                                    2), // เปลี่ยนเป็นสีเขียวตามต้องการ
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.check,
-                                    color: Colors
-                                        .white, // เปลี่ยนเป็นสีขาวตามต้องการ
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'กำลังรอ',
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ] else if (!pending && join) ...[
-                      //เข้าร่วมแล้ว
-                      Expanded(
-                        flex: 6,
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: TextButton(
-                              onPressed: () {
-                                setState(() {});
-                              },
-                              style: TextButton.styleFrom(
-                                elevation: 2,
-                                backgroundColor: Color(
-                                    0xFF02D417), // เปลี่ยนเป็นสีเขียวตามต้องการ
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.check,
-                                    color: Colors
-                                        .white, // เปลี่ยนเป็นสีขาวตามต้องการ
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'เข้าร่วมแล้ว',
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]
-                  ] else ...[
-                    if (!openevent) ...[
-                      Expanded(
-                        flex: 5,
-                        child: Container(
-                            alignment: Alignment.center,
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: TextButton(
-                                  child: Text(
-                                    'เปิดให้เข้าร่วม',
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  style: TextButton.styleFrom(
-                                    elevation: 2,
-                                    backgroundColor: const Color(0xFFF5A201),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  onPressed: () => {onStartEvent()}),
-                            )),
-                      ),
-                    ] else ...[
-                      Expanded(
-                        flex: 5,
-                        child: Container(
-                            alignment: Alignment.center,
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: TextButton(
-                                  child: Text(
-                                    'ยกเลิกกิจกรรม',
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  style: TextButton.styleFrom(
-                                    elevation: 2,
-                                    backgroundColor: const Color(0xFFFF5B5B),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  onPressed: () => {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              AlertDialog(
-                                            title: const Text('ยกเลิกกิจกรรม'),
-                                            content: const Text(
-                                                'ต้องการยกเลิกกิจกรรมนี้ใช่หรือไม่'),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () => Navigator.pop(
-                                                    context, 'Cancel'),
-                                                child: const Text('ยกเลิก'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () =>
-                                                    {cancelE(eventeach['_id'])},
-                                                child: const Text('ยืนยัน'),
-                                              ),
-                                            ],
+                        ] else ...[
+                          if (userJoin.length <= eventeach['userlimit']) ...[
+                            Expanded(
+                              flex: 6,
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: TextButton(
+                                        child: Text(
+                                          'ส่งคำขอเข้าร่วม',
+                                          style: TextStyle(
+                                            color: const Color.fromARGB(
+                                                255, 255, 255, 255),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
                                           ),
                                         ),
-
-                                        // setState(() {
-                                        //   // openevent = false;
-                                        //   changeStatus();
-                                        // }),
-                                      }),
-                            )),
-                      ),
-                    ],
-                    if (username == clubInfo['owner']) ...[
-                      Expanded(
-                        flex: 1,
-                        child: SizedBox(),
-                      ),
-                      Expanded(
-                        flex: 5,
-                        child: Container(
-                            alignment: Alignment.center,
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: TextButton(
-                                  child: Text(
-                                    'แก้ไข้ข้อมูล',
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 255, 255, 255),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  style: TextButton.styleFrom(
-                                    elevation: 2,
-                                    backgroundColor: const Color(0xFF013C58),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  onPressed: () => {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (BuildContext
-                                                        context) =>
-                                                    EditEvent(id: eventeach)))
-                                      }),
-                            )),
-                      ),
-                    ] else
-                      ...[]
-                  ],
-                ],
-              ),
-            )),
-        body: SafeArea(
-          left: false,
-          right: false,
-          child: loading
-              ? CircularProgressIndicator()
-              : SingleChildScrollView(
-                  child: !status
-                      ? Text("Error: ")
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Padding(
-                                padding: EdgeInsets.only(bottom: 15),
-                                child: Column(children: [
-                                  if (images.isNotEmpty) ...[
-                                    CarouselSlider(
-                                      items: images.map<Widget>((items) {
-                                        return Container(
-                                          margin: EdgeInsets.all(8.0),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                                10), // กำหนดให้เป็นรูปร่างวงกลม
-                                          ),
-                                          child: ClipRRect(
+                                        style: TextButton.styleFrom(
+                                          elevation: 2,
+                                          backgroundColor:
+                                              const Color(0xFF013C58),
+                                          shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            child: Image.network(
-                                              items,
-                                              width: 400,
-                                              fit: BoxFit.cover,
-                                              loadingBuilder:
-                                                  (BuildContext context,
-                                                      Widget child,
-                                                      ImageChunkEvent?
-                                                          loadingProgress) {
-                                                if (loadingProgress == null)
-                                                  return child;
-                                                return Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    value: loadingProgress
-                                                                .expectedTotalBytes !=
-                                                            null
-                                                        ? loadingProgress
-                                                                .cumulativeBytesLoaded /
-                                                            loadingProgress
-                                                                .expectedTotalBytes!
-                                                        : null,
-                                                  ),
-                                                );
-                                              },
-                                            ),
+                                                BorderRadius.circular(10),
                                           ),
-                                        );
-                                      }).toList(),
-                                      options: CarouselOptions(
-                                        height: 220.0,
-                                        enlargeCenterPage: true,
-                                        autoPlay: true,
-                                        aspectRatio: 16 / 9,
-                                        autoPlayCurve: Curves.fastOutSlowIn,
-                                        enableInfiniteScroll: false,
-                                        autoPlayAnimationDuration:
-                                            Duration(milliseconds: 2000),
-                                        viewportFraction: 0.8,
-                                      ),
-                                    ),
-                                  ] else ...[
-                                    Container(
-                                      width: double.infinity,
-                                      height: 200,
-                                      margin: EdgeInsets.all(8.0),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                              'assets/images/badapow.png'),
-                                          fit: BoxFit.cover,
                                         ),
+                                        onPressed: () => {
+                                              setState(() {
+                                                requestPending();
+                                              }),
+                                            }),
+                                  )),
+                            ),
+                          ] else ...[
+                            Expanded(
+                              flex: 6,
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: TextButton(
+                                        child: Text(
+                                          'กิจกรรมนี้มีผู้เข้าร่วมครบแล้ว',
+                                          style: TextStyle(
+                                            color: const Color.fromARGB(
+                                                255, 255, 255, 255),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          elevation: 2,
+                                          backgroundColor: Color.fromARGB(
+                                              255, 146, 146, 146),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        onPressed: () => {}),
+                                  )),
+                            ),
+                          ],
+                        ],
+                        //ส่งคำขอ
+                      ] else if (pending && !join) ...[
+                        //กำลังรอ
+                        Expanded(
+                          flex: 6,
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    unRequestPending();
+                                  });
+                                },
+                                style: TextButton.styleFrom(
+                                  elevation: 2,
+                                  backgroundColor: Color.fromARGB(255, 212, 156,
+                                      2), // เปลี่ยนเป็นสีเขียวตามต้องการ
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check,
+                                      color: Colors
+                                          .white, // เปลี่ยนเป็นสีขาวตามต้องการ
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'กำลังรอ',
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 255, 255, 255),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                   ],
-                                  SizedBox(height: 15),
-                                  Container(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  GangOwnerDetail(
-                                                                      club: eventeach[
-                                                                          'club'])),
-                                                        );
-                                                      },
-                                                      child: Text(
-                                                        eventeach['club'],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ] else if (!pending && join) ...[
+                        //เข้าร่วมแล้ว
+                        Expanded(
+                          flex: 6,
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: TextButton(
+                                onPressed: () {
+                                  setState(() {});
+                                },
+                                style: TextButton.styleFrom(
+                                  elevation: 2,
+                                  backgroundColor: Color(
+                                      0xFF02D417), // เปลี่ยนเป็นสีเขียวตามต้องการ
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check,
+                                      color: Colors
+                                          .white, // เปลี่ยนเป็นสีขาวตามต้องการ
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'เข้าร่วมแล้ว',
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 255, 255, 255),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]
+                    ] else ...[
+                      if (!openevent) ...[
+                        Expanded(
+                          flex: 5,
+                          child: Container(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: TextButton(
+                                    child: Text(
+                                      'เปิดให้เข้าร่วม',
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 255, 255, 255),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      elevation: 2,
+                                      backgroundColor: const Color(0xFFF5A201),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    onPressed: () => {
+                                          onStartEvent(),
+                                        }),
+                              )),
+                        ),
+                      ] else ...[
+                        Expanded(
+                          flex: 5,
+                          child: Container(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: TextButton(
+                                    child: Text(
+                                      'ยกเลิกกิจกรรม',
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 255, 255, 255),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      elevation: 2,
+                                      backgroundColor: const Color(0xFFFF5B5B),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    onPressed: () => {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                AlertDialog(
+                                              title:
+                                                  const Text('ยกเลิกกิจกรรม'),
+                                              content: const Text(
+                                                  'ต้องการยกเลิกกิจกรรมนี้ใช่หรือไม่'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                          context, 'Cancel'),
+                                                  child: const Text('ยกเลิก'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () => {
+                                                    cancelE(eventeach['_id']),
+                                                    Navigator.pop(context),
+                                                  },
+                                                  child: const Text('ยืนยัน'),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // setState(() {
+                                          //   // openevent = false;
+                                          //   changeStatus();
+                                          // }),
+                                        }),
+                              )),
+                        ),
+                      ],
+                      if (username == clubInfo['owner']) ...[
+                        Expanded(
+                          flex: 1,
+                          child: SizedBox(),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Container(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: TextButton(
+                                    child: Text(
+                                      'แก้ไข้ข้อมูล',
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 255, 255, 255),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      elevation: 2,
+                                      backgroundColor: const Color(0xFF013C58),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    onPressed: () => {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (BuildContext
+                                                          context) =>
+                                                      EditEvent(id: eventeach)))
+                                        }),
+                              )),
+                        ),
+                      ] else
+                        ...[]
+                    ],
+                  ],
+                ),
+              )),
+          body: SafeArea(
+            left: false,
+            right: false,
+            child: loading
+                ? CircularProgressIndicator()
+                : SingleChildScrollView(
+                    child: !status
+                        ? Text("Error: ")
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Padding(
+                                  padding: EdgeInsets.only(bottom: 15),
+                                  child: Column(children: [
+                                    if (images.isNotEmpty) ...[
+                                      CarouselSlider(
+                                        items: images.map<Widget>((items) {
+                                          return Container(
+                                            margin: EdgeInsets.all(8.0),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(
+                                                  10), // กำหนดให้เป็นรูปร่างวงกลม
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              child: Image.network(
+                                                items,
+                                                width: 400,
+                                                fit: BoxFit.cover,
+                                                loadingBuilder:
+                                                    (BuildContext context,
+                                                        Widget child,
+                                                        ImageChunkEvent?
+                                                            loadingProgress) {
+                                                  if (loadingProgress == null)
+                                                    return child;
+                                                  return Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      value: loadingProgress
+                                                                  .expectedTotalBytes !=
+                                                              null
+                                                          ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              loadingProgress
+                                                                  .expectedTotalBytes!
+                                                          : null,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        options: CarouselOptions(
+                                          height: 220.0,
+                                          enlargeCenterPage: true,
+                                          autoPlay: true,
+                                          aspectRatio: 16 / 9,
+                                          autoPlayCurve: Curves.fastOutSlowIn,
+                                          enableInfiniteScroll: false,
+                                          autoPlayAnimationDuration:
+                                              Duration(milliseconds: 2000),
+                                          viewportFraction: 0.8,
+                                        ),
+                                      ),
+                                    ] else ...[
+                                      Container(
+                                        width: double.infinity,
+                                        height: 200,
+                                        margin: EdgeInsets.all(8.0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/badapow.png'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    SizedBox(height: 15),
+                                    Container(
+                                      padding:
+                                          EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) =>
+                                                                    GangOwnerDetail(
+                                                                        club: eventeach[
+                                                                            'club'])),
+                                                          );
+                                                        },
+                                                        child: Text(
+                                                          eventeach['club'],
+                                                          style: TextStyle(
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            shadows: [
+                                                              Shadow(
+                                                                  color: Color(
+                                                                      0xFF013C58),
+                                                                  offset:
+                                                                      Offset(0,
+                                                                          -6))
+                                                            ],
+                                                            color: Colors
+                                                                .transparent,
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .underline,
+                                                            decorationColor:
+                                                                Color(
+                                                                    0xFF013C58),
+                                                            decorationThickness:
+                                                                2,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      if (clubInfo['owner'] !=
+                                                          username) ...[
+                                                        if (followStatus) ...[
+                                                          SizedBox(
+                                                            height: 20,
+                                                            width: 100,
+                                                            child: TextButton(
+                                                                // ignore: sort_child_properties_last
+                                                                child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Icon(
+                                                                        Icons
+                                                                            .check,
+                                                                        size:
+                                                                            12,
+                                                                        color: Color(
+                                                                            0xFF02D417),
+                                                                      ),
+                                                                      SizedBox(
+                                                                          width:
+                                                                              5),
+                                                                      Text(
+                                                                        'ติดตามแล้ว',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Color(0xFF29C14A),
+                                                                          fontSize:
+                                                                              12,
+                                                                          fontWeight:
+                                                                              FontWeight.w700,
+                                                                        ),
+                                                                      )
+                                                                    ]),
+                                                                style: TextButton
+                                                                    .styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          255,
+                                                                          255,
+                                                                          255),
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .zero,
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    side: BorderSide(
+                                                                        width:
+                                                                            1,
+                                                                        color: Color(
+                                                                            0xFF29C14A)),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            25),
+                                                                  ),
+                                                                ),
+                                                                onPressed: () =>
+                                                                    {
+                                                                      onUnFollow()
+                                                                    }),
+                                                          )
+                                                        ] else ...[
+                                                          SizedBox(
+                                                            height: 20,
+                                                            child: TextButton(
+                                                                child: Text(
+                                                                  'ติดตาม',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color(
+                                                                        0xFF484848),
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700,
+                                                                  ),
+                                                                ),
+                                                                style: TextButton
+                                                                    .styleFrom(
+                                                                  backgroundColor:
+                                                                      const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          255,
+                                                                          255,
+                                                                          255),
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .zero,
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    side: BorderSide(
+                                                                        width:
+                                                                            1,
+                                                                        color: Color(
+                                                                            0xFF484848)),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            25),
+                                                                  ),
+                                                                ),
+                                                                onPressed: () =>
+                                                                    {
+                                                                      onFollow()
+                                                                    }),
+                                                          )
+                                                        ]
+                                                      ]
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              Spacer(),
+                                              ShareBottton(),
+                                            ],
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 5),
+                                            child: Container(
+                                              width: double.infinity,
+                                              height: 1,
+                                              color: Colors.black.withOpacity(
+                                                  0.10999999940395355),
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Row(
+                                            children: [
+                                              Spacer(),
+                                              Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        userJoin.length
+                                                            .toString(),
                                                         style: TextStyle(
+                                                          color:
+                                                              Color(0xFF013C58),
                                                           fontSize: 20,
                                                           fontWeight:
                                                               FontWeight.w700,
-                                                          shadows: [
-                                                            Shadow(
-                                                                color: Color(
-                                                                    0xFF013C58),
-                                                                offset: Offset(
-                                                                    0, -6))
-                                                          ],
-                                                          color: Colors
-                                                              .transparent,
-                                                          decoration:
-                                                              TextDecoration
-                                                                  .underline,
-                                                          decorationColor:
-                                                              Color(0xFF013C58),
-                                                          decorationThickness:
-                                                              2,
+                                                          height: 0,
                                                         ),
                                                       ),
-                                                    ),
-                                                    SizedBox(width: 10),
-                                                    if (clubInfo['owner'] !=
-                                                        username) ...[
-                                                      if (followStatus) ...[
-                                                        SizedBox(
-                                                          height: 20,
-                                                          width: 100,
-                                                          child: TextButton(
-                                                              // ignore: sort_child_properties_last
-                                                              child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                    Icon(
-                                                                      Icons
-                                                                          .check,
-                                                                      size: 12,
-                                                                      color: Color(
-                                                                          0xFF02D417),
-                                                                    ),
-                                                                    SizedBox(
-                                                                        width:
-                                                                            5),
-                                                                    Text(
-                                                                      'ติดตามแล้ว',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: Color(
-                                                                            0xFF29C14A),
-                                                                        fontSize:
-                                                                            12,
-                                                                        fontWeight:
-                                                                            FontWeight.w700,
+                                                      if (clubInfo != null &&
+                                                              clubInfo
+                                                                  .containsKey(
+                                                                      'owner') &&
+                                                              clubInfo[
+                                                                      'owner'] !=
+                                                                  null &&
+                                                              username ==
+                                                                  clubInfo[
+                                                                      'owner'] ||
+                                                          (clubInfo.containsKey(
+                                                                  'admin') &&
+                                                              clubInfo[
+                                                                      'admin'] !=
+                                                                  null &&
+                                                              clubInfo['admin']
+                                                                  .contains(
+                                                                      username))) ...[
+                                                        IconButton(
+                                                          icon: Icon(
+                                                              Icons
+                                                                  .arrow_forward_ios,
+                                                              size: 12),
+                                                          color:
+                                                              Color(0xFF515151),
+                                                          onPressed: () {
+                                                            showModalBottomSheet(
+                                                              context: context,
+                                                              isScrollControlled:
+                                                                  true,
+                                                              backgroundColor:
+                                                                  Color(
+                                                                      0xFF575757),
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return StatefulBuilder(builder:
+                                                                    (BuildContext
+                                                                            context,
+                                                                        StateSetter
+                                                                            setState) {
+                                                                  return DefaultTabController(
+                                                                    length: 2,
+                                                                    child:
+                                                                        FractionallySizedBox(
+                                                                      heightFactor:
+                                                                          0.6,
+                                                                      child:
+                                                                          Container(
+                                                                        child:
+                                                                            Padding(
+                                                                          padding: EdgeInsets.fromLTRB(
+                                                                              10,
+                                                                              5,
+                                                                              10,
+                                                                              0),
+                                                                          child:
+                                                                              Column(
+                                                                            children: [
+                                                                              TabBar(
+                                                                                tabs: [
+                                                                                  Tab(
+                                                                                    child: Text(
+                                                                                      "กำลังรอการยืนยัน",
+                                                                                      style: TextStyle(
+                                                                                        color: Colors.white,
+                                                                                        fontSize: 14,
+                                                                                        fontWeight: FontWeight.w400,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                  Tab(
+                                                                                    child: Text(
+                                                                                      "เข้าร่วมแล้ว",
+                                                                                      style: TextStyle(
+                                                                                        color: Colors.white,
+                                                                                        fontSize: 14,
+                                                                                        fontWeight: FontWeight.w400,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                              Expanded(
+                                                                                child: TabBarView(
+                                                                                  children: [
+                                                                                    SingleChildScrollView(
+                                                                                      child: Padding(
+                                                                                        padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+                                                                                        child: Column(
+                                                                                          children: userPending.map<Widget>((items) {
+                                                                                            return Padding(
+                                                                                              padding: EdgeInsetsDirectional.all(5),
+                                                                                              child: Column(
+                                                                                                children: [
+                                                                                                  Row(
+                                                                                                    children: [
+                                                                                                      if (imageList[items] != "") ...[
+                                                                                                        CircleAvatar(
+                                                                                                          backgroundImage: NetworkImage(imageList[items]),
+                                                                                                        )
+                                                                                                      ] else ...[
+                                                                                                        CircleAvatar(
+                                                                                                          backgroundImage: AssetImage('assets/images/user_default.png'),
+                                                                                                        )
+                                                                                                      ],
+                                                                                                      SizedBox(width: 25),
+                                                                                                      Text(
+                                                                                                        items,
+                                                                                                        style: TextStyle(
+                                                                                                          color: Colors.white,
+                                                                                                          fontSize: 14,
+                                                                                                          fontWeight: FontWeight.w400,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      Spacer(),
+                                                                                                      IconButton(
+                                                                                                        onPressed: () {
+                                                                                                          acceptJoinEvent(items); // ทำการยอมรับข้อมูล
+                                                                                                          unacceptJoinEvent(items); // ทำการยกเลิกข้อมูล
+
+                                                                                                          // ลบรายการที่มีค่าเท่ากับ items ออกจาก userPending
+
+                                                                                                          setState(() {
+                                                                                                            userPending.removeWhere((item) => item == items);
+
+                                                                                                            userJoin.add(items);
+                                                                                                          });
+                                                                                                          initSharedPref();
+                                                                                                        },
+                                                                                                        icon: Icon(
+                                                                                                          Icons.check,
+                                                                                                          size: 20,
+                                                                                                          color: Colors.green,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      IconButton(
+                                                                                                        onPressed: () {
+                                                                                                          unacceptJoinEvent(items);
+                                                                                                          setState(() {
+                                                                                                            userPending.removeWhere((item) => item == items);
+                                                                                                          });
+                                                                                                        },
+                                                                                                        icon: Icon(
+                                                                                                          Icons.close,
+                                                                                                          size: 20,
+                                                                                                          color: Colors.red,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    ],
+                                                                                                  ),
+                                                                                                  SizedBox(
+                                                                                                    height: 10,
+                                                                                                  ),
+                                                                                                  Container(
+                                                                                                    width: double.infinity,
+                                                                                                    height: 1,
+                                                                                                    color: Colors.black.withOpacity(0.10999999940395355),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                            );
+                                                                                          }).toList(),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    SingleChildScrollView(
+                                                                                      child: Padding(
+                                                                                        padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+                                                                                        child: Column(
+                                                                                          children: userJoin.map<Widget>((items) {
+                                                                                            return Padding(
+                                                                                              padding: EdgeInsetsDirectional.all(5),
+                                                                                              child: Column(
+                                                                                                children: [
+                                                                                                  Row(
+                                                                                                    children: [
+                                                                                                      if (imageList[items] != "") ...[
+                                                                                                        CircleAvatar(
+                                                                                                          backgroundImage: NetworkImage(imageList[items]),
+                                                                                                        )
+                                                                                                      ] else ...[
+                                                                                                        CircleAvatar(
+                                                                                                          backgroundImage: AssetImage('assets/images/user_default.png'),
+                                                                                                        )
+                                                                                                      ],
+                                                                                                      SizedBox(width: 25),
+                                                                                                      Text(
+                                                                                                        items,
+                                                                                                        style: TextStyle(
+                                                                                                          color: Colors.white,
+                                                                                                          fontSize: 14,
+                                                                                                          fontWeight: FontWeight.w400,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      Spacer(),
+                                                                                                      Text(
+                                                                                                        "เข้าร่วมแล้ว",
+                                                                                                        style: TextStyle(
+                                                                                                          color: Color.fromARGB(255, 26, 255, 26),
+                                                                                                          fontSize: 14,
+                                                                                                          fontWeight: FontWeight.w400,
+                                                                                                        ),
+                                                                                                      )
+                                                                                                    ],
+                                                                                                  ),
+                                                                                                  SizedBox(
+                                                                                                    height: 20,
+                                                                                                  ),
+                                                                                                  Container(
+                                                                                                    width: double.infinity,
+                                                                                                    height: 1,
+                                                                                                    color: Colors.black.withOpacity(0.10999999940395355),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                            );
+                                                                                          }).toList(),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
                                                                       ),
-                                                                    )
-                                                                  ]),
-                                                              style: TextButton
-                                                                  .styleFrom(
-                                                                backgroundColor:
-                                                                    const Color
-                                                                        .fromARGB(
-                                                                        255,
-                                                                        255,
-                                                                        255,
-                                                                        255),
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .zero,
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                  side: BorderSide(
-                                                                      width: 1,
-                                                                      color: Color(
-                                                                          0xFF29C14A)),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              25),
-                                                                ),
-                                                              ),
-                                                              onPressed: () => {
-                                                                    onUnFollow()
-                                                                  }),
-                                                        )
-                                                      ] else ...[
-                                                        SizedBox(
-                                                          height: 20,
-                                                          child: TextButton(
-                                                              child: Text(
-                                                                'ติดตาม',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color(
-                                                                      0xFF484848),
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700,
-                                                                ),
-                                                              ),
-                                                              style: TextButton
-                                                                  .styleFrom(
-                                                                backgroundColor:
-                                                                    const Color
-                                                                        .fromARGB(
-                                                                        255,
-                                                                        255,
-                                                                        255,
-                                                                        255),
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .zero,
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                  side: BorderSide(
-                                                                      width: 1,
-                                                                      color: Color(
-                                                                          0xFF484848)),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              25),
-                                                                ),
-                                                              ),
-                                                              onPressed: () =>
-                                                                  {onFollow()}),
-                                                        )
-                                                      ]
-                                                    ]
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                            Spacer(),
-                                            ShareBottton(),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 5),
-                                          child: Container(
-                                            width: double.infinity,
-                                            height: 1,
-                                            color: Colors.black.withOpacity(
-                                                0.10999999940395355),
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Row(
-                                          children: [
-                                            Spacer(),
-                                            Column(
-                                              children: [
-                                                Row(
+                                                                    ),
+                                                                  );
+                                                                });
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 5.0),
+                                                  Text(
+                                                    'เข้าร่วมแล้ว',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF929292),
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Spacer(),
+                                              Container(
+                                                width: 1,
+                                                height: 50,
+                                                color: Colors.black.withOpacity(
+                                                    0.10999999940395355),
+                                              ),
+                                              Spacer(),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // Navigator.push(
+                                                  //   context,
+                                                  //   MaterialPageRoute(
+                                                  //       builder: (context) =>
+                                                  //           ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
+                                                  // );
+                                                },
+                                                child: Column(
                                                   children: [
                                                     Text(
-                                                      userJoin.length
-                                                          .toString(),
+                                                      rating,
                                                       style: TextStyle(
                                                         color:
                                                             Color(0xFF013C58),
@@ -1033,413 +1385,62 @@ class _GangDetailState extends State<GangDetail> {
                                                         height: 0,
                                                       ),
                                                     ),
-                                                    if (clubInfo != null &&
-                                                            clubInfo
-                                                                .containsKey(
-                                                                    'owner') &&
-                                                            clubInfo['owner'] !=
-                                                                null &&
-                                                            username ==
-                                                                clubInfo[
-                                                                    'owner'] ||
-                                                        (clubInfo.containsKey(
-                                                                'admin') &&
-                                                            clubInfo['admin'] !=
-                                                                null &&
-                                                            clubInfo['admin']
-                                                                .contains(
-                                                                    username))) ...[
-                                                      IconButton(
-                                                        icon: Icon(
-                                                            Icons
-                                                                .arrow_forward_ios,
-                                                            size: 12),
-                                                        color:
-                                                            Color(0xFF515151),
-                                                        onPressed: () {
-                                                          showModalBottomSheet(
-                                                            context: context,
-                                                            isScrollControlled:
-                                                                true,
-                                                            backgroundColor:
-                                                                Color(
-                                                                    0xFF575757),
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return StatefulBuilder(builder:
-                                                                  (BuildContext
-                                                                          context,
-                                                                      StateSetter
-                                                                          setState) {
-                                                                return DefaultTabController(
-                                                                  length: 2,
-                                                                  child:
-                                                                      FractionallySizedBox(
-                                                                    heightFactor:
-                                                                        0.6,
-                                                                    child:
-                                                                        Container(
-                                                                      child:
-                                                                          Padding(
-                                                                        padding: EdgeInsets.fromLTRB(
-                                                                            10,
-                                                                            5,
-                                                                            10,
-                                                                            0),
-                                                                        child:
-                                                                            Column(
-                                                                          children: [
-                                                                            TabBar(
-                                                                              tabs: [
-                                                                                Tab(
-                                                                                  child: Text(
-                                                                                    "กำลังรอการยืนยัน",
-                                                                                    style: TextStyle(
-                                                                                      color: Colors.white,
-                                                                                      fontSize: 14,
-                                                                                      fontWeight: FontWeight.w400,
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                                Tab(
-                                                                                  child: Text(
-                                                                                    "เข้าร่วมแล้ว",
-                                                                                    style: TextStyle(
-                                                                                      color: Colors.white,
-                                                                                      fontSize: 14,
-                                                                                      fontWeight: FontWeight.w400,
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                            Expanded(
-                                                                              child: TabBarView(
-                                                                                children: [
-                                                                                  SingleChildScrollView(
-                                                                                    child: Padding(
-                                                                                      padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
-                                                                                      child: Column(
-                                                                                        children: userPending.map<Widget>((items) {
-                                                                                          return Padding(
-                                                                                            padding: EdgeInsetsDirectional.all(5),
-                                                                                            child: Column(
-                                                                                              children: [
-                                                                                                Row(
-                                                                                                  children: [
-                                                                                                    if (imageList[items] != "") ...[
-                                                                                                      CircleAvatar(
-                                                                                                        backgroundImage: NetworkImage(imageList[items]),
-                                                                                                      )
-                                                                                                    ] else ...[
-                                                                                                      CircleAvatar(
-                                                                                                        backgroundImage: AssetImage('assets/images/user_default.png'),
-                                                                                                      )
-                                                                                                    ],
-                                                                                                    SizedBox(width: 25),
-                                                                                                    Text(
-                                                                                                      items,
-                                                                                                      style: TextStyle(
-                                                                                                        color: Colors.white,
-                                                                                                        fontSize: 14,
-                                                                                                        fontWeight: FontWeight.w400,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Spacer(),
-                                                                                                    IconButton(
-                                                                                                      onPressed: () {
-                                                                                                        acceptJoinEvent(items); // ทำการยอมรับข้อมูล
-                                                                                                        unacceptJoinEvent(items); // ทำการยกเลิกข้อมูล
-
-                                                                                                        // ลบรายการที่มีค่าเท่ากับ items ออกจาก userPending
-
-                                                                                                        setState(() {
-                                                                                                          userPending.removeWhere((item) => item == items);
-
-                                                                                                          userJoin.add(items);
-                                                                                                        });
-                                                                                                        initSharedPref();
-                                                                                                      },
-                                                                                                      icon: Icon(
-                                                                                                        Icons.check,
-                                                                                                        size: 20,
-                                                                                                        color: Colors.green,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    IconButton(
-                                                                                                      onPressed: () {
-                                                                                                        unacceptJoinEvent(items);
-                                                                                                        setState(() {
-                                                                                                          userPending.removeWhere((item) => item == items);
-                                                                                                        });
-                                                                                                      },
-                                                                                                      icon: Icon(
-                                                                                                        Icons.close,
-                                                                                                        size: 20,
-                                                                                                        color: Colors.red,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  ],
-                                                                                                ),
-                                                                                                SizedBox(
-                                                                                                  height: 10,
-                                                                                                ),
-                                                                                                Container(
-                                                                                                  width: double.infinity,
-                                                                                                  height: 1,
-                                                                                                  color: Colors.black.withOpacity(0.10999999940395355),
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                          );
-                                                                                        }).toList(),
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  SingleChildScrollView(
-                                                                                    child: Padding(
-                                                                                      padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
-                                                                                      child: Column(
-                                                                                        children: userJoin.map<Widget>((items) {
-                                                                                          return Padding(
-                                                                                            padding: EdgeInsetsDirectional.all(5),
-                                                                                            child: Column(
-                                                                                              children: [
-                                                                                                Row(
-                                                                                                  children: [
-                                                                                                    if (imageList[items] != "") ...[
-                                                                                                      CircleAvatar(
-                                                                                                        backgroundImage: NetworkImage(imageList[items]),
-                                                                                                      )
-                                                                                                    ] else ...[
-                                                                                                      CircleAvatar(
-                                                                                                        backgroundImage: AssetImage('assets/images/user_default.png'),
-                                                                                                      )
-                                                                                                    ],
-                                                                                                    SizedBox(width: 25),
-                                                                                                    Text(
-                                                                                                      items,
-                                                                                                      style: TextStyle(
-                                                                                                        color: Colors.white,
-                                                                                                        fontSize: 14,
-                                                                                                        fontWeight: FontWeight.w400,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Spacer(),
-                                                                                                    Text(
-                                                                                                      "เข้าร่วมแล้ว",
-                                                                                                      style: TextStyle(
-                                                                                                        color: Color.fromARGB(255, 26, 255, 26),
-                                                                                                        fontSize: 14,
-                                                                                                        fontWeight: FontWeight.w400,
-                                                                                                      ),
-                                                                                                    )
-                                                                                                  ],
-                                                                                                ),
-                                                                                                SizedBox(
-                                                                                                  height: 20,
-                                                                                                ),
-                                                                                                Container(
-                                                                                                  width: double.infinity,
-                                                                                                  height: 1,
-                                                                                                  color: Colors.black.withOpacity(0.10999999940395355),
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                          );
-                                                                                        }).toList(),
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              });
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
-                                                    ],
+                                                    SizedBox(height: 5),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          'รีวิว',
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                                0xFF929292),
+                                                            fontSize: 13,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            height: 0,
+                                                          ),
+                                                        ),
+                                                        // Icon(
+                                                        //   Icons.arrow_forward_ios,
+                                                        //   color:
+                                                        //       Color(0xFF929292),
+                                                        //   size: 14.0,
+                                                        // ),
+                                                      ],
+                                                    ),
                                                   ],
                                                 ),
-                                                SizedBox(height: 5.0),
-                                                Text(
-                                                  'เข้าร่วมแล้ว',
-                                                  style: TextStyle(
-                                                    color: Color(0xFF929292),
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Spacer(),
-                                            Container(
-                                              width: 1,
-                                              height: 50,
-                                              color: Colors.black.withOpacity(
-                                                  0.10999999940395355),
-                                            ),
-                                            Spacer(),
-                                            GestureDetector(
-                                              onTap: () {
-                                                // Navigator.push(
-                                                //   context,
-                                                //   MaterialPageRoute(
-                                                //       builder: (context) =>
-                                                //           ReviewScreen()), // เปลี่ยนเป็นชื่อหน้าหาก๊วนจริงๆ ของคุณ
-                                                // );
-                                              },
-                                              child: Column(
+                                              ),
+                                              Spacer(),
+                                            ],
+                                          ),
+                                          SizedBox(height: 20),
+                                          Row(
+                                            children: [
+                                              Column(
                                                 children: [
-                                                  Text(
-                                                    rating,
-                                                    style: TextStyle(
-                                                      color: Color(0xFF013C58),
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      height: 0,
+                                                  Container(
+                                                    height: 35,
+                                                    width: 35,
+                                                    decoration: BoxDecoration(
+                                                        color:
+                                                            Color(0x33FF0000),
+                                                        shape: BoxShape.circle),
+                                                    child: Icon(
+                                                      Icons.location_on,
+                                                      color: Color(0xFFFF0000),
+                                                      size: 22.0,
                                                     ),
-                                                  ),
-                                                  SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        'รีวิว',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Color(0xFF929292),
-                                                          fontSize: 13,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          height: 0,
-                                                        ),
-                                                      ),
-                                                      // Icon(
-                                                      //   Icons.arrow_forward_ios,
-                                                      //   color:
-                                                      //       Color(0xFF929292),
-                                                      //   size: 14.0,
-                                                      // ),
-                                                    ],
-                                                  ),
+                                                  )
                                                 ],
                                               ),
-                                            ),
-                                            Spacer(),
-                                          ],
-                                        ),
-                                        SizedBox(height: 20),
-                                        Row(
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Container(
-                                                  height: 35,
-                                                  width: 35,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0x33FF0000),
-                                                      shape: BoxShape.circle),
-                                                  child: Icon(
-                                                    Icons.location_on,
-                                                    color: Color(0xFFFF0000),
-                                                    size: 22.0,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(width: 10),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'สถานที่',
-                                                    style: TextStyle(
-                                                      color: Color(0xFF013C58),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      height: 0,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    eventeach['placename'],
-                                                    style: TextStyle(
-                                                      color: Color(0xFF929292),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      height: 0,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            // Spacer(),
-                                            IconButton(
-                                              iconSize: 20,
-                                              icon: Icon(
-                                                Icons.arrow_forward_ios,
-                                                color: Color(0xFF013C58),
-                                              ),
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (BuildContext
-                                                                context) =>
-                                                            MapPage(
-                                                              eventLat: eventeach[
-                                                                  'latitude'],
-                                                              eventLng: eventeach[
-                                                                  'longitude'],
-                                                              eventPlacename:
-                                                                  eventeach[
-                                                                      'placename'],
-                                                            )));
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 15),
-                                        Row(
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Container(
-                                                  height: 35,
-                                                  width: 35,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0x3344DC65),
-                                                      shape: BoxShape.circle),
-                                                  child: Icon(
-                                                    Icons.schedule,
-                                                    color: Color(0xFF43DC65),
-                                                    size: 22.0,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(width: 10),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
+                                              SizedBox(width: 10),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      'วัน/เวลา',
+                                                      'สถานที่',
                                                       style: TextStyle(
                                                         color:
                                                             Color(0xFF013C58),
@@ -1449,307 +1450,92 @@ class _GangDetailState extends State<GangDetail> {
                                                         height: 0,
                                                       ),
                                                     ),
+                                                    Text(
+                                                      eventeach['placename'],
+                                                      style: TextStyle(
+                                                        color:
+                                                            Color(0xFF929292),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        height: 0,
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
-                                                Text(
-                                                  formattingDate(
-                                                      eventeach[
-                                                          'eventdate_start'],
-                                                      eventeach[
-                                                          'eventdate_end']),
-                                                  style: TextStyle(
-                                                    color: Color(0xFF929292),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 0,
-                                                  ),
+                                              ),
+                                              // Spacer(),
+                                              IconButton(
+                                                iconSize: 20,
+                                                icon: Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: Color(0xFF013C58),
                                                 ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 15),
-                                        Row(
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Container(
-                                                  height: 35,
-                                                  width: 35,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0x33CC00FF),
-                                                      shape: BoxShape.circle),
-                                                  child: Icon(
-                                                    Icons.call,
-                                                    color: Color(0xFFCC00FF),
-                                                    size: 18.0,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(width: 10),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'ติดต่อ',
-                                                  style: TextStyle(
-                                                    color: Color(0xFF013C58),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  eventeach['contact'],
-                                                  style: TextStyle(
-                                                    color: Color(0xFF929292),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 15),
-                                        Row(
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Container(
-                                                  height: 35,
-                                                  width: 35,
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0x330028FF),
-                                                      shape: BoxShape.circle),
-                                                  child: Icon(
-                                                    Icons.paid,
-                                                    color: Color(0xFF363CC4),
-                                                    size: 20.0,
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(width: 10),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'ค่าใช้จ่าย',
-                                                  style: TextStyle(
-                                                    color: Color(0xFF013C58),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  'ค่าเล่น ' +
-                                                      eventeach['priceplay'] +
-                                                      ' ค่าลูก ' +
-                                                      eventeach[
-                                                          'price_badminton'],
-                                                  style: TextStyle(
-                                                    color: Color(0xFF929292),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Spacer(),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'ลูกแบดที่ใช้',
-                                                  style: TextStyle(
-                                                    color: Color(0xFF013C58),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  eventeach['brand'],
-                                                  style: TextStyle(
-                                                    color: Color(0xFF929292),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Spacer(),
-                                          ],
-                                        ),
-                                        SizedBox(height: 15),
-                                        Row(
-                                          children: [
-                                            SizedBox(width: 10),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'ระดับของผู้เล่น',
-                                                  style: TextStyle(
-                                                    color: Color(0xFF013C58),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 0,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 10),
-                                                if (eventeach['level'] !=
-                                                        null &&
-                                                    eventeach['level']
-                                                        .isNotEmpty) ...[
-                                                  Row(
-                                                    children: [
-                                                      for (int i = 0;
-                                                          i <
-                                                              eventeach['level']
-                                                                  .length;
-                                                          i++)
-                                                        Container(
-                                                          margin: i > 0
-                                                              ? EdgeInsets.only(
-                                                                  left: 5)
-                                                              : EdgeInsets.zero,
-                                                          height: 22,
-                                                          width: 22,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: {
-                                                                  'N': Color(
-                                                                      0xFFB2EBF2), // Purple
-                                                                  'S': Color(
-                                                                      0xFFFFCC80), // Green
-                                                                  'P': Color(
-                                                                      0xFFF8BBD0), // Light Purple
-                                                                  'NB': Color(
-                                                                      0xFFCFD8DC), // Blue
-                                                                  'N-': Color(
-                                                                      0xFFBBDEFB), //Dark Purple
-                                                                  'P+': Color(
-                                                                      0xFFE3D6FF), // Pink
-                                                                  'P-': Color(
-                                                                      0xFFFEDEFF), // Dark Red
-                                                                  'C': Color(
-                                                                      0x5B009020), // Orange
-                                                                  'C+': Color(
-                                                                      0xFFB2DFDB), // Dark Orange
-                                                                }[eventeach[
-                                                                        'level']
-                                                                    [i]] ??
-                                                                Color(
-                                                                    0xFFFC7FFF), // Default color
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        7),
-                                                            border: Border.all(
-                                                              width: 2,
-                                                              color: {
-                                                                    'N': Color(
-                                                                        0xFF26C6DA), // Purple
-                                                                    'S': Color(
-                                                                        0xFFFF9800), // Green
-                                                                    'P': Color(
-                                                                        0xffff63ca), // Pink
-                                                                    'NB': Color(
-                                                                        0xFF607D8B), // Blue
-                                                                    'N-': Color(
-                                                                        0xff2962ff), // Dark Purple
-                                                                    'P+': Color(
-                                                                        0xFFA47AFF), // Pink
-                                                                    'P-': Color(
-                                                                        0xFFFC7FFF), // Dark Red
-                                                                    'C': Color(
-                                                                        0xFF00901F), // Pink
-                                                                    'C+': Color(
-                                                                        0xFF00695C), // Dark Orange
-                                                                  }[eventeach[
-                                                                          'level']
-                                                                      [i]] ??
-                                                                  Color(
-                                                                      0xFFFC7FFF), // Default color
-                                                            ),
-                                                          ),
-                                                          child: Center(
-                                                            child: Text(
-                                                              eventeach['level']
-                                                                  [i],
-                                                              style: TextStyle(
-                                                                color: {
-                                                                      'N': Color(
-                                                                          0xFF00838F), // Purple
-                                                                      'S': Color(
-                                                                          0xFFE65100), // Green
-                                                                      'P': Color(
-                                                                          0xffff63ca), // Pink
-                                                                      'NB': Color(
-                                                                          0xFF37474F), // Blue
-                                                                      'N-': Color(
-                                                                          0xFF0000FF), // Dark Purple
-                                                                      'P+': Color(
-                                                                          0xFFA47AFF), // Pink
-                                                                      'P-': Color(
-                                                                          0xFFFC7FFF), // Dark Red
-                                                                      'C': Color(
-                                                                          0xFF00901F), // Pink
-                                                                      'C+': Color(
-                                                                          0xFF009688), // Dark Orange
-                                                                    }[eventeach[
-                                                                            'level']
-                                                                        [i]] ??
-                                                                    Color(
-                                                                        0xFFFC7FFF), // Default color
-                                                                fontSize: 9,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                height: 0,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                    ],
-                                                  ),
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (BuildContext
+                                                                  context) =>
+                                                              MapPage(
+                                                                eventLat: eventeach[
+                                                                    'latitude'],
+                                                                eventLng: eventeach[
+                                                                    'longitude'],
+                                                                eventPlacename:
+                                                                    eventeach[
+                                                                        'placename'],
+                                                              )));
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 15),
+                                          Row(
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Container(
+                                                    height: 35,
+                                                    width: 35,
+                                                    decoration: BoxDecoration(
+                                                        color:
+                                                            Color(0x3344DC65),
+                                                        shape: BoxShape.circle),
+                                                    child: Icon(
+                                                      Icons.schedule,
+                                                      color: Color(0xFF43DC65),
+                                                      size: 22.0,
+                                                    ),
+                                                  )
                                                 ],
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 15),
-                                        Row(
-                                          children: [
-                                            SizedBox(width: 10),
-                                            Flexible(
-                                              child: Column(
+                                              ),
+                                              SizedBox(width: 10),
+                                              Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    'รายละเอียดเพิ่มเติม',
-                                                    style: TextStyle(
-                                                      color: Color(0xFF013C58),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      height: 0,
-                                                    ),
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        'วัน/เวลา',
+                                                        style: TextStyle(
+                                                          color:
+                                                              Color(0xFF013C58),
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          height: 0,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                   Text(
-                                                    eventeach['details'],
+                                                    formattingDate(
+                                                        eventeach[
+                                                            'eventdate_start'],
+                                                        eventeach[
+                                                            'eventdate_end']),
                                                     style: TextStyle(
                                                       color: Color(0xFF929292),
                                                       fontSize: 14,
@@ -1760,18 +1546,330 @@ class _GangDetailState extends State<GangDetail> {
                                                   ),
                                                 ],
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(height: 10)
-                                      ],
+                                            ],
+                                          ),
+                                          SizedBox(height: 15),
+                                          Row(
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Container(
+                                                    height: 35,
+                                                    width: 35,
+                                                    decoration: BoxDecoration(
+                                                        color:
+                                                            Color(0x33CC00FF),
+                                                        shape: BoxShape.circle),
+                                                    child: Icon(
+                                                      Icons.call,
+                                                      color: Color(0xFFCC00FF),
+                                                      size: 18.0,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(width: 10),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'ติดต่อ',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    eventeach['contact'],
+                                                    style: TextStyle(
+                                                      color: Color(0xFF929292),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 15),
+                                          Row(
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Container(
+                                                    height: 35,
+                                                    width: 35,
+                                                    decoration: BoxDecoration(
+                                                        color:
+                                                            Color(0x330028FF),
+                                                        shape: BoxShape.circle),
+                                                    child: Icon(
+                                                      Icons.paid,
+                                                      color: Color(0xFF363CC4),
+                                                      size: 20.0,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(width: 10),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'ค่าใช้จ่าย',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    'ค่าเล่น ' +
+                                                        eventeach['priceplay'] +
+                                                        ' ค่าลูก ' +
+                                                        eventeach[
+                                                            'price_badminton'],
+                                                    style: TextStyle(
+                                                      color: Color(0xFF929292),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Spacer(),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'ลูกแบดที่ใช้',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    eventeach['brand'],
+                                                    style: TextStyle(
+                                                      color: Color(0xFF929292),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Spacer(),
+                                            ],
+                                          ),
+                                          SizedBox(height: 15),
+                                          Row(
+                                            children: [
+                                              SizedBox(width: 10),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'ระดับของผู้เล่น',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 10),
+                                                  if (eventeach['level'] !=
+                                                          null &&
+                                                      eventeach['level']
+                                                          .isNotEmpty) ...[
+                                                    Row(
+                                                      children: [
+                                                        for (int i = 0;
+                                                            i <
+                                                                eventeach[
+                                                                        'level']
+                                                                    .length;
+                                                            i++)
+                                                          Container(
+                                                            margin: i > 0
+                                                                ? EdgeInsets
+                                                                    .only(
+                                                                        left: 5)
+                                                                : EdgeInsets
+                                                                    .zero,
+                                                            height: 22,
+                                                            width: 22,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: {
+                                                                    'N': Color(
+                                                                        0xFFB2EBF2), // Purple
+                                                                    'S': Color(
+                                                                        0xFFFFCC80), // Green
+                                                                    'P': Color(
+                                                                        0xFFF8BBD0), // Light Purple
+                                                                    'NB': Color(
+                                                                        0xFFCFD8DC), // Blue
+                                                                    'N-': Color(
+                                                                        0xFFBBDEFB), //Dark Purple
+                                                                    'P+': Color(
+                                                                        0xFFE3D6FF), // Pink
+                                                                    'P-': Color(
+                                                                        0xFFFEDEFF), // Dark Red
+                                                                    'C': Color(
+                                                                        0x5B009020), // Orange
+                                                                    'C+': Color(
+                                                                        0xFFB2DFDB), // Dark Orange
+                                                                  }[eventeach[
+                                                                          'level']
+                                                                      [i]] ??
+                                                                  Color(
+                                                                      0xFFFC7FFF), // Default color
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          7),
+                                                              border:
+                                                                  Border.all(
+                                                                width: 2,
+                                                                color: {
+                                                                      'N': Color(
+                                                                          0xFF26C6DA), // Purple
+                                                                      'S': Color(
+                                                                          0xFFFF9800), // Green
+                                                                      'P': Color(
+                                                                          0xffff63ca), // Pink
+                                                                      'NB': Color(
+                                                                          0xFF607D8B), // Blue
+                                                                      'N-': Color(
+                                                                          0xff2962ff), // Dark Purple
+                                                                      'P+': Color(
+                                                                          0xFFA47AFF), // Pink
+                                                                      'P-': Color(
+                                                                          0xFFFC7FFF), // Dark Red
+                                                                      'C': Color(
+                                                                          0xFF00901F), // Pink
+                                                                      'C+': Color(
+                                                                          0xFF00695C), // Dark Orange
+                                                                    }[eventeach[
+                                                                            'level']
+                                                                        [i]] ??
+                                                                    Color(
+                                                                        0xFFFC7FFF), // Default color
+                                                              ),
+                                                            ),
+                                                            child: Center(
+                                                              child: Text(
+                                                                eventeach[
+                                                                    'level'][i],
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: {
+                                                                        'N': Color(
+                                                                            0xFF00838F), // Purple
+                                                                        'S': Color(
+                                                                            0xFFE65100), // Green
+                                                                        'P': Color(
+                                                                            0xffff63ca), // Pink
+                                                                        'NB': Color(
+                                                                            0xFF37474F), // Blue
+                                                                        'N-': Color(
+                                                                            0xFF0000FF), // Dark Purple
+                                                                        'P+': Color(
+                                                                            0xFFA47AFF), // Pink
+                                                                        'P-': Color(
+                                                                            0xFFFC7FFF), // Dark Red
+                                                                        'C': Color(
+                                                                            0xFF00901F), // Pink
+                                                                        'C+': Color(
+                                                                            0xFF009688), // Dark Orange
+                                                                      }[eventeach[
+                                                                              'level']
+                                                                          [
+                                                                          i]] ??
+                                                                      Color(
+                                                                          0xFFFC7FFF), // Default color
+                                                                  fontSize: 9,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  height: 0,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 15),
+                                          Row(
+                                            children: [
+                                              SizedBox(width: 10),
+                                              Flexible(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'รายละเอียดเพิ่มเติม',
+                                                      style: TextStyle(
+                                                        color:
+                                                            Color(0xFF013C58),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        height: 0,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      eventeach['details'],
+                                                      style: TextStyle(
+                                                        color:
+                                                            Color(0xFF929292),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        height: 0,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(height: 10)
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ])),
-                          ],
-                        ),
-                ),
-        ));
+                                  ])),
+                            ],
+                          ),
+                  ),
+          )),
+    );
   }
 }
 
