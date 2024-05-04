@@ -519,7 +519,7 @@ class _GangDetailState extends State<GangDetail> {
                                 )),
                           ),
                         ] else ...[
-                          if (userJoin.length <= eventeach['userlimit']) ...[
+                          if (userJoin.length < eventeach['userlimit']) ...[
                             Expanded(
                               flex: 6,
                               child: Container(

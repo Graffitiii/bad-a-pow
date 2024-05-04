@@ -184,148 +184,169 @@ class _AdiminOfState extends State<AdiminOf> {
             backgroundColor: Color(0xFF00537A),
           ),
           body: SafeArea(
-              child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
-              child: Column(
-                children: transformeRole.map<Widget>((item) {
-                  String dropdownvalue;
-                  if (item['role'] == 'follower') {
-                    dropdownvalue = dropdownvalueMember;
-                  } else {
-                    dropdownvalue = dropdownvalueAdmin;
-                  }
+              child: loading
+                  ? CircularProgressIndicator()
+                  : SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(15, 20, 10, 0),
+                        child: Column(
+                          children: transformeRole.map<Widget>((item) {
+                            String dropdownvalue;
+                            if (item['role'] == 'follower') {
+                              dropdownvalue = dropdownvalueMember;
+                            } else {
+                              dropdownvalue = dropdownvalueAdmin;
+                            }
 
-                  return Padding(
-                    padding: EdgeInsetsDirectional.all(5),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            if (imageList[item['name']] != "") ...[
-                              CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(imageList[item['name']]),
-                              )
-                            ] else ...[
-                              CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    'assets/images/user_default.png'),
-                              )
-                            ],
-                            SizedBox(width: 25),
-                            Text(
-                              item['name'] ?? '',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Spacer(),
-                            if (item['role'] != 'owner') ...[
-                              Container(
-                                padding: EdgeInsets.all(10.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
+                            return Padding(
+                              padding: EdgeInsetsDirectional.all(5),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      if (imageList[item['name']] != "") ...[
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              imageList[item['name']]),
+                                        )
+                                      ] else ...[
+                                        CircleAvatar(
+                                          backgroundImage: AssetImage(
+                                              'assets/images/user_default.png'),
+                                        )
+                                      ],
+                                      SizedBox(width: 25),
+                                      Text(
+                                        item['name'] ?? '',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      if (item['role'] != 'owner') ...[
                                         Container(
-                                          height: 40,
-                                          padding: EdgeInsets.all(5.0),
-                                          child: DropdownButtonHideUnderline(
-                                            child: DropdownButton(
-                                              elevation: 0,
-                                              value: dropdownvalue,
-                                              icon: Icon(
-                                                Icons.keyboard_arrow_down,
-                                                size: 25,
-                                              ),
-                                              items: items.map((String items) {
-                                                return DropdownMenuItem(
-                                                  value: items,
-                                                  child: Text(
-                                                    items,
-                                                    style: TextStyle(
-                                                      color: Color(0xFF013C58),
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      height: 0,
+                                          padding: EdgeInsets.all(10.0),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Container(
+                                                    height: 40,
+                                                    padding:
+                                                        EdgeInsets.all(5.0),
+                                                    child:
+                                                        DropdownButtonHideUnderline(
+                                                      child: DropdownButton(
+                                                        elevation: 0,
+                                                        value: dropdownvalue,
+                                                        icon: Icon(
+                                                          Icons
+                                                              .keyboard_arrow_down,
+                                                          size: 25,
+                                                        ),
+                                                        items: items.map(
+                                                            (String items) {
+                                                          return DropdownMenuItem(
+                                                            value: items,
+                                                            child: Text(
+                                                              items,
+                                                              style: TextStyle(
+                                                                color: Color(
+                                                                    0xFF013C58),
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                height: 0,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }).toList(),
+                                                        onChanged:
+                                                            (String? newValue) {
+                                                          setState(() {
+                                                            if (item['role'] ==
+                                                                'follower') {
+                                                              dropdownvalue =
+                                                                  newValue!;
+                                                              roleGetAdmin(
+                                                                  item['name']);
+                                                            } else {
+                                                              dropdownvalue =
+                                                                  newValue!;
+                                                              roleUnGetAdmin(
+                                                                  item['name']);
+                                                            }
+                                                          });
+                                                        },
+                                                      ),
                                                     ),
                                                   ),
-                                                );
-                                              }).toList(),
-                                              onChanged: (String? newValue) {
-                                                setState(() {
-                                                  if (item['role'] ==
-                                                      'follower') {
-                                                    dropdownvalue = newValue!;
-                                                    roleGetAdmin(item['name']);
-                                                  } else {
-                                                    dropdownvalue = newValue!;
-                                                    roleUnGetAdmin(
-                                                        item['name']);
-                                                  }
-                                                });
-                                              },
-                                            ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ] else ...[
-                              Container(
-                                padding: EdgeInsets.only(right: 15, top: 10),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
+                                      ] else ...[
                                         Container(
-                                          height: 40,
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'เจ้าของ',
-                                            style: TextStyle(
-                                              color: Color(0xFF013C58),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              height: 0,
-                                            ),
+                                          padding: EdgeInsets.only(
+                                              right: 15, top: 10),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Container(
+                                                    height: 40,
+                                                    padding:
+                                                        EdgeInsets.all(5.0),
+                                                    child: Text(
+                                                      'เจ้าของ',
+                                                      style: TextStyle(
+                                                        color:
+                                                            Color(0xFF013C58),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        height: 0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                      ]
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 1,
+                                    color: Colors.black
+                                        .withOpacity(0.10999999940395355),
+                                  ),
+                                ],
                               ),
-                            ]
-                          ],
+                            );
+                          }).toList(),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          width: double.infinity,
-                          height: 1,
-                          color: Colors.black.withOpacity(0.10999999940395355),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ))),
+                      ),
+                    ))),
     );
   }
 }

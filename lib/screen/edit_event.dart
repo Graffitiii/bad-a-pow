@@ -859,9 +859,8 @@ class _EditEventState extends State<EditEvent> {
                                                                       ]),
                                                                 )));
                                           },
-                                          initialPosition: LatLng(
-                                              13.744679051575686,
-                                              100.53005064632619),
+                                          initialPosition:
+                                              LatLng(latitude, longitude),
                                           useCurrentLocation: false,
 
                                           resizeToAvoidBottomInset:

@@ -179,6 +179,8 @@ class _FindGangState extends State<FindGang> {
       'club': search.text,
       'status': openEvent.toString()
     };
+
+    print(queryParameters);
     var uri = Uri.http(getUrl, '/getFilter', queryParameters);
     var response = await http.get(uri);
 
@@ -716,7 +718,7 @@ class _FindGangState extends State<FindGang> {
                                                                                                           ]),
                                                                                                         )));
                                                                                       },
-                                                                                      initialPosition: LatLng(13.744679051575686, 100.53005064632619),
+                                                                                      initialPosition: LatLng(latitude, longitude),
                                                                                       useCurrentLocation: false,
 
                                                                                       resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets

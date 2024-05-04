@@ -131,7 +131,11 @@ class _AddState extends State<Add> {
   void addTodo() async {
     if (contact.text.isNotEmpty &&
         priceBadminton.text.isNotEmpty &&
-        priceplay.text.isNotEmpty) {
+        priceplay.text.isNotEmpty &&
+        eventdate.text.isNotEmpty &&
+        eventdate.text.isNotEmpty &&
+        placename.text.isNotEmpty &&
+        userlimit.text.isNotEmpty) {
       var regBody;
       if (images.length != 0) {
         for (int i = 0; i < images.length; i++) {
@@ -221,6 +225,26 @@ class _AddState extends State<Add> {
       } else {
         print("error");
       }
+    } else {
+      showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('ไม่สามารถสร้างกิจกรรมได้'),
+          content: const Text(
+            'กรุณากรอกข้อมูลให้ครบถ้วน',
+            style: TextStyle(fontSize: 18),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, 'ยกเลิก');
+              },
+              child: const Text('ตกลง'),
+            ),
+          ],
+        ),
+      );
     }
     // print(selectedlevel);
     // print(formattedStartTime);
