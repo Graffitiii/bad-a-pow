@@ -153,8 +153,8 @@ class _SignUpObjectState extends State<SignUpObject> {
     startTimer();
 
     var queryParameters = {
-      'api_key': 'e5179bf7',
-      'api_secret': 'eS3znKj5XFBSVRqv',
+      'api_key': '7e8349e6',
+      'api_secret': '62aYVj1NhtUEGGqI',
       'number': '66623413184',
       'brand': 'BadAPow',
     };
@@ -176,8 +176,8 @@ class _SignUpObjectState extends State<SignUpObject> {
 
   void confirmOtp() async {
     var queryParameters = {
-      'api_key': 'e5179bf7',
-      'api_secret': 'eS3znKj5XFBSVRqv',
+      'api_key': '7e8349e6',
+      'api_secret': '62aYVj1NhtUEGGqI',
       'request_id': otpId,
       'code': otpController.text,
     };

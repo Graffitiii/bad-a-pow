@@ -65,8 +65,8 @@ class _ForgetConfirmOtpState extends State<ForgetConfirmOtp> {
     startTimer();
 
     var queryParameters = {
-      'api_key': 'e5179bf7',
-      'api_secret': 'eS3znKj5XFBSVRqv',
+      'api_key': '7e8349e6',
+      'api_secret': '62aYVj1NhtUEGGqI',
       'number': '66623413184',
       'brand': 'BadAPow',
     };
@@ -77,19 +77,19 @@ class _ForgetConfirmOtpState extends State<ForgetConfirmOtp> {
 
     var jsonResponse = jsonDecode(response.body);
 
-    print(response.statusCode);
-
-    setState(() {
-      otpId = jsonResponse['request_id'];
-    });
+    if (jsonResponse['status'] == "0") {
+      setState(() {
+        otpId = jsonResponse['request_id'];
+      });
+    }
 
     print(otpId);
   }
 
   void confirmOtp(code) async {
     var queryParameters = {
-      'api_key': 'e5179bf7',
-      'api_secret': 'eS3znKj5XFBSVRqv',
+      'api_key': '7e8349e6',
+      'api_secret': '62aYVj1NhtUEGGqI',
       'request_id': otpId,
       'code': code,
     };
