@@ -1122,14 +1122,18 @@ class _GangDetailState extends State<GangDetail> {
                                                               clubInfo['admin']
                                                                   .contains(
                                                                       username))) ...[
-                                                        IconButton(
-                                                          icon: Icon(
+                                                        GestureDetector(
+                                                          child: Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    left: 15),
+                                                            child: Icon(
                                                               Icons
                                                                   .arrow_forward_ios,
-                                                              size: 12),
-                                                          color:
-                                                              Color(0xFF515151),
-                                                          onPressed: () {
+                                                              size: 17,
+                                                            ),
+                                                          ),
+                                                          onTap: () {
                                                             showModalBottomSheet(
                                                               context: context,
                                                               isScrollControlled:
@@ -1338,7 +1342,7 @@ class _GangDetailState extends State<GangDetail> {
                                                               },
                                                             );
                                                           },
-                                                        ),
+                                                        )
                                                       ],
                                                     ],
                                                   ),
@@ -1595,6 +1599,38 @@ class _GangDetailState extends State<GangDetail> {
                                                   ),
                                                 ],
                                               ),
+                                              SizedBox(width: 15),
+                                              Spacer(),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'ผู้เข้าร่วม',
+                                                    style: TextStyle(
+                                                      color: Color(0xFF013C58),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    userJoin.length.toString() +
+                                                        " / " +
+                                                        eventeach['userlimit']
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                      color: Color(0xFF929292),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Spacer(),
                                             ],
                                           ),
                                           SizedBox(height: 15),
