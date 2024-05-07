@@ -17,24 +17,15 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -52,11 +43,39 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCGvLasccnPH_4TgO6piuAMeMWptJcnGj0',
+    appId: '1:377102217262:web:d9194849ce988f37c76fbf',
+    messagingSenderId: '377102217262',
+    projectId: 'bad-a-pow',
+    authDomain: 'bad-a-pow.firebaseapp.com',
+    storageBucket: 'bad-a-pow.appspot.com',
+    measurementId: 'G-M2PF913QBB',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB-NDcwa4ZKpWQFGnPhHAwDHxnvpyFy6XY',
     appId: '1:377102217262:android:75ea9f513a42f5a8c76fbf',
     messagingSenderId: '377102217262',
     projectId: 'bad-a-pow',
     storageBucket: 'bad-a-pow.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAWNmAxKdd3pKEUf65tZgRHumQEeT9x3bo',
+    appId: '1:377102217262:ios:2b9b26902e64a503c76fbf',
+    messagingSenderId: '377102217262',
+    projectId: 'bad-a-pow',
+    storageBucket: 'bad-a-pow.appspot.com',
+    iosBundleId: 'com.example.finalmo',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAWNmAxKdd3pKEUf65tZgRHumQEeT9x3bo',
+    appId: '1:377102217262:ios:bccc313a0175fb4fc76fbf',
+    messagingSenderId: '377102217262',
+    projectId: 'bad-a-pow',
+    storageBucket: 'bad-a-pow.appspot.com',
+    iosBundleId: 'com.example.finalmo.RunnerTests',
   );
 }
