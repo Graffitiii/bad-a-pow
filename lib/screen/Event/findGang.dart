@@ -518,11 +518,14 @@ class _FindGangState extends State<FindGang> {
                                   ),
                                 ),
                                 child: Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 0, 20, 10),
-                                  child: IconButton(
-                                    icon: Icon(Icons.tune, size: 23),
-                                    color: Color(0xFF013C58),
-                                    onPressed: () {
+                                  padding: EdgeInsets.all(0),
+                                  child: GestureDetector(
+                                    child: Icon(
+                                      Icons.tune,
+                                      size: 25,
+                                      color: Color(0xFF013C58),
+                                    ),
+                                    onTap: () {
                                       setState(() {
                                         placenameSelect = placename;
                                         latitudeSelect = latitude;

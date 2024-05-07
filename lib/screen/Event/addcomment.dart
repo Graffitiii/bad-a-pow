@@ -53,6 +53,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
           "comment": comment.text,
           "showuser": light,
           "clubname": widget.club,
+          "create_at": DateTime.now().toUtc().toIso8601String(),
         };
       } else {
         regBody = {
@@ -61,6 +62,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
           "comment": comment.text,
           "showuser": light,
           "clubname": widget.club,
+          "create_at": DateTime.now().toUtc().toIso8601String(),
         };
       }
 
