@@ -506,8 +506,8 @@ class _FindGangState extends State<FindGang> {
                               ),
                             ),
                             Container(
-                                height: 40,
-                                width: 40,
+                                height: 35,
+                                width: 35,
                                 decoration: ShapeDecoration(
                                   color:
                                       const Color.fromARGB(255, 255, 255, 255),
@@ -1508,8 +1508,8 @@ class _FindGangState extends State<FindGang> {
                                                                                 5)
                                                                         : EdgeInsets
                                                                             .zero,
-                                                                    height: 22,
-                                                                    width: 22,
+                                                                    height: 19,
+                                                                    width: 19,
                                                                     decoration:
                                                                         BoxDecoration(
                                                                       color: {
@@ -1538,7 +1538,7 @@ class _FindGangState extends State<FindGang> {
                                                                               0xFFFC7FFF), // Default color
                                                                       borderRadius:
                                                                           BorderRadius.circular(
-                                                                              7),
+                                                                              6),
                                                                       border:
                                                                           Border
                                                                               .all(

@@ -10,15 +10,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Profile extends StatefulWidget {
-  final a;
-  const Profile({this.a, super.key});
+class OProfile extends StatefulWidget {
+  final username;
+  const OProfile({this.username, super.key});
 
   @override
-  State<Profile> createState() => _ProfileState();
+  State<OProfile> createState() => _OProfileState();
 }
 
-class _ProfileState extends State<Profile> {
+class _OProfileState extends State<OProfile> {
   bool loading = true;
   var username = '';
   late SharedPreferences prefs;
@@ -27,117 +27,11 @@ class _ProfileState extends State<Profile> {
   var userInfo;
   @override
   void initState() {
+    getUser(widget.username);
     super.initState();
-    initializeState();
-    print(widget.a);
-    if (widget.a != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        // จะทำงานหลังจากที่ Widget ถูกสร้างและวางบนหน้าจอเสร็จ
-        _openModalBottomSheet(); // เรียกเมทอดเพื่อเปิด showModalBottomSheet ทันที
-      });
-    }
   }
 
-  void initializeState() async {
-    await initSharedPref();
-    getUser();
-  }
-
-  void _openModalBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: new Icon(Icons.manage_accounts),
-              title: new Text('การตั้งค่าโปรไฟล์'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => ProfileEdit(
-                      profile: userInfo,
-                    ),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.supervisor_account),
-              title: new Text('สมัครเป็นผู้จัดก๊วน'),
-              onTap: () {
-                showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    title: const Text('สมัครเป็นผู้จัดก๊วน'),
-                    content: const Text(
-                      'ต้องการสมัครเป็นผู้จัดก๊วนใช่หรือไม่',
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'Cancel'),
-                        child: const Text('ยกเลิก'),
-                      ),
-                      TextButton(
-                        onPressed: () =>
-                            {Navigator.pop(context, 'Cancel'), regisOwner()},
-                        child: const Text('ยืนยัน'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.history),
-              title: new Text('ประวัติการเข้าร่วม'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HistoryScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: new Icon(Icons.logout),
-              title: new Text('ออกจากระบบ'),
-              onTap: () {
-                logout();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> initSharedPref() async {
-    prefs = await SharedPreferences.getInstance();
-    setState(() {
-      myToken = prefs.getString('token');
-    });
-    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(myToken);
-    username = jwtDecodedToken['userName'];
-  }
-
-  void logout() {
-    prefs.remove('token');
-    print('logout');
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => TabBarViewBottom()),
-    // );
-  }
-
-  void getUser() async {
+  Future<void> getUser(username) async {
     var queryParameters = {
       'userName': username,
     };
@@ -178,34 +72,6 @@ class _ProfileState extends State<Profile> {
     return age.toString();
   }
 
-  void regisOwner() async {
-    var regBody = {
-      "userName": username,
-    };
-
-    var response = await http.post(Uri.parse(regOwner),
-        headers: {"Content-type": "application/json"},
-        body: jsonEncode(regBody));
-
-    var jsonResponse = jsonDecode(response.body);
-
-    if (jsonResponse['status']) {
-      showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('สมัครเป็นผู้จัดก๊วนสำเร็จ'),
-          content: const Text('สมัครเป็นผู้จัดก๊วนสำเร็จ'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'Cancel'),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -221,94 +87,6 @@ class _ProfileState extends State<Profile> {
           ),
         ),
         backgroundColor: Color(0xFF00537A),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.settings,
-              color: Colors.white,
-            ),
-            tooltip: 'การตั้งค่า',
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      ListTile(
-                        leading: new Icon(Icons.manage_accounts),
-                        title: new Text('การตั้งค่าโปรไฟล์'),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      ProfileEdit(
-                                        profile: userInfo,
-                                      )));
-                        },
-                      ),
-                      ListTile(
-                        leading: new Icon(Icons.supervisor_account),
-                        title: new Text('สมัครเป็นผู้จัดก๊วน'),
-                        onTap: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (BuildContext context) =>
-                          //             SettingProfile()));
-                          showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: const Text('สมัครเป็นผู้จัดก๊วน'),
-                              content: const Text(
-                                  'ต้องการสมัครเป็นผู้จัดก๊วนใช่หรือไม่'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, 'Cancel'),
-                                  child: const Text('ยกเลิก'),
-                                ),
-                                TextButton(
-                                  onPressed: () => {
-                                    Navigator.pop(context, 'Cancel'),
-                                    regisOwner()
-                                  },
-                                  child: const Text('ยืนยัน'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-
-                      ListTile(
-                        leading: new Icon(Icons.history),
-                        title: new Text('ประวัติการเข้าร่วม'),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HistoryScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      // DialogExample(),
-
-                      ListTile(
-                          leading: new Icon(Icons.logout),
-                          title: new Text('ออกจากระบบ'),
-                          onTap: () {
-                            logout();
-                          }),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: loading
@@ -361,37 +139,6 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                       ]
-
-                      // Container(
-                      //   margin: EdgeInsets.all(8.0),
-                      //   decoration: BoxDecoration(
-                      //     shape: BoxShape.circle, // กำหนดให้เป็นรูปร่างวงกลม
-                      //     image: DecorationImage(
-                      //       image: AssetImage('assets/images/profile1.jpg'),
-                      //       fit: BoxFit.cover,
-                      //     ),
-                      //   ),
-                      // ),
-                      // Container(
-                      //   margin: EdgeInsets.all(8.0),
-                      //   decoration: BoxDecoration(
-                      //     shape: BoxShape.circle,
-                      //     image: DecorationImage(
-                      //       image: AssetImage('assets/images/profile3.jpg'),
-                      //       fit: BoxFit.cover,
-                      //     ),
-                      //   ),
-                      // ),
-                      // Container(
-                      //   margin: EdgeInsets.all(8.0),
-                      //   decoration: BoxDecoration(
-                      //     shape: BoxShape.circle,
-                      //     image: DecorationImage(
-                      //       image: AssetImage('assets/images/profile4.jpg'),
-                      //       fit: BoxFit.cover,
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                     options: CarouselOptions(
                       height: 230.0,
@@ -413,7 +160,7 @@ class _ProfileState extends State<Profile> {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            username,
+                            userInfo['userName'],
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 20,
@@ -501,6 +248,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                     ),
                                   ],
+                                  SizedBox(width: 100),
                                 ],
                               ),
                             ),

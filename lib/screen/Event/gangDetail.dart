@@ -4,6 +4,7 @@ import 'package:finalmo/screen/add.dart';
 import 'package:finalmo/screen/edit_event.dart';
 import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
 import 'package:finalmo/screen/Event/map.dart';
+import 'package:finalmo/screen/profile/otherProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:convert';
@@ -1124,15 +1125,43 @@ class _GangDetailState extends State<GangDetail> {
                                                                       username))) ...[
                                                         GestureDetector(
                                                           child: Padding(
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    left: 15),
-                                                            child: Icon(
-                                                              Icons
-                                                                  .arrow_forward_ios,
-                                                              size: 17,
-                                                            ),
-                                                          ),
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left: 10),
+                                                              child: userPending
+                                                                          .length !=
+                                                                      0
+                                                                  ? Container(
+                                                                      width:
+                                                                          20.0,
+                                                                      height:
+                                                                          20.0,
+                                                                      child:
+                                                                          Center(
+                                                                        child: Text(
+                                                                            userPending.length
+                                                                                .toString(),
+                                                                            style:
+                                                                                TextStyle(
+                                                                              color: Color.fromARGB(255, 255, 255, 255),
+                                                                              fontSize: 14,
+                                                                              fontWeight: FontWeight.w600,
+                                                                              height: 0,
+                                                                            )),
+                                                                      ),
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color: Colors
+                                                                            .red,
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                      ),
+                                                                    )
+                                                                  : Icon(
+                                                                      Icons
+                                                                          .arrow_forward_ios,
+                                                                      size: 17,
+                                                                    )),
                                                           onTap: () {
                                                             showModalBottomSheet(
                                                               context: context,
@@ -1206,12 +1235,34 @@ class _GangDetailState extends State<GangDetail> {
                                                                                                   Row(
                                                                                                     children: [
                                                                                                       if (imageList[items] != "") ...[
-                                                                                                        CircleAvatar(
-                                                                                                          backgroundImage: NetworkImage(imageList[items]),
+                                                                                                        GestureDetector(
+                                                                                                          onTap: () {
+                                                                                                            Navigator.push(
+                                                                                                              context,
+                                                                                                              MaterialPageRoute(
+                                                                                                                  builder: (context) => OProfile(
+                                                                                                                        username: items,
+                                                                                                                      )),
+                                                                                                            );
+                                                                                                          },
+                                                                                                          child: CircleAvatar(
+                                                                                                            backgroundImage: NetworkImage(imageList[items]),
+                                                                                                          ),
                                                                                                         )
                                                                                                       ] else ...[
-                                                                                                        CircleAvatar(
-                                                                                                          backgroundImage: AssetImage('assets/images/user_default.png'),
+                                                                                                        GestureDetector(
+                                                                                                          onTap: () {
+                                                                                                            Navigator.push(
+                                                                                                              context,
+                                                                                                              MaterialPageRoute(
+                                                                                                                  builder: (context) => OProfile(
+                                                                                                                        username: items,
+                                                                                                                      )),
+                                                                                                            );
+                                                                                                          },
+                                                                                                          child: CircleAvatar(
+                                                                                                            backgroundImage: AssetImage('assets/images/user_default.png'),
+                                                                                                          ),
                                                                                                         )
                                                                                                       ],
                                                                                                       SizedBox(width: 25),
@@ -1286,12 +1337,34 @@ class _GangDetailState extends State<GangDetail> {
                                                                                                   Row(
                                                                                                     children: [
                                                                                                       if (imageList[items] != "") ...[
-                                                                                                        CircleAvatar(
-                                                                                                          backgroundImage: NetworkImage(imageList[items]),
+                                                                                                        GestureDetector(
+                                                                                                          onTap: () {
+                                                                                                            Navigator.push(
+                                                                                                              context,
+                                                                                                              MaterialPageRoute(
+                                                                                                                  builder: (context) => OProfile(
+                                                                                                                        username: items,
+                                                                                                                      )),
+                                                                                                            );
+                                                                                                          },
+                                                                                                          child: CircleAvatar(
+                                                                                                            backgroundImage: NetworkImage(imageList[items]),
+                                                                                                          ),
                                                                                                         )
                                                                                                       ] else ...[
-                                                                                                        CircleAvatar(
-                                                                                                          backgroundImage: AssetImage('assets/images/user_default.png'),
+                                                                                                        GestureDetector(
+                                                                                                          onTap: () {
+                                                                                                            Navigator.push(
+                                                                                                              context,
+                                                                                                              MaterialPageRoute(
+                                                                                                                  builder: (context) => OProfile(
+                                                                                                                        username: items,
+                                                                                                                      )),
+                                                                                                            );
+                                                                                                          },
+                                                                                                          child: CircleAvatar(
+                                                                                                            backgroundImage: AssetImage('assets/images/user_default.png'),
+                                                                                                          ),
                                                                                                         )
                                                                                                       ],
                                                                                                       SizedBox(width: 25),

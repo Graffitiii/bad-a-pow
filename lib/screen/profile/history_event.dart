@@ -1,4 +1,5 @@
 import 'package:finalmo/screen/Event/gangOwnerDetail.dart';
+import 'package:finalmo/screen/Event/review.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -210,15 +211,82 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             child: Column(
                                               children: [
                                                 ListTile(
-                                                  title: Text(
-                                                    items['clubname'],
-                                                    style: TextStyle(
-                                                      color: Color(0xFF013C58),
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      height: 0,
-                                                    ),
+                                                  title: Row(
+                                                    children: [
+                                                      Text(
+                                                        items['clubname'],
+                                                        style: TextStyle(
+                                                          color:
+                                                              Color(0xFF013C58),
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          height: 0,
+                                                        ),
+                                                      ),
+                                                      Spacer(),
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        ReviewScreen(
+                                                                          club:
+                                                                              items['clubname'],
+                                                                        )),
+                                                          );
+                                                        },
+                                                        child: Opacity(
+                                                          opacity: 0.80,
+                                                          child: Container(
+                                                            child: Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            15,
+                                                                            5,
+                                                                            15,
+                                                                            5),
+                                                                child: Text(
+                                                                  'รีวิว',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            0,
+                                                                            0,
+                                                                            0),
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    height: 0,
+                                                                  ),
+                                                                )),
+                                                            // width: 87,
+                                                            // height: 17,
+                                                            decoration:
+                                                                ShapeDecoration(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      255,
+                                                                      196,
+                                                                      0),
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5)),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                   subtitle: Column(
                                                     crossAxisAlignment:

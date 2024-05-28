@@ -90,7 +90,26 @@ class _SignUpObjectState extends State<SignUpObject> {
     print('userControl Status:');
     print(jsonResponse['status']);
     if (jsonResponse['status']) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
+      showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('ลงทะเบียนสำเร็จ'),
+          content: const Text(
+            'ลงทะเบียนสำเร็จ',
+            style: TextStyle(fontSize: 18),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => LoginScreen()));
+              },
+              child: const Text('ตกลง'),
+            ),
+          ],
+        ),
+      );
     }
   }
 

@@ -250,7 +250,7 @@ class _ProfileEditState extends State<ProfileEdit> {
         backgroundColor: Color(0xFF00537A),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
+            icon: const Icon(Icons.save, color: Colors.white),
             tooltip: 'บันทึก',
             onPressed: () {
               uploadFile();

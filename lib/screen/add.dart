@@ -285,10 +285,10 @@ class _AddState extends State<Add> {
         // print(item['clubname']);
         clubname.add(item['clubname']);
       }
-      for (var item in jsonResponse['Admin']) {
-        // print(item['clubname']);
-        clubname.add(item['clubname']);
-      }
+      // for (var item in jsonResponse['Admin']) {
+      //   // print(item['clubname']);
+      //   clubname.add(item['clubname']);
+      // }
       // print(jsonResponse['data'][0]['clubname']);
       print("clubname: $clubname");
       status = true;

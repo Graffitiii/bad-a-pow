@@ -980,7 +980,9 @@ class _HomePageState extends State<HomePage> {
                                           Padding(
                                             padding: EdgeInsets.symmetric(
                                                 vertical: 10),
-                                            child: Text("กลุ่มที่ติดตาม"),
+                                            child: Text("กลุ่มที่ติดตาม",
+                                                overflow:
+                                                    TextOverflow.ellipsis),
                                           ),
                                         ],
                                       ),
@@ -1026,7 +1028,9 @@ class _HomePageState extends State<HomePage> {
                                           Padding(
                                             padding: EdgeInsets.symmetric(
                                                 vertical: 10),
-                                            child: Text("ที่เข้าร่วม"),
+                                            child: Text("ที่เข้าร่วม",
+                                                overflow:
+                                                    TextOverflow.ellipsis),
                                           ),
                                         ],
                                       ),
@@ -1076,6 +1080,7 @@ class _HomePageState extends State<HomePage> {
                                                 vertical: 10),
                                             child: Text(
                                               "จัดการก๊วน",
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ],
@@ -1122,7 +1127,10 @@ class _HomePageState extends State<HomePage> {
                                           Padding(
                                             padding: EdgeInsets.symmetric(
                                                 vertical: 10),
-                                            child: Text("ตารางกิจกรรม"),
+                                            child: Text(
+                                              "ตารางกิจกรรม",
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                         ],
                                       ),

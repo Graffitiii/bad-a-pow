@@ -899,17 +899,42 @@ class _GangOwnerDetailState extends State<GangOwnerDetail>
                                             Spacer(),
                                             Row(
                                               children: [
-                                                Text(
-                                                  "กำลังรอ" +
-                                                      "  " +
-                                                      items['pending']
-                                                          .length
-                                                          .toString(),
-                                                  style: TextStyle(
-                                                    color: Color(0xFFFF5B5B),
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 0,
+                                                // Text(
+                                                //   "กำลังรอ" +
+                                                //       "  " +
+                                                //       items['pending']
+                                                //           .length
+                                                //           .toString(),
+                                                //   style: TextStyle(
+                                                //     color: Color(0xFFFF5B5B),
+                                                //     fontSize: 14,
+                                                //     fontWeight: FontWeight.w600,
+                                                //     height: 0,
+                                                //   ),
+                                                // )
+                                                Container(
+                                                  width: 25.0,
+                                                  height: 25.0,
+                                                  child: Center(
+                                                    child: Text(
+                                                        items['pending']
+                                                            .length
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              255,
+                                                              255,
+                                                              255),
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          height: 0,
+                                                        )),
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    shape: BoxShape.circle,
                                                   ),
                                                 )
                                               ],
